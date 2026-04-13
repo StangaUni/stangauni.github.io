@@ -1,0 +1,222 @@
+---
+title: "Selezione e Iterazione in C"
+type: "riassunto"
+tags: ["if", "else", "while", "for", "switch", "cicli annidati", "operatore ternario", "incremento", "decremento"]
+excerpt: "if/else, operatore ternario, while, for, cicli annidati, switch/break, operatori ++ e -- con relative trappole."
+readingTime: 10
+---
+
+## if / else
+
+```c
+if (condizione) {
+    // eseguito se condizione vera
+} else {
+    // eseguito se condizione falsa
+}
+```
+
+- La condizione è un'espressione booleana tra parentesi
+- `{}` definiscono un blocco; **non** seguiti da `;`
+- Il ramo `else` è opzionale
+
+**Cascata else-if:**
+```c
+if (cond1) {
+    // cond1 vera
+} else if (cond2) {
+    // cond1 falsa, cond2 vera
+} else {
+    // entrambe false
+}
+```
+
+**Senza `{}`** (singolo comando):
+```c
+if (!x)
+    printf("x uguale a 0");
+else
+    printf("x diverso da zero");
+```
+
+> Senza `{}`, l'`else` si riferisce all'`if` più vicino. Per chiarezza, usare sempre `{}`.
+
+---
+
+## Operatore Ternario
+
+```c
+condizione ? valore_se_vero : valore_se_falso
+```
+
+```c
+y = 3 + (x>0 ? x : -x);   // valore assoluto di x, sommato a 3
+```
+
+---
+
+## Casi Particolari dell'if
+
+**Punto e virgola accidentale:**
+```c
+if (a==5);          // ; è il corpo dell'if (comando vuoto)
+{                   // questo blocco viene SEMPRE eseguito
+    printf("a ha valore 5\n");
+}
+```
+
+**Assegnamento invece di confronto:**
+```c
+if (a=5) { ... }    // assegna 5 ad a; la condizione vale 5 → sempre vera!
+```
+
+---
+
+## while
+
+```c
+while (condizione) {
+    // corpo
+}
+```
+
+1. Se condizione falsa → salta il corpo
+2. Se condizione vera → esegue il corpo
+3. Torna al punto 1
+
+```c
+int i=1;
+while (i<=10) {
+    printf("%d\n", i);
+    i = i+1;
+}
+```
+
+**Caso particolare — punto e virgola accidentale:**
+```c
+while (a<5);        // ciclo infinito: il corpo è il comando vuoto ;
+{
+    a = a+1;        // mai raggiunto
+}
+```
+
+---
+
+## for
+
+```c
+for (inizializzazione; condizione; aggiornamento) {
+    // corpo
+}
+```
+
+`for` e `while` sono equivalenti; si usa quello più naturale.
+
+```c
+// equivalenti:
+int i=1;
+while (i<=5) { printf("Ciao!\n"); i=i+1; }
+
+for (int i=1; i<=5; i=i+1) { printf("Ciao!\n"); }
+```
+
+> La variabile dichiarata nell'inizializzazione del `for` è locale al ciclo (C99).
+
+---
+
+## Cicli Annidati
+
+All'interno del corpo di un ciclo può comparire qualunque istruzione, incluso un altro ciclo.
+
+**Esempio — quadrato n×n di asterischi:**
+```c
+int n=4, i, j;
+for (j=1; j<=n; j=j+1) {       // ciclo esterno: righe
+    for (i=1; i<=n; i=i+1) {   // ciclo interno: colonne
+        printf("*");
+    }
+    printf("\n");
+}
+```
+Output:
+```
+****
+****
+****
+****
+```
+
+---
+
+## switch / break (cenno)
+
+```c
+switch (grade) {
+    case 'A':
+    case 'a':
+        aCount += 1;
+        break;          // esce dal switch
+    case 'b':
+        bCount += 1;
+        break;
+    default:
+        printf("ERROR");
+}
+```
+
+- `grade` viene confrontato con ogni `case`; se uguale, esegue i comandi seguenti
+- Senza `break`, l'esecuzione **prosegue** nel case successivo (fall-through)
+- `default` eseguito se nessun `case` corrisponde
+
+> **Nota del corso:** `switch` e `break` **non devono essere usati agli esami**.
+
+---
+
+## Operatori di Incremento e Decremento
+
+| Espressione | Comportamento |
+|-------------|---------------|
+| `++a` | incrementa `a`, poi usa il **nuovo** valore |
+| `a++` | usa il **valore corrente**, poi incrementa `a` |
+| `--b` | decrementa `b`, poi usa il **nuovo** valore |
+| `b--` | usa il **valore corrente**, poi decrementa `b` |
+
+```c
+int c = 5;
+printf("%d\n", c++);   // stampa 5, poi c diventa 6
+printf("%d\n", ++c);   // c diventa 7, poi stampa 7
+```
+
+- Si applicano solo a variabili: `++(x+1)` è un errore
+- Con i puntatori: `--*p` decrementa il valore puntato; `*p--` dereferenzia p all'indirizzo corrente, poi decrementa p
+
+> **Comportamento indefinito:** non usare `++`/`--` se la stessa variabile appare più volte nell'espressione:
+> ```c
+> x = i++ * i++;   // risultato non specificato dallo standard
+> ```
+
+---
+
+## Esercizi Notevoli
+
+**Esco o sto a casa?** (piove, ombrello):
+```c
+if (piove && !ombrello)
+    printf("sto a casa");
+else
+    printf("esco");
+```
+
+**Minimo di 3 variabili:**
+```c
+if (x < y) {
+    printf("%d\n", x<z ? x : z);
+} else {
+    printf("%d\n", y<z ? y : z);
+}
+```
+
+**Punto interno a rettangolo:**
+```c
+(p_x>s_x && p_x<d_x && p_y>s_y && p_y<d_y) ? "interno" : "esterno"
+```

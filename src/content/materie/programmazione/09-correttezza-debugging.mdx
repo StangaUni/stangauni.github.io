@@ -1,0 +1,122 @@
+---
+title: "Correttezza e Debugging"
+type: "riassunto"
+tags: ["debugging", "assert", "GDB", "test", "errori sintattici", "errori semantici", "strategie di risoluzione"]
+excerpt: "Tipi di errore (sintattico, semantico, warning), assert, funzioni di test, comandi GDB e strategie di problem solving."
+readingTime: 7
+---
+
+## Tipi di Errore
+
+| Tipo | Quando si manifesta | Effetto |
+|------|---------------------|---------|
+| **Errore sintattico** | Compilazione | Il codice macchina non viene generato |
+| **Warning** | Compilazione | Il codice viene generato ma qualcosa è insolito |
+| **Errore semantico** | Esecuzione | Il programma produce risultati sbagliati |
+
+```bash
+gcc -Wall programma.c   # mostra tutti i warning
+```
+
+> In presenza di molti errori a cascata, iniziare sempre a correggere **dal primo**.
+
+---
+
+## assert
+
+`assert` verifica che una precondizione sia rispettata a runtime. Se la condizione è falsa, termina il programma con un messaggio d'errore.
+
+```c
+#include <assert.h>
+
+/*
+PRE:  x >= 0
+POST: restituisce la radice quadrata di x
+*/
+int radice_quadrata(int x) {
+    assert(x >= 0);
+    // ...
+}
+```
+
+---
+
+## Funzioni di Test
+
+Una funzione di test raggruppa una serie di `assert` per verificare il comportamento di una funzione:
+
+```c
+void test_radice_quadrata() {
+    assert(radice_quadrata(9)  == 3);
+    assert(radice_quadrata(16) == 4);
+    assert(radice_quadrata(1)  == 1);
+    printf("Tutti i test passati!\n");
+}
+```
+
+**Vantaggi:**
+- Si replicano tutti i test rapidamente dopo ogni modifica
+- Documentano i casi testati
+- Permettono il **Test Driven Development**: scrivere prima i test, poi il codice che li soddisfa
+
+---
+
+## Debugger
+
+Un debugger esegue il programma e permette di:
+- Mettere in **pausa** l'esecuzione (breakpoint) o avanzare istruzione per istruzione
+- Visualizzare il **contenuto delle variabili** e lo stato della memoria in ogni momento
+
+Per usare `gdb`, compilare con `-g`:
+```bash
+gcc -g -o programma sorgente.c
+gdb programma
+# Con argomenti: gdb --args programma arg1 arg2
+```
+
+> Il debugger online (onlinegdb.com) **non** è utilizzabile agli esami.
+
+---
+
+## GDB — Comandi Essenziali
+
+| Comando | Abbr. | Descrizione |
+|---------|-------|-------------|
+| `start` | | Esegue e si ferma all'inizio di `main()` |
+| `run` | `r` | Esegue il programma |
+| `break 9` / `break f` | `b` | Imposta breakpoint alla riga 9 o alla funzione `f` |
+| `next` | `n` | Esegue l'istruzione successiva (senza entrare nelle funzioni) |
+| `step` | | Come `next`, ma entra nelle funzioni |
+| `continue` | `c` | Riprende fino al prossimo breakpoint |
+| `finish` | | Porta alla fine della funzione corrente |
+| `display x` | | Mostra automaticamente `x` ad ogni passo |
+| `info locals` | `i lo` | Stampa tutte le variabili locali |
+| `print x` | `p` | Stampa il valore di un'espressione |
+| `whatis x` | | Mostra il tipo di `x` |
+| `watch x` | | Si ferma quando `x` cambia valore |
+| `backtrace` | | Mostra l'intero call stack |
+| `up` / `down` | | Naviga nel call stack |
+| `set var x=15` | | Modifica il valore di `x` |
+| `layout next` | | Mostra il codice con la riga corrente evidenziata |
+| `refresh` | `ctrl-l` | Ridisegna lo schermo |
+| `quit` | `q` | Esce dal debugger |
+
+---
+
+## Strategie di Risoluzione dei Problemi
+
+### Decomposizione
+Suddividere il problema in sottoproblemi, ciascuno risolto da una funzione dedicata. Usare quando il main diventa troppo complesso o un sottoproblema si ripete.
+
+### Genera e Verifica
+Enumerare i candidati finché non se ne trova uno che soddisfa la condizione.
+- Esempio: trovare il più piccolo primo > N (testare N+1, N+2, ...)
+- Appropriato quando: esiste una soluzione, i candidati sono enumerabili, la verifica è efficiente
+
+### Simulazione
+Quando non esiste (o è troppo complessa) una soluzione analitica, simulare il processo e stimare il risultato.
+- Esempio: probabilità di una mano a poker → simulare migliaia di mani
+
+### Semplificazione
+Riscrivere il problema in forma equivalente ma più semplice, ad esempio applicando De Morgan.
+- Esempio: "x > tutti gli elementi di L" → "non esiste l ∈ L tale che l ≥ x"

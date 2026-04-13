@@ -1,0 +1,143 @@
+---
+title: "Compilazione e Struttura di un Programma C"
+type: "riassunto"
+tags: ["compilatore", "interprete", "GCC", "preprocessore", "linker", "struttura C", "ANSI C"]
+excerpt: "Interprete vs compilatore, le 4 fasi di traduzione del C (preprocessore, compilatore, linker), struttura di un programma C, GCC e standard ANSI."
+readingTime: 8
+---
+
+## Linguaggi di Programmazione
+
+**Linguaggio macchina (basso livello):**
+- Il computer esegue solo programmi in linguaggio macchina
+- Dipende dall'architettura (MIPS, x86, ARM)
+- Difficile da scrivere; ogni programma va riscritto per ogni architettura
+
+**Linguaggio di alto livello:**
+- Istruzioni più vicine al pensiero umano
+- Un **traduttore** converte automaticamente in linguaggio macchina
+- Se cambia l'architettura, basta un nuovo traduttore
+
+---
+
+## Interprete vs Compilatore
+
+| Tipo | Comportamento | Esempi |
+|------|--------------|--------|
+| **Interprete** | Traduce ed esegue una istruzione alla volta | Perl, Matlab |
+| **Compilatore** | Traduce tutto, poi esegue | C, C++ |
+| **Soluzione intermedia** | Compila in bytecode, poi interpreta | Java |
+
+**Interprete:** esecuzione più lenta; serve il traduttore a runtime; portabile su ogni macchina con il traduttore.
+
+**Compilatore:** esecuzione più veloce (ottimizzazioni); non serve il traduttore a runtime; va ricompilato per ogni architettura.
+
+---
+
+## Le 4 Fasi di Traduzione del C
+
+### Fase 1 — Editor
+Il programmatore scrive il codice sorgente (`.c`) e lo salva su disco.
+
+### Fase 2 — Preprocessore
+Elabora le direttive `#` prima della compilazione:
+1. **Rimozione dei commenti**
+2. **Espansione degli `#include`:** copia il contenuto del file indicato (`#include <stdio.h>` → copia `stdio.h`)
+3. **Espansione delle macro:** `#define X 3` sostituisce ogni `X` con `3`
+4. **Compilazione condizionale:** utile per librerie con nomi diversi su sistemi diversi
+
+### Fase 3 — Compilatore
+Analizza il codice e lo traduce in istruzioni di linguaggio macchina:
+- Il codice deve rispettare rigorosamente la sintassi del C
+- In caso di errore → genera un **errore** e si ferma
+- In caso di successo → produce un **file oggetto** (`.o`)
+
+### Fase 4 — Linker
+Collega i file oggetto tra loro e con le librerie:
+- Evita di duplicare il codice di funzioni come `printf`
+- Usa le **tabelle delle funzioni** prodotte dal compilatore per risolvere i riferimenti
+- Produce l'**eseguibile finale**
+
+```
+[file con printf]   [nostro file con main]
+        ↓                    ↓
+          Compilazione
+        ↓                    ↓
+ [binario printf]    [binario con ?printf?]
+                          ↓
+                        Linking
+                          ↓
+                   [eseguibile finale]
+```
+
+---
+
+## Struttura di un Programma C
+
+```c
+#include <stdio.h>          // (1) include la libreria stdio.h
+
+int main () {               // (2) ogni programma C DEVE avere un main
+                            // (3) { inizio del corpo della funzione
+
+    /* commento             // (4) commento ignorato dal compilatore
+       su più righe */
+
+    printf("Ciao Mondo!\n"); // (5) i comandi sono separati da ;
+                             // (6) le stringhe sono tra " "
+
+}                           // (7) } fine del corpo della funzione
+```
+
+> L'indentazione non ha effetto sul C (ma è fondamentale per la leggibilità).
+
+---
+
+## Commenti
+
+```c
+// commento su una riga
+
+/* commento
+   su più righe */
+```
+
+**Linee guida:**
+- **Non** descrivere cose ovvie: `3+2; // somma 3 e 2` ← inutile
+- **Sì** per spiegare cosa fa una funzione (quando non sia ovvio)
+- **Sì** per segnalare algoritmi inusuali: `/* Algoritmo di Euclide */`
+- Devono essere **corretti**: un commento sbagliato è peggio di nessun commento
+
+> Nota del docente: `//` per commenti didattici; `/* */` per commenti che andrebbero nel codice reale.
+
+---
+
+## Compilare con GCC
+
+```bash
+gcc -o nomefile sorgente.c      # compila e produce l'eseguibile "nomefile"
+gcc sorgente.c                  # produce a.out (nome default)
+gcc -c sorgente.c               # compila senza linking (produce .o)
+gcc -g sorgente.c               # include info per il debugger
+gcc -Wall sorgente.c            # mostra tutti i warning
+./nomefile                      # esegue il programma (Linux)
+```
+
+**Errori vs Warning:**
+- **Errore:** il codice macchina non viene generato; bisogna correggere prima di proseguire
+- **Warning:** il codice macchina viene generato, ma qualcosa è insolito o rischioso
+
+> In presenza di molti errori in cascata, iniziare sempre a correggere **dal primo**.
+
+---
+
+## Standard ANSI C
+
+Più compilatori C esistono indipendentemente. Lo standard ANSI C garantisce comportamento uniforme:
+
+| Standard | Anno |
+|----------|------|
+| C89, C90 | ISO C 1990 |
+| C17 | ISO C 2017 |
+
+> In alcuni casi particolari il comportamento non è specificato: non basta testare sulla propria macchina, bisogna **controllare lo standard**.

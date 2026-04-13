@@ -1,0 +1,165 @@
+---
+title: "Funzioni"
+type: "riassunto"
+tags: ["funzioni", "prototipi", "parametri", "passaggio per valore", "call stack", "ricorsione", "programmazione modulare"]
+excerpt: "Definizione, prototipi, parametri formali e attuali, passaggio per valore, algoritmo di chiamata, visibilità tra funzioni, call stack."
+readingTime: 10
+---
+
+## Definizione
+
+Una funzione è un blocco di istruzioni `{}` a cui è stato assegnato un nome. Deve svolgere un **unico compito**.
+
+```c
+tipo_restituito nomeFunzione(tipo param1, tipo param2, ...) {
+    // variabili locali
+    // comandi
+    return espressione;
+}
+```
+
+- `return` restituisce il valore e interrompe immediatamente la funzione
+- I comandi dopo `return` non vengono eseguiti
+- Se non si restituisce nulla: `void` come tipo di ritorno (il `return` può essere omesso)
+- In C, una funzione **non può restituire più di un valore**
+
+```c
+int numero_gatti() { return 44; }
+
+int main() {
+    int x = numero_gatti();
+    printf("Ci sono %d gatti", numero_gatti() + 3);
+}
+```
+
+---
+
+## Prototipi
+
+La visibilità di una funzione si estende dal punto di definizione alla fine del file. Se viene chiamata prima di essere definita → errore di compilazione.
+
+**Soluzione — prototipo:**
+```c
+int numero_gatti();     // prototipo: dichiarazione anticipata
+
+int main() {
+    int g = numero_gatti();   // OK
+}
+
+int numero_gatti() { return 44; }
+```
+
+Il prototipo informa il compilatore sul tipo di ritorno e sui tipi dei parametri. Forme equivalenti:
+```c
+int somma(int b, int e);
+int somma(int, int);
+```
+
+> **Buona pratica:** inserire tutti i prototipi all'inizio del file.
+
+---
+
+## Parametri
+
+### Parametri formali e attuali
+
+```c
+int successivo(int n) {   // n: parametro formale
+    return n+1;
+}
+
+int main() {
+    int x=2;
+    printf("%d\n", successivo(x));  // x: parametro attuale
+}
+```
+
+Con più parametri, i valori attuali vengono assegnati ai formali **nell'ordine** (numero e tipo devono corrispondere):
+
+```c
+int somma(int x, int y) { return x+y; }
+
+int main() {
+    int a=4, b=5;
+    printf("%d\n", somma(a, b));   // x=4, y=5 → 9
+}
+```
+
+### Passaggio per valore
+
+Il C usa **esclusivamente il passaggio per valore**: i parametri attuali non vengono modificati durante l'esecuzione della funzione. I parametri formali si comportano come variabili locali.
+
+```c
+int successivo(int n) { return n+1; }
+
+int main() {
+    int x=2;
+    printf("%d\n", successivo(x));  // 3
+    printf("%d\n", x);              // 2 (x non modificata)
+}
+```
+
+---
+
+## Algoritmo di Chiamata
+
+Quando una funzione viene invocata:
+
+1. Viene creata una nuova tabella dei simboli; per ogni parametro formale si aggiunge una riga inizializzata con il valore del parametro attuale corrispondente
+2. Si eseguono i comandi della funzione
+3. Se si incontra `return`, si valuta l'espressione e si usa il risultato nella funzione chiamante
+4. La tabella della funzione viene eliminata
+5. L'esecuzione riprende dal comando successivo alla chiamata
+
+---
+
+## Visibilità tra Funzioni
+
+Funzioni allo stesso livello **non vedono** le variabili locali delle altre; vedono però le variabili globali.
+
+```c
+int z=1;
+
+int somma(int x, int y) {
+    printf("%d\n", z);   // OK: z è globale
+    printf("%d\n", a);   // ERRORE: a è locale a main
+    return x+y;
+}
+
+int main() {
+    int a=4, b=5;
+    somma(a, b);
+    printf("%d", z);     // OK: z è globale
+}
+```
+
+---
+
+## Vantaggi della Programmazione Modulare
+
+- Il programma ha un livello di astrazione più alto (i dettagli sono nascosti nelle funzioni)
+- Il codice è scritto una volta sola e richiamato quando necessario
+- Funzioni più piccole → più semplici da implementare, testare e verificare
+- Il codice corretto è riusabile in altri programmi
+
+---
+
+## Call Stack (Pila delle Chiamate)
+
+Quando si chiama una funzione, bisogna ricordare dove tornare al termine. Non basta un registro: se la funzione chiamata ne chiama un'altra, il registro verrebbe sovrascritto. Si usa una struttura in RAM: lo **stack**.
+
+**Stack (LIFO):** gli elementi vengono aggiunti e rimossi dalla cima.
+
+Ogni chiamata aggiunge uno **stack record (activation record)** contenente:
+- L'indirizzo di ritorno
+- Il valore di ritorno (eventuale)
+- I parametri della funzione
+- Le variabili locali
+
+```c
+void bar() {}
+void foo() { bar(); }
+int main() { foo(); }
+```
+
+Sequenza: `main` push → `foo` push → `bar` push → `bar` pop → `foo` pop → `main` pop → stack vuoto.

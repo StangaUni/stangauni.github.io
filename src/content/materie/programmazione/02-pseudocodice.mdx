@@ -1,0 +1,154 @@
+---
+title: "Pseudocodice"
+type: "riassunto"
+tags: ["pseudocodice", "diagrammi di flusso", "variabili", "assegnamento", "selezione", "iterazione", "funzioni"]
+excerpt: "Strumenti per esprimere algoritmi: diagrammi di flusso, variabili, assegnamento, selezione, ciclo while e funzioni in pseudocodice."
+readingTime: 8
+---
+
+## Strumenti per Esprimere un Algoritmo
+
+Dal più ambiguo al più formale:
+- Testo libero
+- Pseudocodice / diagrammi di flusso
+- Pseudocodice / diagrammi di flusso eseguibili (sintassi rigida, quasi un linguaggio)
+
+---
+
+## Diagrammi di Flusso
+
+Un diagramma di flusso ha **un solo inizio** e **una sola fine**.
+
+| Forma | Nome | Descrizione |
+|-------|------|-------------|
+| Ovale | Inizio/Fine | Punto di partenza o arrivo |
+| Parallelogramma | Input/Output | Lettura o scrittura di dati |
+| Rettangolo | Comando | Istruzione da eseguire |
+| Rombo | Scelta | Condizione con due uscite: SÌ / NO |
+
+Il rombo ha un'entrata e due uscite; la condizione deve essere valutabile come vera/falsa in modo non ambiguo.
+
+---
+
+## Variabili e Assegnamento
+
+- **Variabile:** zona di memoria a cui si associa un nome
+- **Assegnamento:** `TOT ← 4` (TOT assume il valore 4)
+- `TOT ← TOT + 1` → il vecchio valore viene letto, sommato a 1, e riscritto
+
+> **Regola:** a tutte le variabili che compaiono in un'espressione deve essere stato associato un valore prima della valutazione.
+> - `y ← 2*TOT` ← corretto (TOT ha un valore)
+> - `y ← z + 4` ← **errato** se z non è stato inizializzato
+
+Il computer vede solo lo **stato corrente**: non mantiene memoria degli stati passati.
+
+---
+
+## Pseudocodice — Selezione
+
+```
+Se condizione {
+    comandi se condizione vera
+} altrimenti {
+    comandi se condizione falsa
+}
+```
+
+**Varianti:**
+```
+// senza ramo altrimenti
+Se condizione {
+    comandi
+}
+
+// cascata
+Se cond1 {
+    Comando1
+} altrimenti se cond2 {
+    Comando2
+} altrimenti {
+    Comando3
+}
+
+// Se annidati
+Se cond1 {
+    Se cond2 { Com1 } altrimenti { Com2 }
+} altrimenti { Com3 }
+```
+
+---
+
+## Pseudocodice — Iterazione (while)
+
+```
+ripeti finché condizione {
+    Corpo del ciclo
+}
+Comando successivo
+```
+
+**Comportamento:**
+1. Se la condizione è falsa → salta il corpo e va al Comando successivo
+2. Se la condizione è vera → esegue il corpo
+3. Torna al punto 1
+
+**Elementi di un ciclo:**
+- **Inizializzazione:** condizioni iniziali delle variabili
+- **Condizione di continuazione**
+- **Corpo del ciclo**
+- **Istruzione di avanzamento** (fa progredire verso la terminazione)
+
+> Se manca l'istruzione di avanzamento, il ciclo non termina mai (**ciclo infinito**).
+
+**Analisi di un ciclo:**
+```
+a ← 0
+ripeti finché a < 5 {
+    scrivi a
+    a ← a + 2
+}
+// dopo il ciclo: a >= 5
+```
+- Quante iterazioni? 3 (a = 0, 2, 4)
+- Valore prima iterazione: 0 | Valore ultima: 4 | Valore dopo: 6
+
+---
+
+## Pseudocodice — Funzioni
+
+```
+funzione nome(parametri) {
+    comandi
+    restituisci valore
+}
+```
+
+- `restituisci` termina immediatamente l'esecuzione della funzione
+- Una funzione può avere parametri e restituire un valore
+- Esempio: `x ← somma(3, 7)` → x = 10
+
+---
+
+## Scambio di Variabili
+
+**Problema:** date x e y, scambiarne i valori.
+
+**Tentativo errato:**
+```
+y ← x   // si perde il valore di y!
+x ← y
+```
+
+**Soluzione corretta** (variabile temporanea):
+```
+temp ← y
+y ← x
+x ← temp
+```
+
+| Passo | x | y | temp |
+|-------|---|---|------|
+| Iniziale | 2 | 5 | — |
+| temp ← y | 2 | 5 | 5 |
+| y ← x | 2 | 2 | 5 |
+| x ← temp | 5 | 2 | 5 |

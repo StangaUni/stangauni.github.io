@@ -1,0 +1,134 @@
+---
+title: "Visibilità delle Variabili"
+type: "riassunto"
+tags: ["scope", "visibilità", "shadowing", "variabili globali", "tabella dei simboli", "blocchi", "for"]
+excerpt: "Regole di visibilità in C, shadowing, algoritmo della tabella dei simboli, variabili globali, distinzione tra esistenza e visibilità."
+readingTime: 7
+---
+
+## Motivazione
+
+Usare nomi unici per ogni variabile in un programma grande è impraticabile e, in progetti multi-file, impossibile da coordinare. Soluzione: **visibilità limitata** — i legami nome-indirizzo hanno durata limitata.
+
+---
+
+## Regole di Visibilità in C
+
+1. Una variabile è usabile solo **da quando è dichiarata**
+2. Una variabile dichiarata dentro `{}` è **locale** a quel blocco: visibile fino alla `}` corrispondente
+3. Una variabile dichiarata fuori da qualsiasi `{}` è **globale**: visibile fino alla fine del file
+4. Se un blocco interno dichiara una variabile con lo stesso nome di un blocco esterno, quella esterna diventa **invisibile** nel blocco interno (**shadowing**)
+5. Non leggere mai una variabile con R-valore indefinito
+
+```c
+int main() {
+    int y=1;        // y visibile da qui...
+    {
+        int x;      // x visibile da qui...
+        x=2;
+    }               // ...fino a qui (x esce dallo scope)
+    printf("%d", y);
+}                   // ...fino a qui (y esce dallo scope)
+// printf("%d", x); ← ERRORE: x non è visibile qui
+```
+
+---
+
+## Shadowing
+
+```c
+int main() {
+    int y=1;   // y' (layer esterno)
+    {
+        int y; // y'' (layer interno) — nasconde y'
+        y=2;   // modifica y'', non y'
+    }
+    printf("%d", y);  // stampa y' → 1
+}
+```
+
+---
+
+## Algoritmo della Tabella dei Simboli
+
+Il compilatore mantiene una tabella a **strati (layer)**:
+
+1. `{` → aggiunge un nuovo layer
+2. `}` → rimuove il layer corrente
+3. Dichiarazione → aggiunge la variabile al layer corrente (errore se già presente nello stesso layer)
+4. Uso di variabile → cerca dal layer più interno verso l'esterno; si ferma alla prima occorrenza (errore se non trovata)
+
+**Esempio — traccia:**
+```c
+int z;          // layer 0: z
+int main() {
+    int y=1;    // layer 1: y
+    {
+        int y;  // layer 2: y (nasconde quella di layer 1)
+        int x;  // layer 2: x
+        printf("%d", y);  // trova y in layer 2 (valore indefinito!)
+        y=2;              // aggiorna y in layer 2
+    }           // layer 2 rimosso
+    printf("%d", y);  // trova y in layer 1 → stampa 1
+}
+```
+
+---
+
+## Blocchi Separati
+
+```c
+{ int x; }   // x' (primo blocco)
+{ int x; }   // x'' (secondo blocco, variabile diversa)
+```
+
+Due variabili con lo stesso nome in blocchi separati (non annidati) sono variabili distinte; nessuna è visibile dall'altro blocco.
+
+---
+
+## Visibilità nel for
+
+La variabile dichiarata nell'inizializzazione del `for` è locale al corpo del ciclo:
+
+```c
+for (int x=1; x<=3; x=x+1) {
+    printf("%d\n", x);
+}
+// printf("%d", x);  ← ERRORE: x non è visibile qui
+int x=-6;            // ok: nuovo x
+```
+
+Nel `while`, la variabile di controllo va dichiarata **fuori** dal ciclo.
+
+---
+
+## Variabili Globali
+
+Dichiarate fuori da qualsiasi funzione; visibili da tutto il file.
+
+> **Buona pratica:** evitare le variabili globali se non strettamente necessario.
+
+Ogni variabile locale nasconde l'eventuale globale con lo stesso nome:
+
+```c
+int x=2;           // globale
+
+int main() {
+    printf("%d", x);    // stampa 2 (usa globale)
+    {
+        int x=3;
+        printf("%d", x); // stampa 3 (usa locale, oscura globale)
+    }
+    printf("%d", x);    // stampa 2 (locale uscita dallo scope)
+}
+```
+
+---
+
+## Esistenza vs Visibilità
+
+- **Esistenza (allocazione):** una variabile esiste da quando è dichiarata fino alla fine del suo blocco (o del file, se globale)
+- **Visibilità:** una variabile è visibile se è globale, oppure se ci si trova nel suo blocco e non è stata ridefinita in un blocco più interno
+
+Accedere tramite **nome** richiede sia esistenza che visibilità.  
+Accedere tramite **puntatore** richiede solo l'esistenza (vedi file sui Puntatori).

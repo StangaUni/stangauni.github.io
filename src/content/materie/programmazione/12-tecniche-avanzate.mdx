@@ -1,0 +1,167 @@
+---
+title: "Tecniche Avanzate"
+type: "riassunto"
+tags: ["numeri casuali", "rand", "puntatori a funzione", "argomenti riga di comando", "argc", "argv", "sprintf", "sscanf", "strtod"]
+excerpt: "Numeri pseudocasuali, puntatori a funzione e loro uso come parametri, argomenti da linea di comando (argc/argv), conversione di stringhe in numeri, sprintf e sscanf."
+readingTime: 10
+---
+
+## Numeri Pseudocasuali
+
+Il calcolatore non genera sequenze veramente casuali, ma **pseudocasuali**: deterministiche ma con le stesse proprietà statistiche (es. distribuzione uniforme).
+
+Esempio di generatore lineare congruenziale:
+
+$$X_{n+1} = (a \cdot X_n + c) \% m$$
+
+- `a`, `c`, `m`: scelti dall'implementatore
+- `X0` (**seed**): scelto dall'utente — seed diversi producono sequenze diverse
+
+### Funzioni in C (`<stdlib.h>`)
+
+```c
+srand(seed);   // imposta il seed
+rand();        // restituisce un intero in [0, RAND_MAX]
+```
+
+- Stesso seed → stessa sequenza
+- `RAND_MAX` ≥ 2⁸ (definito in `<stdlib.h>`)
+
+```c
+srand(1);
+for (int i=0; i<5; i+=1)
+    printf("%d ", rand());
+// 16807 282475249 1622650073 984943658 1144108930
+
+srand(1);
+printf("%d\n", rand());   // stampa 16807 (riparte dall'inizio)
+```
+
+**Esempio — simulazione lanci di dado:**
+```c
+srand(42);
+for (int i=0; i<lanci; i+=1)
+    F[rand() % 6] += 1;
+// frequenze ≈ 1/6 per ciascuna faccia
+```
+
+---
+
+## Puntatori a Funzione
+
+Ogni funzione ha un **tipo** determinato dal tipo di ritorno e dai tipi dei parametri:
+```
+int somma(int x, int y)  →  tipo: int (int, int)
+```
+
+### Dichiarazione
+
+```c
+tipo_restituito (*nome)(tipi_parametri);
+
+int (*c)(int, int);          // puntatore a funzione int(int,int)
+void (*p)(int, int);
+```
+
+### Uso
+
+```c
+void somma(int x, int y) { printf("%d\n", x+y); }
+
+int main() {
+    void (*p)(int, int);
+    p = somma;        // il nome di una funzione converte automaticamente in puntatore
+    (*p)(3, 7);       // equivale a somma(3, 7)
+}
+```
+
+### Passaggio come parametro
+
+Permette di **parametrizzare** una funzione rispetto a un'altra (utile per evitare codice quasi-duplicato):
+
+```c
+void selectionSort(int *X, int size,
+                   int (*seleziona)(int *, int)) {
+    for (int i=0; i<size-1; i+=1) {
+        int ind = (*seleziona)(X+i, size-i);
+        scambia(X+i, &X[ind+i]);
+    }
+}
+
+// utilizzo:
+selectionSort(X, size, trova_indice_val_min);   // ordine crescente
+selectionSort(X, size, trova_indice_val_max);   // ordine decrescente
+```
+
+### Array di puntatori a funzione
+
+```c
+void (*f[3])(int) = {function1, function2, function3};
+int choice;
+scanf("%d", &choice);
+(*f[choice])(choice);   // chiama la funzione scelta dall'utente
+```
+
+---
+
+## Argomenti da Linea di Comando
+
+```c
+int main(int argc, char *argv[])
+```
+
+- **`argc`** (argument count): numero di argomenti incluso il nome del programma (`argc ≥ 1`)
+- **`argv`** (argument vector): array di stringhe; `argv[0]` = nome del programma, `argv[1]` = primo argomento, ecc.
+
+```c
+int main(int argc, char *argv[]) {
+    for (int i=1; i<argc; i+=1)
+        printf("argv[%d] = %s\n", i, argv[i]);
+}
+```
+
+---
+
+## Conversione di Stringhe in Numeri
+
+Gli argomenti da riga di comando sono stringhe. Per usarli come numeri, usare le funzioni di `<stdlib.h>`:
+
+```c
+double strtod(const char *nPtr, char **endPtr);
+long   strtol(const char *nPtr, char **endPtr, int base);
+unsigned long strtoul(const char *nPtr, char **endPtr, int base);
+```
+
+- `nPtr`: stringa di input (spazi iniziali ignorati)
+- `endPtr`: dopo la chiamata, punta al primo carattere non convertito
+
+```c
+char *end;
+char *p = "23.2abc";
+printf("%f - %s\n", strtod(p, &end), end);
+// Output: 23.200000 - abc
+
+p = "-232abc";
+printf("%ld - %s\n", strtol(p, &end, 0), end);
+// Output: -232 - abc
+```
+
+---
+
+## sprintf e sscanf
+
+Da `<stdio.h>`:
+
+**`sprintf(char *s, const char *format, ...)`** — come `printf` ma scrive in una stringa:
+```c
+char buf[50];
+sprintf(buf, "Valore: %d", 42);   // buf = "Valore: 42"
+```
+
+**`sscanf(char *s, const char *format, ...)`** — come `scanf` ma legge da una stringa:
+```c
+int x;
+sscanf("42abc", "%d", &x);   // x = 42
+```
+
+Alternativa a `strtod`/`strtol` per la conversione.

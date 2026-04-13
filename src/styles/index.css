@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background:   0 0% 100%;
+    --foreground:   222 47% 11%;
+
+    --card:           0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --primary:           217 91% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary:           210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted:           210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent:           210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --border: 214 32% 91%;
+    --input:  214 32% 91%;
+    --ring:   217 91% 53%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background:   222 47% 8%;
+    --foreground:   210 40% 98%;
+
+    --card:           222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --primary:           217 91% 60%;
+    --primary-foreground: 222 47% 8%;
+
+    --secondary:           215 28% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted:           215 28% 17%;
+    --muted-foreground: 215 16% 57%;
+
+    --accent:           215 28% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --border: 215 28% 20%;
+    --input:  215 28% 20%;
+    --ring:   217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  code, pre, kbd {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+}
+
+@layer components {
+  .skeleton {
+    @apply bg-muted animate-pulse-soft rounded;
+  }
+
+
+  /* Academic prose style for note pages */
+  .prose-academic {
+    @apply prose prose-slate max-w-none dark:prose-invert;
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .prose-academic h1,
+  .prose-academic h2,
+  .prose-academic h3,
+  .prose-academic h4 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    scroll-margin-top: 5rem;
+  }
+
+  .prose-academic code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875em;
+  }
+
+  .prose-academic code::before,
+  .prose-academic code::after {
+    content: none;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }

@@ -1,0 +1,135 @@
+---
+title: "Algoritmi e Formalizzazione"
+type: "riassunto"
+tags: ["algoritmi", "pre-condizione", "post-condizione", "correttezza", "design by contract"]
+excerpt: "Definizione di algoritmo, stati e transizioni, PRE e POST condizioni, correttezza, design by contract."
+readingTime: 12
+---
+
+## Cos'è un Algoritmo
+
+> **Sequenza ordinata e finita di istruzioni elementari e non ambigue per risolvere un problema.**
+
+Il concetto è generale: non dipende dal calcolatore.
+
+**Due elementi:**
+- Il problema da risolvere
+- L'insieme di istruzioni e oggetti su cui operare
+
+**Due attori:**
+- Chi crea le istruzioni
+- Chi le esegue (il calcolatore)
+
+Gli attori non comunicano se non tramite le istruzioni: tutto ciò che è ambiguo per l'esecutore è un errore di chi scrive.
+
+---
+
+## Fasi della Realizzazione
+
+```
+Inizio
+  → Formalizzare il problema
+  → Ideare l'algoritmo di risoluzione
+  → Comunicare l'algoritmo all'esecutore (programmare)
+  → Soluzione corretta?
+      Sì → Fine
+      No → torna a Ideare
+```
+
+- **Stato:** configurazione della porzione di mondo su cui opera l'algoritmo
+- L'esecuzione è una sequenza di transizioni di stato: s¹ → s² → ... → sⁿ
+- Un algoritmo descrive quali istruzioni applicare a s¹ per ottenere sⁿ
+
+---
+
+## PRE e POST Condizioni
+
+- **POST-condizione:** predicato che descrive tutti gli stati finali desiderabili (cosa calcola l'algoritmo)
+- **PRE-condizione:** predicato che descrive gli stati iniziali per cui la POST è garantita (assunzioni sugli input)
+
+> **Definizione di correttezza:** un algoritmo A è corretto rispetto a una POST se:
+> `PRE(A) ⟹ POST(A)`
+
+**Esempio:**
+```
+PRE:  x ≥ 0
+POST: restituisce y tale che y·y = x
+
+funzione RADICE_QUADRATA(x) { ... }
+```
+
+### Cosa indicare nella PRE
+
+La PRE serve a **evitare di complicare il codice** per:
+- Casi in cui il programma non ha senso (radice quadrata di numeri negativi)
+- Casi rari (almeno in prima versione)
+
+Regola: **minimizzare le condizioni nella PRE**. Una PRE troppo restrittiva banalizza il problema:
+```
+PRE:  x = 9    ← SBAGLIATO: cambia il problema!
+POST: restituisce y tale che y·y = x
+```
+
+### Rimuovere la PRE spostando il controllo nella POST
+
+```
+PRE:  (vuota)
+POST: restituisce
+        ERRORE      se x < 0
+        y: y·y = x  altrimenti
+```
+
+---
+
+## Formalizzazione del Problema
+
+**Primo passo:** rappresentare ingressi e uscite in modo chiaro e non ambiguo tramite variabili o costanti.
+
+**Fare esempi di input/output per:**
+- Verificare di aver capito il problema
+- Scovare casi particolari
+- Osservare come si risolve il problema
+- Raccogliere casi di test
+
+### Esempio: ordinare carte
+
+```
+PRE:  C è una lista di carte (stesso seme)
+POST: restituisce C tale che ∀i, 1 ≤ i < |C|. C[i] < C[i+1]
+      dove A=1, 2=2, ..., 10=10, J=11, Q=12, K=13
+```
+
+**Rappresentazione delle carte a calcolatore:**
+- Stesso seme: lista di interi (A=1, ..., K=13)
+- Semi diversi (idea 1): due liste parallele (valori + semi con cuori=1, quadri=2, fiori=3, picche=4)
+- Semi diversi (idea 2): lista singola con codifica globale (A♥=1, A♦=2, ..., K♠=52)
+
+> La rappresentazione migliore dipende dal problema da risolvere.
+
+---
+
+## Design by Contract
+
+**Per l'utilizzatore della funzione:**
+- La POST dice **cosa calcola** la funzione
+- La PRE dice **come (non) invocarla**
+- L'implementazione è irrilevante se la POST è dimostrata corretta
+
+**Il contratto:**
+- Lo sviluppatore **garantisce la POST** se chi chiama rispetta la PRE
+- Se si invoca il codice ignorando la PRE, lo sviluppatore **non garantisce nulla**
+
+---
+
+## Correttezza e Qualità
+
+Criterio più importante: **Correttezza**.
+
+A parità di correttezza:
+- **Efficienza** (tempo e spazio)
+- **Organizzazione:** dividere in sottoproblemi, riusare il codice
+- **Stile:** il codice deve essere comprensibile
+
+**Evidenza di correttezza:**
+- **Test:** controllare che per certi input si ottiene l'output desiderato
+- **Prove di correttezza formali**

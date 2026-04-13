@@ -1,0 +1,208 @@
+---
+title: "Casi Studio in Pseudocodice"
+type: "riassunto"
+tags: ["accumulatore", "invariante", "ricerca", "lista", "numeri di Pell", "pattern algoritmici"]
+excerpt: "Pattern algoritmici fondamentali: accumulatore, variabili scorrevoli, ricerca in lista con e senza garanzia, verifica di proprietà."
+readingTime: 10
+---
+
+## 1. Somma 1 + 2 + ... + N
+
+```
+PRE:  n > 0
+POST: stampato 1 + 2 + ... + n
+```
+
+**Schema:** accumulatore — variabile `sum` che cresce ad ogni iterazione.
+
+```
+i ← 0
+sum ← 0        // invariante: sum = 0+1+...+i
+leggi n
+ripeti finché i <= n {
+    sum ← sum + i
+    i ← i + 1
+}
+scrivi sum
+```
+
+> `sum` contiene la somma dei numeri da 0 a `i` incluso ad ogni iterazione (**invariante del ciclo**).
+
+**Variante senza variabile i** (si consuma n):
+```
+leggi n
+sum ← n
+ripeti finché n > 1 {
+    n ← n - 1
+    sum ← sum + n
+}
+scrivi sum
+```
+
+---
+
+## 2. Numeri di Pell
+
+P(0)=0, P(1)=1, P(n) = 2·P(n−1) + P(n−2) per n≥2
+
+| n | P(n) |
+|---|------|
+| 0 | 0 |
+| 1 | 1 |
+| 2 | 2 |
+| 3 | 5 |
+| 4 | 12 |
+
+```
+PRE:  n ≥ 0
+POST: restituisce P(n)
+```
+
+**Schema:** tre variabili scorrevoli `p''`, `p'`, `p` che rappresentano P(i−2), P(i−1), P(i).
+
+```
+funzione pell(n) {
+    Se n < 2
+        restituisci n
+
+    p'' ← 0; p' ← 1; p ← 2    // i=2
+    i ← 3
+    ripeti finché i <= n {
+        p'' ← p'
+        p'  ← p
+        p   ← 2*p' + p''
+        i   ← i + 1
+    }
+    restituisci p
+}
+```
+
+> L'ordine degli assegnamenti è cruciale: si sovrascrive prima `p''` (non serve più dopo), poi `p'`, poi `p`.
+
+---
+
+## 3. Minimo di Lista
+
+```
+PRE:  -
+POST: restituisce min(L[i])  se |L| > 0
+                  VUOTA       altrimenti
+```
+
+```
+funzione minimo_lista(L) {
+    Se |L| = 0
+        restituisci VUOTA
+    min ← L[1]; i ← 2
+    ripeti finché i <= |L|
+        Se L[i] < min
+            min ← L[i]
+        i ← i + 1
+    restituisci min
+}
+```
+
+---
+
+## 4. Ricerca Certa in Lista
+
+Dato x ∈ L (presenza garantita dalla PRE):
+
+```
+PRE:  x ∈ L
+POST: restituisce min(i). L[i] = x
+```
+
+```
+funzione trova_certo(L, x) {
+    i ← 1
+    ripeti finché NOT(x = L[i])
+        i ← i + 1
+    restituisci i
+}
+```
+
+**Variante — indice massimo:**
+```
+funzione trova_certo_max(L, x) {
+    i ← |L|
+    ripeti finché NOT(x = L[i])
+        i ← i - 1
+    restituisci i
+}
+```
+
+---
+
+## 5. Ricerca in Lista (senza PRE)
+
+x potrebbe non essere presente:
+
+```
+PRE:  -
+POST: restituisce min(i). L[i] = x   se x ∈ L
+                  NOTFOUND            altrimenti
+```
+
+**Versione 1** — condizione doppia nel ciclo:
+```
+funzione trova(L, x) {
+    i ← 1
+    ripeti finché i <= |L| AND NOT(x = L[i])
+        i ← i + 1
+    Se i > |L|
+        restituisci NOTFOUND
+    altrimenti
+        restituisci i
+}
+```
+
+**Versione 2** — variabile booleana:
+```
+funzione trova(L, x) {
+    trovato ← falso; i ← 1
+    ripeti finché i <= |L| AND NOT(trovato)
+        Se x = L[i]
+            trovato ← vero
+        altrimenti
+            i ← i + 1
+    Se trovato
+        restituisci i
+    altrimenti
+        restituisci NOTFOUND
+}
+```
+
+---
+
+## 6. Maggiore di Lista
+
+```
+PRE:  -
+POST: restituisce vero   se ∀ l ∈ L. x > l
+                 falso   altrimenti
+```
+
+> Se L è vuota → restituisce **vero** (proprietà vacuamente vera sull'insieme vuoto).
+
+```
+funzione maggioreDiLista(L, x) {
+    maggiore ← vero; i ← 1
+    ripeti finché i <= |L|
+        maggiore ← maggiore AND x > L[i]
+        i ← i + 1
+    restituisci maggiore
+}
+```
+
+---
+
+## Schema Generale
+
+| Pattern | Struttura |
+|---------|-----------|
+| Accumulatore | `sum ← 0; ripeti { sum ← sum + ... }` |
+| Tre variabili scorrevoli | aggiornare nell'ordine corretto per non perdere valori |
+| Ricerca con garanzia (PRE) | ciclo senza controllo bounds |
+| Ricerca senza garanzia | ciclo con `i <= \|L\| AND NOT(trovato)` |
+| Verifica proprietà su lista | accumulatore booleano con AND |

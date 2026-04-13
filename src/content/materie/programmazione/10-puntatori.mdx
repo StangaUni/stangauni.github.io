@@ -1,0 +1,211 @@
+---
+title: "Puntatori"
+type: "riassunto"
+tags: ["puntatori", "indirizzo", "dereference", "NULL", "passaggio per indirizzo", "dangling reference", "void*"]
+excerpt: "L-valore e R-valore, dichiarazione e uso dei puntatori, operatori & e *, NULL, passaggio per indirizzo, dangling reference, puntatori a puntatori."
+readingTime: 12
+---
+
+## L-valore e R-valore
+
+*(Concetto introdotto in **05. Tipi, Variabili ed Espressioni** — ripreso qui come fondamento dei puntatori.)*
+
+- **L-valore (indirizzo):** locazione di memoria in cui è allocata una variabile
+- **R-valore:** il valore memorizzato in quella locazione
+
+In `x = 3`: a sinistra si usa l'L-valore (dove scrivere), a destra l'R-valore (cosa leggere).
+
+---
+
+## Cos'è un Puntatore
+
+Un **puntatore** è una variabile il cui R-valore è un L-valore (un indirizzo di memoria).
+
+```
+I1    12    x
+I3    I1    z    ← z è un puntatore: contiene l'indirizzo I1 di x
+```
+
+I puntatori permettono di:
+- Manipolare altre variabili (celle di memoria)
+- Accedere a una variabile senza usare il suo nome
+- Passare variabili a funzioni **per indirizzo** (aggirando il passaggio per valore)
+
+---
+
+## Dichiarazione
+
+```c
+int *z;        // z è un puntatore a int
+float *x;
+char *c;
+int **p;       // puntatore a puntatore a int
+```
+
+Con più variabili sulla stessa riga:
+```c
+int *a, b, *c;   // a e c sono puntatori; b è un int
+```
+
+Stampa di un indirizzo: `printf("%p", a);`
+
+---
+
+## Operatore `&` — Indirizzo
+
+`&x` restituisce l'**L-valore** (indirizzo) di `x`, con tipo `tipo_di_x *`.
+
+```c
+int x=12;
+int *z = &x;    // z contiene l'indirizzo di x
+```
+
+- `&x` ha tipo `int *`
+- `&&x` è un errore: `&` si applica solo a variabili, non a espressioni
+
+---
+
+## Operatore `*` — Dereference
+
+`*p` restituisce la **variabile puntata** da `p` (di tipo `tipo`).
+
+```c
+int x=12;
+int *p = &x;
+printf("%d", *p);    // stampa 12
+```
+
+`*p` può essere usato anche come L-valore (sinistra di un assegnamento):
+
+```c
+float y=2.7;
+float *q = &y;
+*q = *q + 1.1;
+printf("%f\n", *q);  // stampa 3.8 (e y ora vale 3.8)
+```
+
+### Il simbolo `*` — tre significati
+
+| Contesto | Significato |
+|----------|-------------|
+| `2.7 * 1.5` | moltiplicazione |
+| `int *p;` | dichiarazione di puntatore |
+| `*p = 2.3;` | dereference |
+
+---
+
+## Precedenza di `&` e `*`
+
+- Precedenza inferiore a `()` e `[]`, superiore agli operatori aritmetici
+- Associatività da destra a sinistra
+
+```c
+int i=4;
+*&i + 1    // = (*(& i)) + 1 = 5
+--*p       // decrementa il valore puntato da p (equivale a: (*p) = (*p) - 1)
+*p--       // dereferenzia p all'indirizzo corrente, poi decrementa p
+```
+
+---
+
+## Inizializzazione e NULL
+
+> **Regola fondamentale:** non leggere mai un puntatore non inizializzato — potrebbe puntare a qualsiasi locazione di memoria.
+
+```c
+int main() {
+    int *p;
+    *p = 5;    // PERICOLO: locazione indefinita; può dare Segmentation Fault
+}
+```
+
+Se non è possibile inizializzare subito, usare `NULL`:
+
+```c
+#include <stddef.h>
+int *p = NULL;
+if (p == NULL) { /* non inizializzato */ }
+```
+
+---
+
+## Compatibilità dei Tipi
+
+**Puntatore a costante** (`const`): si può leggere ma non modificare il valore puntato.
+```c
+const int *p = &x;
+printf("%d\n", *p);  // OK
+*p = 7;              // ERRORE
+p = &y;              // OK (si può cambiare a cosa punta)
+```
+
+**Mismatch di tipo:** assegnare l'indirizzo di un `float` a un `int *` produce un warning e un valore privo di significato.
+
+**`void *`:** compatibile con qualsiasi tipo; non può essere usato direttamente in espressioni; usato per la programmazione generica.
+
+---
+
+## Puntatori a Puntatori
+
+```c
+int x=42, *p1, **p2;
+p1 = &x;
+p2 = &p1;
+printf("%d", **p2);  // 42: **p2 → *p1 → x
+```
+
+---
+
+## Passaggio per Indirizzo
+
+Il passaggio per valore non permette di modificare variabili del chiamante. Passando **l'indirizzo** si aggira il limite:
+
+```c
+void scambia(int *x, int *y) {
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+int main() {
+    int a=2, b=5;
+    scambia(&a, &b);
+    printf("a=%d, b=%d\n", a, b);   // a=5, b=2
+}
+```
+
+---
+
+## scanf
+
+`scanf` richiede l'indirizzo della variabile perché deve modificarla (stesso meccanismo di `scambia`):
+
+```c
+int x;
+scanf("%d", &x);   // legge un intero e lo memorizza in x
+```
+
+---
+
+## Dangling Reference
+
+Accedere tramite puntatore a una variabile già deallocata → **comportamento indefinito**.
+
+```c
+int *somma(int x, int y) {
+    int s = x+y;
+    return &s;      // PERICOLO: s verrà deallocata al termine della funzione!
+}
+// *s dopo la chiamata → comportamento indefinito
+```
+
+> **Regola:** una funzione non deve mai restituire un puntatore a una variabile locale o a un parametro.
+
+---
+
+## Esistenza vs Visibilità con i Puntatori
+
+Accedere tramite **nome** → richiede sia esistenza che visibilità.  
+Accedere tramite **puntatore** → richiede solo che la variabile sia **allocata** (non la visibilità).
+
+Questo significa che, tramite puntatore, si può accedere a una variabile che è stata "oscurata" dallo shadowing — ma bisogna fare attenzione alla deallocazione.

@@ -1,0 +1,45 @@
+# Normalizza tutto il testo a LF (anche su Windows)
+* text=auto eol=lf
+
+# Source code
+*.ts          text eol=lf
+*.tsx         text eol=lf
+*.js          text eol=lf
+*.jsx         text eol=lf
+*.mjs         text eol=lf
+*.cjs         text eol=lf
+*.mdx         text eol=lf
+*.md          text eol=lf
+*.css         text eol=lf
+*.html        text eol=lf
+
+# Config / data
+*.json        text eol=lf
+*.yaml        text eol=lf
+*.yml         text eol=lf
+*.toml        text eol=lf
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+.npmrc         text eol=lf
+
+# Immagini — binario, nessuna conversione EOL
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.avif  binary
+
+# Font — binario
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+
+# SVG — testo (è XML)
+*.svg   text eol=lf
+
+# PDF
+*.pdf   binary

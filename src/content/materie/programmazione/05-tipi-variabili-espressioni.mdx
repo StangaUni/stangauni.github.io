@@ -1,0 +1,218 @@
+---
+title: "Tipi, Variabili ed Espressioni"
+type: "riassunto"
+tags: ["tipi", "int", "float", "char", "ASCII", "variabili", "espressioni", "priorità operatori", "conversioni", "printf", "scanf"]
+excerpt: "Tipi interi, reali e carattere; dichiarazione di variabili, L-valore e R-valore; espressioni aritmetiche e booleane, priorità operatori, conversioni tra tipi, formati printf/scanf."
+readingTime: 13
+---
+
+## Tipi Interi
+
+| Tipo | Dimensione tipica | Range tipico |
+|------|------------------|--------------|
+| `short` | 2 byte | −32.768 … 32.767 |
+| `int` | 4 byte | −2.147.483.648 … 2.147.483.647 |
+| `long` | 4-8 byte | dipende dalla piattaforma |
+| `unsigned int` | 4 byte | 0 … 4.294.967.295 |
+
+**Costanti utili** (da `<limits.h>`):
+```c
+#define INT_MAX   2147483647
+#define INT_MIN  -2147483648
+```
+
+**Overflow:** se si supera il range, il valore "wrappa":
+```c
+INT_MAX + 1 == INT_MIN   // -2147483648 (overflow!)
+```
+
+**`#define` — macro:**
+```c
+#define LATO 5      // sostituisce ogni occorrenza di LATO con 5
+```
+Eseguita dal preprocessore (sostituzione testuale, non una variabile).
+
+---
+
+## Tipi Reali
+
+| Tipo | Precisione | Formato |
+|------|-----------|---------|
+| `float` | ~6-7 cifre significative | `printf("%f", x)` |
+| `double` | ~15-16 cifre significative | `printf("%lf", x)` |
+
+**Attenzione:** i reali nel calcolatore sono approssimati; l'ordine delle operazioni influisce sul risultato.
+```c
+(a + b) + c  !=  a + (b + c)   // possibile con float/double
+```
+
+---
+
+## Tipo Carattere
+
+Ogni carattere è associato a un numero intero secondo la tabella **ASCII** (0–127):
+- `'0'`–`'9'` → 48–57
+- `'A'`–`'Z'` → 65–90
+- `'a'`–`'z'` → 97–122
+
+```c
+char x = 'c';
+printf("%c %d\n", x, x);   // stampa: c 99
+```
+
+- `printf("%c", x)` → stampa il carattere
+- `printf("%d", x)` → stampa il valore numerico
+- `char` è un intero: usabile in espressioni aritmetiche
+
+**UNICODE** (UTF-8/UTF-16): standard più ampio, 65.536+ caratteri.
+
+---
+
+## Variabili
+
+**Dichiarazione:** `tipo nome;`  
+**Dichiarazione con inizializzazione:** `tipo nome = valore;`  
+**Più variabili:** `int a, b, c;` oppure `int a=1, b=2;`
+
+### Nomi di Variabili
+
+- Caratteri validi: `a-z`, `A-Z`, `0-9`, `_`
+- Non possono iniziare con `0-9` o `_`
+- Il C è **case sensitive** (`VAR` e `var` sono nomi diversi)
+- Evitare nomi simili a keyword: `IF`, `INT`
+- Nomi indicativi della funzione, ma non troppo lunghi
+
+### L-valore e R-valore
+
+- **L-valore:** indirizzo di memoria (dove è memorizzata la variabile)
+- **R-valore:** valore memorizzato in quella locazione
+
+In un assegnamento `x = 3`:
+- A sinistra di `=` si usa l'**L-valore** (dove scrivere)
+- A destra di `=` si usa l'**R-valore** (cosa leggere)
+
+> Non leggere mai una variabile non inizializzata: il suo R-valore è indefinito.
+
+### Legame Statico e Dinamico
+
+- **Statico:** stabilito prima dell'esecuzione, non cambia → il **tipo** in C è statico
+  - Permette al compilatore di rilevare errori come `int x; x = "Ciao Mondo!";`
+- **Dinamico:** può cambiare durante l'esecuzione → il **valore** è dinamico
+
+Le **costanti** (`const int x = 3;`) hanno valore statico: devono essere inizializzate alla dichiarazione.
+
+### Assegnamento come Espressione
+
+L'assegnamento ha un **effetto collaterale**: oltre ad assegnare il valore, lo restituisce.
+
+```c
+4 + (x=8)   // assegna 8 a x e restituisce 12
+```
+
+> Attenzione: `=` ha priorità molto bassa come operatore.
+
+---
+
+## Espressioni Aritmetiche
+
+| Operatore | Significato |
+|-----------|-------------|
+| `+` `-` `*` | addizione, sottrazione, moltiplicazione |
+| `/` | divisione (intera se entrambi operandi interi) |
+| `%` | resto della divisione intera |
+
+**Priorità** (dalla più alta): `* / %` poi `+ -`. Parentesi per forzare l'ordine.
+
+**Divisione intera vs reale:**
+```c
+3/2       // = 1   (divisione intera: parte decimale troncata)
+3.0/2.0   // = 1.5 (divisione reale)
+3/2 * 2   // = 2   (NON 3!)
+```
+
+> Conversione Fahrenheit → Celsius: `5*(X-32)/9` e non `5/9*(X-32)` (perché `5/9 = 0` tra interi).
+
+**Note su `%`:** gli argomenti devono essere interi; se `y = 0` il risultato è indefinito.
+
+---
+
+## Conversioni tra Tipi
+
+Il C esegue **promozioni automatiche** negli operatori binari: il tipo con meno informazione viene promosso a quello con più informazione.
+
+**Gerarchia** (dal meno al più informativo):
+```
+short → int → unsigned int → long → unsigned long → float → double → long double
+```
+
+**Assegnare float a int:** troncamento (non arrotondamento):
+```c
+int a;
+float x = 3.7;
+a = x;             // a == 3 (troncato)
+```
+
+**Cast esplicito:**
+```c
+int x = 3 + ((int) 3.9);   // = 6 (3.9 troncato a 3 prima della somma)
+```
+
+---
+
+## Espressioni Booleane
+
+Il C non ha un tipo booleano nativo: **0 = falso**, **qualsiasi valore ≠ 0 = vero**.
+
+| Operatore | Significato |
+|-----------|-------------|
+| `==` | uguale |
+| `!=` | diverso |
+| `<` `<=` `>` `>=` | confronto |
+| `&&` | AND logico |
+| `\|\|` | OR logico |
+| `!` | NOT logico |
+
+### Tabella di Priorità Completa
+
+| Livello | Operatori | Associatività |
+|---------|-----------|---------------|
+| 1 (max) | `()` | da sinistra a destra |
+| 2 | `sizeof`, `+`, `-`, `!` (unari) | da destra a sinistra |
+| 3 | `*`, `/`, `%` | da sinistra a destra |
+| 4 | `+`, `-` | da sinistra a destra |
+| 5 | `<`, `>`, `<=`, `>=` | da sinistra a destra |
+| 6 | `==`, `!=` | da sinistra a destra |
+| 7 | `&&` | da sinistra a destra |
+| 8 (min) | `\|\|` | da sinistra a destra |
+
+> Usare più parentesi del necessario se migliorano la leggibilità.
+
+**Attenzione — espressioni concatenate:**
+```c
+0 <= 9 < 8  →  (0<=9) < 8  →  1 < 8  →  vero (!)
+```
+Per verificare `0 ≤ x < 8` correttamente: `(0 <= x) && (x < 8)`
+
+**Short-circuit evaluation:**
+- `A && B`: se A è falso, B non viene valutato
+- `A || B`: se A è vero, B non viene valutato
+
+```c
+printf("%d\n", (3>0 || 3/0));   // stampa 1; 3/0 non viene mai valutato
+```
+
+---
+
+## Formati printf / scanf
+
+| Tipo | Formato |
+|------|---------|
+| `int` | `%d` |
+| `float` | `%f` |
+| `double` | `%lf` |
+| `char` | `%c` |
+| stringa | `%s` |
+| puntatore | `%p` |
+| `unsigned int` | `%u` |
+
+**Sequenze di escape:** `\n` (a capo), `\t` (tab), `\\` (backslash), `\"` (virgolette).

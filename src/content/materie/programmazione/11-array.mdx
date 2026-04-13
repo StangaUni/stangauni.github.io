@@ -1,0 +1,184 @@
+---
+title: "Array"
+type: "riassunto"
+tags: ["array", "puntatori", "aritmetica puntatori", "stringhe", "ordinamento", "selection sort", "array multidimensionali", "matrici"]
+excerpt: "Dichiarazione e uso degli array, relazione con i puntatori, aritmetica dei puntatori, stringhe, ordinamento per selezione, array multidimensionali e passaggio a funzioni."
+readingTime: 13
+---
+
+## Definizione e Dichiarazione
+
+Un **array** è un gruppo di variabili dello stesso tipo memorizzate in locazioni di memoria **contigue**.
+
+```c
+int c[4];             // 4 interi: c[0], c[1], c[2], c[3]
+int n[] = {32,27,64,18,95};   // dimensione inferita (5)
+int a[3] = {1, 2, 3};
+```
+
+- Indice a partire da **0**; ultimo elemento: `a[dimensione-1]`
+- In **C89** la dimensione deve essere una costante a compile time
+- **C99** ammette VLA (Variable Length Arrays), ma non possono essere inizializzati con `{...}`
+
+> **Attenzione:** il C **non** controlla i limiti. Accedere a un indice fuori range non dà errore ma produce comportamento indefinito.
+
+---
+
+## Array e Puntatori
+
+Quando una variabile array compare in un'espressione, viene automaticamente convertita in un **puntatore costante al primo elemento**:
+
+```c
+int a[3];
+int *p = a;      // p punta a a[0]
+```
+
+`a[k]` è equivalente a `*(a+k)` — la conversione è automatica.
+
+### Aritmetica dei puntatori
+
+Se `p` è di tipo `tipo *` e `k` è un intero:
+```
+p + k  =  p + k * sizeof(tipo)
+```
+
+Sono ammesse:
+- Somma/sottrazione puntatore + intero
+- Sottrazione tra puntatori allo stesso array
+- Confronto tra puntatori allo stesso array
+
+### Array come parametri di funzioni
+
+Gli array vengono automaticamente convertiti in puntatori; le dimensioni vanno passate separatamente:
+
+```c
+void stampa(int *a, int len) {
+    for (int i=0; i<len; i++)
+        printf("%d ", a[i]);
+}
+```
+
+---
+
+## Stringhe
+
+Una stringa è un array di `char` terminato dal carattere nullo `'\0'`:
+
+```c
+char s[] = "ciao";
+// equivalente a: {'c','i','a','o','\0'}
+```
+
+`printf("%s", s)` assume che l'array termini con `'\0'`.
+
+---
+
+## Ordinamento per Selezione
+
+**Algoritmo:** per ogni posizione `i`, trovare il minimo nella parte non ordinata e scambiarlo con `a[i]`.
+
+```c
+int indice_minimo(int A[], int len) {
+    int min_ind = 0;
+    for (int i=1; i<len; i++)
+        if (A[i] < A[min_ind]) min_ind = i;
+    return min_ind;
+}
+
+void scambia(int *x, int *y) {
+    int temp=*x; *x=*y; *y=temp;
+}
+
+void ordina_crescente(int *A, int len) {
+    for (int i=0; i<len; i++) {
+        int min = indice_minimo(A+i, len-i);
+        scambia(A+i, A+min+i);
+    }
+}
+```
+
+Dettagli cruciali:
+- `A+i`: puntatore alla posizione corrente (non all'inizio)
+- `len-i`: cerca solo nella parte non ancora ordinata
+- `A+min+i` (non `A+min`): l'indice del minimo è relativo al sottarray
+
+---
+
+## Array Multidimensionali
+
+### Array 2D
+
+```c
+int a[3][4];    // 3 righe, 4 colonne
+
+// inizializzazione
+int a[3][4] = {{1,2,3,4},{5,6,7,8},{9,10,11,12}};
+int a[][4]  = {1,2,3,4,5,6,7,8,9,10,11,12};  // prima dim. inferita
+```
+
+- `a[i][j]` è equivalente a `(a[i])[j]` (`[]` è associativo a sinistra)
+- **Layout row-major:** righe memorizzate in modo contiguo
+- Indirizzo di `a[i][j]`: `&a[0][0] + i*ncols + j` (con cast a `int *`)
+
+### Array 3D e superiori
+
+```c
+int a[2][3][4];   // 2 elementi, ciascuno una matrice 3×4
+```
+
+Offset di `a[i][j][k]`: `i*3*4 + j*4 + k`
+
+### Array di puntatori (jagged array)
+
+```c
+int *p[2] = {a, b};   // 2 puntatori a int (righe di dimensioni diverse)
+```
+
+`p[i][j]` funziona ugualmente.
+
+---
+
+## Passare Matrici a Funzioni
+
+**Metodo 1 — array 2D** (colonne note a compile time):
+```c
+#define NCOLS 4
+void stampa(int a[][NCOLS], int righe) {
+    for (int i=0; i<righe; i++) {
+        for (int j=0; j<NCOLS; j++) printf("%d ", a[i][j]);
+        printf("\n");
+    }
+}
+// int a[][NCOLS] è convertito in int (*a)[NCOLS]
+```
+
+**Metodo 2 — array di puntatori:**
+```c
+void stampa(int **a, int righe, int colonne) {
+    for (int i=0; i<righe; i++) {
+        for (int j=0; j<colonne; j++) printf("%d ", a[i][j]);
+        printf("\n");
+    }
+}
+```
+
+**Metodo 3 — puntatore singolo** (massima flessibilità):
+```c
+void stampa(int *a, int righe, int colonne) {
+    for (int i=0; i<righe; i++) {
+        for (int j=0; j<colonne; j++) printf("%d ", *(a + i*colonne + j));
+        printf("\n");
+    }
+}
+```
+
+---
+
+## Riepilogo Dichiarazioni Complesse
+
+| Dichiarazione | Significato |
+|---------------|-------------|
+| `int a[5]` | array di 5 `int` |
+| `int *p[4]` | array di 4 puntatori a `int` |
+| `int (*p)[4]` | puntatore a array di 4 `int` |
+| `int a[2][3]` | matrice 2×3 di `int` |
