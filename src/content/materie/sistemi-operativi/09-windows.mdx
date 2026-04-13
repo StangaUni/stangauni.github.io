@@ -1,0 +1,265 @@
+---
+title: "Windows"
+type: "riassunto"
+tags: ["Windows", "NT", "NTFS", "MFT", "registry", "scheduling", "memoria virtuale", "DLL", "Win32"]
+excerpt: "Storia di Windows (MS-DOS → NT), Registry, processi e thread, scheduling, gestione memoria e NTFS con MFT e run list."
+readingTime: 13
+---
+
+## Storia
+
+### Prima e seconda generazione
+
+**MS-DOS** (1981): mono-utente, command line, non multiprogrammato.
+
+| Anno | Versione | Note |
+|---|---|---|
+| 1981 | MS-DOS 1.0 (8 KB) | PC IBM 8088 (16 bit) |
+| 1990–93 | Windows 3.x | GUI sopra MS-DOS; copia dell'interfaccia Macintosh |
+| 1995 | **Windows 95** | Primo S/O multiprogrammato; mono-utente; FS FAT; semaforo globale sul nucleo; ¼ spazio condiviso R/W tra processi |
+| 1998 | Windows 98 | Modeste migliorie |
+
+### Terza generazione: Progetto NT
+
+Abbandono della base MS-DOS. Scritto in **C e C++** (~16–29 M linee di codice).
+
+| Anno | Versione | Note |
+|---|---|---|
+| 1993 | **NT 3.1** | Architettura microkernel; fiasco commerciale |
+| 1996 | **NT 4.0** | Architettura monolitica; prestazioni migliori |
+| 1999 | **Windows 2000** (NT 5.0) | Spazio privato per processo; plug-and-play |
+| 2001 | **Windows XP** | Successo commerciale |
+| 2007 | **Windows Vista** | Flop; più sicuro; Windows Aero |
+| 2009 | **Windows 7** | Risposta a Vista; multitouch |
+
+**NT 3.1 (microkernel):** servizi in processi utente; alta portabilità ma basse prestazioni.
+**NT 4.0 (monolitico):** servizi riportati nel nucleo; prestazioni migliori.
+
+**GUI — paradigma WIMP:** Windows (finestre), Icons (icone), Menus (menu), Pointing (puntamento). Può essere:
+- Programma in spazio utente (GNU/Linux con X Window)
+- Parte del S/O (Windows)
+
+---
+
+## Interfaccia di programmazione
+
+**Win32 API:** interfaccia pubblica controllata da Microsoft; le system call interne non sono pubblicate.
+
+- Alcune procedure includono chiamate di sistema
+- Altre svolgono servizi interamente in modo utente
+- Nessun rigore gerarchico
+
+---
+
+## Registry
+
+Database di configurazione del sistema, salvato in file detti **hive**:
+
+- Directory → **key**
+- File → **entry** = `{nome, tipo, dati}`
+
+**6 chiavi principali:**
+- `HKEY_LOCAL_MACHINE` — hardware, software installato, avvio
+- `HKEY_CURRENT_USER` — preferenze utente corrente
+- `HKEY_USERS`, `HKEY_CLASSES_ROOT`, `HKEY_CURRENT_CONFIG`, `HKEY_PERFORMANCE_DATA`
+
+---
+
+## Gestione dei processi
+
+### Gerarchia delle entità
+
+| Entità | Descrizione |
+|---|---|
+| **Job** | Insieme di processi gestiti come unità con limiti di risorse |
+| **Processo** | Possessore di risorse; ID unico; 4 GB (2 GB utente + 2 GB nucleo); non ha stato di avanzamento |
+| **Thread** | Flusso di controllo gestito dal nucleo; 2 stack (utente + nucleo) |
+| **Fiber** | Suddivisione di thread ignota al nucleo; gestita da Win32 |
+
+### Sincronizzazione tra thread
+
+| Meccanismo | Descrizione |
+|---|---|
+| **Mutex** | Mutua esclusione |
+| **Semaforo contatore** | Conteggio risorse |
+| **Sezione critica** | Solo nello spazio del thread (non kernel object) |
+| **Evento manual-reset** | Rilascio manuale; sveglia tutti i thread in attesa |
+| **Evento auto-reset** | Sveglia uno solo dei thread in attesa |
+
+### Comunicazione tra thread
+
+| Meccanismo | Descrizione |
+|---|---|
+| **Pipe** | Bidirezionale; byte stream o messaggi |
+| **Mailslot** | Unidirezionale; funziona anche in rete |
+| **Socket** | Comunicazione remota |
+| **RPC** | Remote Procedure Call: invoca procedure in altri processi |
+| **Memoria condivisa** | Porzioni di file mappati in memoria |
+
+---
+
+## Scheduling
+
+### Struttura delle priorità
+
+- **32 livelli** (0–31): 31–16 = sistema/real-time, 15–0 = ordinari
+- **6 classi per processo:** Realtime, High, Above-normal, Normal, Below-normal, Idle
+- **7 classi per thread:** Time-critical, Highest, Above-normal, Normal, Below-normal, Lowest, Idle
+
+**Selezione:** ricerca dalla coda a priorità massima, round robin all'interno.
+
+### Priorità dinamica
+
+| Evento | Effetto sulla priorità |
+|---|---|
+| Completamento I/O | Aumenta (+ ampliamento temporaneo del quanto) |
+| Acquisizione semaforo / evento | Aumenta |
+| Quanto consumato | Decresce |
+| Thread pronto non selezionato troppo a lungo | Boost temporaneo per 2 quanti (anti-starvation) |
+
+### Meccanismo di scheduling
+
+Le decisioni di scheduling sono effettuate in modo nucleo come **DPC** (*Deferred Procedure Call*):
+- Thread si blocca su semaforo/I/O → già in modo nucleo
+- Thread segnala un oggetto → già in modo nucleo
+- Esaurimento quanto → interrupt clock → DPC per concludere
+
+Il quanto è più ampio per la finestra in **primo piano**.
+
+---
+
+## Gestione della memoria
+
+### Spazio di indirizzamento (32 bit)
+
+4 GB per processo:
+```
+Alto
+┌──────────────────────────────────┐
+│ Codice e dati del S/O           │  2 GB (condivisi)
+├──────────────────────────────────┤
+│ Codice e dati privati            │  2 GB (modo utente)
+└──────────────────────────────────┘
+Basso
+```
+
+### Traduzione degli indirizzi (2 livelli)
+
+```
+Indirizzo virtuale (32 bit):
+┌──────────┬──────────┬────────────┐
+│ PDE      │ PTE      │ Offset     │
+│ (10 bit) │ (10 bit) │ (12 bit)   │
+└──────────┴──────────┴────────────┘
+      ↓          ↓
+Page Directory  Page Table
+```
+
+Traduzione preferibilmente via **TLB**.
+
+### Stati delle pagine virtuali
+
+| Stato | Descrizione |
+|---|---|
+| **Libera** (*free*) | Non riferita da alcun PTE |
+| **Assegnata** (*committed*) | In uso; caricata da disco su page fault |
+| **Prenotata** (*reserved*) | Non in uso ma non libera; facilita assegnazione contigua |
+
+### DLL e file mappati in memoria
+
+- **DLL** (*Dynamic Link Library*): codice condiviso in sola lettura; dati statici copiati per processo (copy-on-write)
+- Gli indirizzi nel codice DLL sono **relativi** (risolti dal compilatore)
+
+### Working Set
+
+Per ogni processo i: $\text{Min}_i \leq \#\{I_i\} \leq \text{Max}_i$
+
+**Daemon:**
+- **Balance set manager** (1 s): verifica disponibilità pagine libere
+- **Working set manager:** esamina WS dei processi per rilasciarne pagine (priorizza processi con WS vicino al massimo e uso recente scarso)
+- **Swapper thread:** porta in standby/modified le pagine dei processi inattivi
+
+### Stato dei page frame
+
+| Lista | Simbolo | Descrizione |
+|---|---|---|
+| **In attesa** (*standby*) | A | Rimossa dal WS, non modificata; riassegnabile |
+| **Da copiare** (*modified*) | B | Rimossa dal WS, modificata; va salvata su disco |
+| **Libera** (*free*) | C | Non più associata a nessun processo |
+| **Azzerata** (*zeroed*) | D | Contenuto obliterato |
+| **Difettosa** (*bad*) | E | Settore fisico difettoso |
+
+```
+WS₁…WSₙ
+  │ rilascio
+  ▼
+B (modified) → salva su disco → A (standby) → C (free) → D (zeroed)
+  ↑
+richiamo nel WS (page fault)
+```
+
+### Page frame database
+
+Tabella indicizzata per numero di frame fisico: presenza, contatore riferimenti, WS di appartenenza, lista di appartenenza, ecc.
+
+---
+
+## NTFS
+
+### Confronto FS Windows
+
+| FS | Bit indirizzo | Limite |
+|---|---|---|
+| FAT-16 | 16 | 2 GB |
+| FAT-32 | 28 | 2 TB |
+| **NTFS** | 64 | Virtualmente illimitato |
+
+### Caratteristiche generali
+
+- Nomi fino a **255 caratteri Unicode**; path max 32.767 car.
+- File come **aggregato di attributi** (*attribute streams*)
+- Supporto **hard link** e **symbolic link**
+
+### MFT — Master File Table
+
+- Una per volume; fisicamente un **file**
+- Sequenza lineare di ≤ 2⁴⁸ record (1–4 KB ciascuno)
+- Ogni record identifica un file tramite un **indice a 48 bit** + **16 bit** di sequenza
+
+**Primi record riservati (metadata):**
+
+| Record | Contenuto |
+|---|---|
+| 0 | Descrive l'MFT stesso |
+| 1 | Mirror: copia dei primi 16 record in fondo al volume |
+| 3 | Informazioni sul volume (nome, versione FS, data creazione) |
+| 4 | Definizione degli attributi usati nel volume |
+| altri | Radice FS, bitmap blocchi liberi, boot code, ecc. |
+
+### Struttura dei record
+
+Ogni record = numero variabile di coppie `<descrittore-attributo, valore>`:
+- **13 attributi di sistema** predefiniti + eventuali aggiuntivi
+- **Attributo residente:** il valore sta interamente nel record MFT
+- **Attributo non residente:** il record contiene un puntatore a 48 bit + 16 bit di controllo (→ 64 bit totali)
+- **Immediate file:** file con dati < 1 KB → dati interamente nel record MFT
+
+### Run list (sequenze di blocchi contigui)
+
+NTFS tenta di assegnare **blocchi contigui** (*run*). Ogni run è descritto da:
+- Indirizzo del 1° blocco della sequenza
+- Ampiezza della sequenza (in blocchi)
+
+**Efficienza:** il numero di record dipende dalla contiguità, non dalla dimensione del file:
+- 20 GB in 20 run da 1 M blocchi → 21×2×8 B = **336 B** di metadati
+- 64 KB in 64 run da 1 blocco → 65×2×8 B = **1040 B** di metadati
+
+### Record con estensioni (file grandi/frammentati)
+
+Il record base punta a N ≥ 1 **record di estensione** che descrivono le run successive.
+
+Se nemmeno i record di estensione bastano → la run list viene posta in un file dedicato come **attributo non residente**.
+
+### File sparsi (*sparse files*)
+
+File con zone interne non utilizzate (es. poste a 0 e riservate per uso futuro): NTFS non alloca fisicamente i blocchi corrispondenti alle zone azzerate, ma registra solo i run effettivamente scritti. Il file ha una dimensione logica elevata ma occupa fisicamente solo i dati reali.

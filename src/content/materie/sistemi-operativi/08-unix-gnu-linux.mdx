@@ -1,0 +1,286 @@
+---
+title: "Unix e GNU/Linux"
+type: "riassunto"
+tags: ["UNIX", "Linux", "fork", "exec", "pthread", "paginazione", "ext2", "Android", "scheduling"]
+excerpt: "Storia di UNIX/Linux, architettura a livelli, gestione processi e memoria, scheduling, I/O, FS ext2 e Android."
+readingTime: 14
+---
+
+## Storia
+
+| Anno | Evento |
+|---|---|
+| 1964–65 | DTSS (primo time-sharing), CTSS (MIT); nasce MULTICS con MIT, Bell Labs, GE |
+| 1969 | Bell Labs abbandona MULTICS; **Ken Thompson** scrive UNICS in assembler su PDP-7 → **UNIX** |
+| 1974 | UNIX riscritto in **C** da Thompson e **Dennis Ritchie** per PDP-11 |
+| 1979 | UNIX v7 — versione di riferimento; Microsoft la commercializza come **Xenix** |
+| 1979–86 | Diversificazione: **System V** (AT&T→Novell→SCO) e **4.x BSD** (Berkeley; introduce VM e TCP/IP) |
+| 1986+ | **POSIX** (IEEE/ISO): standard che raccoglie il meglio di System V e BSD |
+| 1987 | **MINIX** (Tanenbaum) — microkernel |
+| 1991 | **GNU/Linux v0.01** (Linus Torvalds) — nucleo monolitico, clone POSIX, open-source |
+
+---
+
+## Architettura a livelli
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Utenti 1..N                                                │
+├─────────────────────────────────────────────────────────────┤
+│  Shell, compilatori, GUI, utilità                           │
+├─────────────────────────────────────────────────────────────┤
+│  Librerie standard (fork, exec, open, close, ...)           │
+├─────────────────────────────────────────────────────────────┤
+│  Nucleo monolitico (processi, memoria, I/O, FS, ...)        │
+├─────────────────────────────────────────────────────────────┤
+│                     Hardware                                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Shell:** interfaccia a linea di comando; stdin/stdout/stderr (redirigibili con `<` `>`); pipe `|`; background `&`.
+
+---
+
+## Gestione dei processi
+
+### fork() e execve()
+
+```c
+while (TRUE) {
+    type_prompt();
+    read_command(cmd, par);
+    pid = fork();
+    if (pid != 0) waitpid(-1, &status, 0);  // padre: attende
+    else execve(cmd, par, 0);               // figlio: esegue
+}
+```
+
+- **fork():** duplica il processo; memoria identica inizialmente, poi indipendente (copy-on-write)
+- **execve():** sostituisce il codice del processo corrente con un nuovo programma
+
+### clone() — GNU/Linux
+
+```c
+pid = clone(function, stack_ptr, ctrl, arg);
+```
+
+Permette di specificare il grado di condivisione → crea processi o thread con la stessa chiamata.
+
+### Thread POSIX
+
+```c
+pthread_create(&tid, attr, fun, arg);
+pthread_exit(...);
+pthread_join(tid, ...);
+pthread_mutex_lock(&m);    // P
+pthread_mutex_unlock(&m);  // V
+```
+
+### Tabella dei processi
+
+In RAM permanentemente; contiene per ogni processo:
+
+- Parametri di ordinamento (priorità, tempo cumulato, tempo sospensione)
+- Descrittore della memoria virtuale del processo
+- Lista dei segnali e il loro stato
+- Stato, identità, relazioni di parentela, gruppo di appartenenza
+
+---
+
+## Scheduling in GNU/Linux
+
+### 3 classi di priorità
+
+| Classe | Politica | Funzionamento |
+|---|---|---|
+| **Real-time FCFS** | FCFS a priorità, no prerilascio | A parità di priorità: FIFO |
+| **Real-time RR** | RR a priorità, prerilascio per quanto | Ritorno in fondo alla coda |
+| **Timesharing** | Priorità dinamica (Fair Priority) | Vettori attivo/scaduto (0–99); nice –20..+19 |
+
+**Struttura vettori attivo/scaduto:**
+- Ogni task migra dall'attivo allo scaduto all'esaurimento del quanto
+- Quando il vettore attivo si svuota → i due vettori si scambiano di ruolo
+
+### Prerilascio nel nucleo (≥ 2.6)
+
+- **Top half:** gestore immediato, disabilita le interruzioni
+- **Bottom half:** parte differita, non disabilita ma ha precedenza su tutto tranne le top half
+- Sezioni critiche lunghe: disabilitazione minima delle interruzioni
+- Sezioni critiche brevi: semafori convenzionali
+
+---
+
+## Boot e inizializzazione
+
+1. BIOS carica l'**MBR** (512 B, settore 0) in RAM e lo esegue
+2. MBR carica il programma di boot dalla partizione attiva
+3. Il boot loader carica il **nucleo del S/O**
+4. Il controllo passa al **main del nucleo** → carica driver, inizializza **processo 0**
+
+**Processo 0 (swapper):** configura orologi, installa il FS, crea processo 1 e processo 2.
+
+**Processo 1 (init):** legge `/etc/ttys`, esegue script `/etc/rc`, lancia `getty` per ogni terminale.
+
+```
+Process 0 (swapper)
+    ├── Process 1 (init)
+    │       ├── getty(tty1) → exec(login) → exec(shell)
+    │       └── ...
+    └── Process 2 (page daemon)
+```
+
+---
+
+## Gestione della memoria
+
+### Spazio di indirizzamento di processo
+
+4 sezioni: **Text** (codice, R, fisso) | **Data** (dati inizializzati) | **BSS** (non inizializzati) | **Stack** (cresce verso il basso).
+
+Il segmento codice è condivisibile tra processi; gli altri sono privati (copy-on-write dopo fork).
+
+### UNIX originale: swap di interi processi
+
+Lo **swapper** salvava su disco i processi sospesi con più tempo recente di esecuzione e meno priorità.
+
+### Paging on demand (GNU/Linux)
+
+- Un processo è eseguibile se **descrittore + tabella delle pagine** sono in RAM
+- Le pagine vengono caricate solo quando riferite (page fault)
+- Il **page daemon** (kswapd) gestisce i page frame liberi
+
+### Core map (UNIX)
+
+Struttura da **16 B per page frame** in RAM:
+- Puntatori prev/next nella lista dei frame liberi
+- Posizione su disco
+- Descrittore del contenuto (codice/dati/stack/tabella pagine)
+
+Il nucleo e la core map sono sempre in RAM; il resto è paginato.
+
+### Two-handed clock algorithm (UNIX)
+
+Page daemon verifica ogni 1/4 s che vi siano ≥ *lotsfree* pagine libere:
+- **1ª passata:** azzera il bit R di ogni pagina
+- **2ª passata** (a distanza programmabile): rimuove le pagine con R ancora = 0
+
+### GNU/Linux: spazio virtuale di 4 GB
+
+- **1 GB** riservato al kernel
+- **3 GB** per il processo utente
+- Spazio suddiviso in **regioni** (sequenze contigue di pagine)
+
+**fork() in GNU/Linux:** copia la lista dei descrittori di regione; le pagine sono duplicate fisicamente solo alla **prima scrittura** (copy-on-write):
+- La regione viene marcata R/W; le pagine dati inizialmente R
+- Ogni scrittura causa eccezione → nucleo duplica la pagina e la marca R/W
+
+**Tabella delle pagine a 3 livelli:**
+```
+Indirizzo virtuale → [sel. globale | sel. interm. | sel. pagina | offset]
+                          ↓             ↓              ↓
+                    Dir. globale   Dir. interm.   Tabella pagine
+                    (1/processo)   (M/processo)   (N/processo)
+```
+
+**Daemon:**
+- **kswapd:** page daemon (periodo 1 s); sposta pagine su disco
+- **bdflush:** riscrive le pagine modificate
+
+### Buddy algorithm (allocazione primaria GNU/Linux)
+
+- Ogni richiesta di N pagine → arrotonda a $2^m \geq N$
+- Fraziona la memoria in blocchi di $2^i$ dimensione
+- Al rilascio: ricompone con il **buddy** (blocco vicino) se libero
+- **Strutture slab:** evitano il problema delle potenze di 2 per allocazioni piccole
+
+---
+
+## I/O
+
+- I dispositivi sono file speciali (es. `/dev/sda`) — stesso paradigma dei file normali
+- Un **device driver** è associato a ogni dispositivo; identificato dalla coppia `<major, minor>`
+- GNU/Linux: **caricamento dinamico dei moduli** (no ricompilazione del kernel)
+
+**Socket** — file speciale per la rete:
+
+| Tipo | Descrizione |
+|---|---|
+| Flusso affidabile di caratteri | Simile a TCP; blocchi di dimensione variabile |
+| Flusso affidabile di pacchetti | TCP puro; solo pacchetti di dimensione fissa |
+| Pacchetti inaffidabili | UDP; errori gestiti dall'utente |
+
+---
+
+## File System UNIX/Linux
+
+### Struttura di partizione UNIX v7
+
+```
+Blocco di boot | Superblocco | Lista liberi | Lista i-node | Blocchi dati
+```
+
+Ogni entry di directory = 16 B (14 B nome + 2 B numero i-node).
+
+### I-node: indirezione multipla (UNIX v7, blocco = 4 KB, indirizzo = 4 B → NIB = 1024)
+
+| Livello | Dimensione massima |
+|---|---|
+| 12 diretti | 12 × 4 KB = 48 KB |
+| Single-indirect | 48 KB + 1024 × 4 KB ≈ **4 MB** |
+| Double-indirect | + 1024² × 4 KB ≈ **4 GB** |
+| Triple-indirect | + 1024³ × 4 KB ≈ **4 TB** |
+
+### ext2 (GNU/Linux)
+
+| Caratteristica | Valore |
+|---|---|
+| Dimensione i-node | 128 B |
+| Indirizzi di blocco | 4 B (→ 2³² blocchi) |
+| Dimensione blocco | 1, 2 o 4 KB (configurabile) |
+| Limite partizione | ≤ 4 TB |
+| Struttura puntatori | 12 diretti + 3 indiretti (single/double/triple) |
+
+**Innovazione: gruppi di blocchi** — i-node e blocchi dati vicini tramite preallocazione di 8 blocchi contigui.
+
+---
+
+## Android
+
+### Storia e obiettivi
+
+- Startup acquisita da Google nel 2005; open-source (AOSP)
+- **2007:** Android 1.0, SDK; **2011–14:** schermi grandi, SELinux; **2015–21:** focus privacy
+
+**Obiettivi:** open-source, API per terze parti, competizione "fair" tra app, 200 ms di avvio.
+
+### Architettura
+
+- **init** (PID 1): primo processo utente; avvia i processi a basso livello incluso zygote
+- **zygote**: JVM pre-riscaldata; crea nuovi processi per ogni app (fork + CoW)
+- **system_server**: fornisce i servizi di sistema
+- App ↔ S/O tramite **Android Framework** (API)
+- App ↔ app tramite **IPC Binder**
+
+**Componenti specifici:**
+- **Wake Lock:** inibisce lo spegnimento/risparmio energetico
+- **OOM Killer:** no swap su Android; uccide i processi meno importanti per liberare RAM
+- **ART** (*Android RunTime*): VM Java per-app
+
+### Struttura app (APK)
+
+Archivio ZIP contenente: manifesto, risorse, bytecode DEX, firma digitale.
+
+### 4 tipi di componenti app
+
+| Tipo | Descrizione |
+|---|---|
+| **Activity** | Schermata con UI |
+| **Broadcast Receiver** | Risponde a messaggi di sistema o altre app |
+| **Service** | Background senza UI |
+| **Content Provider** | Fornisce dati strutturati ad altre app |
+
+**Intenti:** identificano il tipo di azione/componente da invocare (espliciti o impliciti).
+
+**Classi di processo** (dalla più alla meno importante): foreground → visibile → servizio → background → vuoto (cache).
+
+**Sicurezza:** sandbox (UID univoco per app) + sistema di permessi + strumenti privacy (granularità posizione, permessi temporanei).

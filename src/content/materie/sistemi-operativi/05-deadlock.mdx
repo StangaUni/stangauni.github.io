@@ -1,0 +1,189 @@
+---
+title: "Deadlock (Stallo)"
+type: "riassunto"
+tags: ["deadlock", "Coffman", "grafo assegnazione", "algoritmo del Banchiere", "stato sicuro", "prevenzione", "rilevazione"]
+excerpt: "Condizioni di Coffman, grafo di assegnazione, strategie di gestione e algoritmo del Banchiere con esempio completo."
+readingTime: 13
+---
+
+## Definizione
+
+Un insieme di processi è in **deadlock** quando ogni processo dell'insieme è in attesa di un evento che solo un altro processo dell'insieme può generare, e nessuno di essi può procedere.
+
+---
+
+## Condizioni necessarie e sufficienti (Coffman, 1971)
+
+Il deadlock può verificarsi se e **solo se** valgono **tutte e 4** le condizioni contemporaneamente:
+
+| # | Condizione | Descrizione |
+|---|---|---|
+| 1 | **Accesso esclusivo** | Almeno una risorsa è detenuta in modalità non condivisibile |
+| 2 | **Accumulo di risorse** | I processi possono acquisire nuove risorse senza rilasciare quelle già in possesso |
+| 3 | **Inibizione di prerilascio** | Le risorse non possono essere tolte forzatamente; vengono rilasciate solo volontariamente |
+| 4 | **Attesa circolare** | Esiste una catena chiusa P₁→R₁→P₂→R₂→...→Pₙ→Rₙ→P₁ |
+
+> Negare **una sola** condizione è sufficiente per impedire il deadlock.
+
+---
+
+## Grafo di assegnazione delle risorse
+
+Il sistema è rappresentato con un **grafo orientato**:
+
+- **Cerchio** = processo (P₁, P₂, ...)
+- **Rettangolo con pallini** = risorsa (ogni pallino = un'istanza)
+- **Arco P→R:** il processo richiede la risorsa
+- **Arco R→P:** la risorsa è assegnata al processo
+
+**Regole di rilevazione:**
+- Se il grafo ha un **ciclo** e tutte le risorse nel ciclo hanno **molteplicità 1** → **deadlock certo**
+- Se le risorse hanno molteplicità > 1: un ciclo non implica necessariamente deadlock
+- Se il grafo **non ha cicli** → nessun deadlock
+
+**Esempio di deadlock:**
+```
+R1 ──assegnata──► P2 ──richiede──► R2 ──assegnata──► P1 ──richiede──► R1
+```
+Ciclo chiuso → stallo.
+
+**Esempio senza deadlock:** se R1 ha 2 istanze, una delle quali non è nel ciclo, il processo che la detiene può terminare e liberarla → il ciclo si spezza.
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/grafo_assegnazione.svg"
+  darkSrc="/assets/sistemi-operativi/grafo_assegnazione_scuro.svg"
+  alt="Grafo di assegnazione delle risorse"
+/>
+
+---
+
+## Strategie per affrontare il deadlock
+
+| Strategia | Descrizione | Usato in |
+|---|---|---|
+| **Prevenzione** | Impedire almeno una delle 4 condizioni strutturalmente | Sistemi batch/semplici |
+| **Evitamento (Banchiere)** | Prima di ogni assegnazione verifica che lo stato rimanga sicuro | Sistemi specializzati |
+| **Rilevazione e recupero** | Permettere il deadlock, rilevarlo periodicamente, recuperare | Sistemi general-purpose |
+| **Indifferenza** | Ignorare il problema | Maggioranza degli S/O moderni |
+
+### Prevenzione — negare le condizioni
+
+| Condizione da negare | Difficoltà |
+|---|---|
+| Accesso esclusivo | Alcune risorse non consentono condivisione |
+| Accumulo | Richiedere tutte le risorse in anticipo o rilasciare tutto prima di chiedere altro |
+| Inibizione prerilascio | Alcune risorse non possono essere prerilasciate (es. stampante in uso) |
+| Attesa circolare | Ordinamento globale delle risorse; i processi le richiedono solo in ordine crescente |
+
+---
+
+## Algoritmo del Banchiere (Dijkstra)
+
+Strategia di **evitamento**: prima di assegnare risorse, verifica che il sistema rimanga in uno **stato sicuro**.
+
+**Principio:** un banchiere non versa mai tutte le risorse disponibili per poter sempre soddisfare i propri clienti.
+
+**Requisiti:** ogni processo deve dichiarare il massimo di risorse che userà.
+
+### Strutture dati
+
+`N` = numero processi, `M` = numero tipi di risorse
+
+| Struttura | Dimensione | Significato |
+|---|---|---|
+| **Disponibili** | M | `Disponibili[j]` = istanze libere di Rⱼ |
+| **Massimo** | N × M | `Massimo[i,j]` = max istanze di Rⱼ che Pᵢ può richiedere |
+| **Assegnate** | N × M | `Assegnate[i,j]` = istanze di Rⱼ attualmente in Pᵢ |
+| **Necessità** | N × M | `Necessità[i,j] = Massimo[i,j] − Assegnate[i,j]` |
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/banchiere_flowchart.svg"
+  darkSrc="/assets/sistemi-operativi/banchiere_flowchart_scuro.svg"
+  alt="Flowchart dell'algoritmo del Banchiere"
+/>
+
+### Algoritmo di verifica della sicurezza — O(M·N²)
+
+```
+1. Lavoro[j] = Disponibili[j]  per ogni j
+   Fine[i]   = false           per ogni i
+
+2. Cerca i tale che:
+   a) Fine[i] == false
+   b) Necessità[i,j] ≤ Lavoro[j]  per ogni j
+   Se non esiste → vai a 4.
+
+3. Lavoro[j] += Assegnate[i,j]  (simula la terminazione di i)
+   Fine[i] = true
+   Torna a 2.
+
+4. Se Fine[i] == true per ogni i → STATO SICURO
+   Altrimenti → STATO NON SICURO (possibile deadlock)
+```
+
+### Algoritmo di richiesta delle risorse
+
+```
+Richieste[i] = vettore delle risorse richieste da Pᵢ
+
+I.   Se Richieste[i] > Necessità[i]  → ERRORE (richiesta eccessiva)
+
+II.  Se Richieste[i] > Disponibili   → Pᵢ deve attendere
+
+III. Simula l'assegnazione:
+     Disponibili  -= Richieste[i]
+     Assegnate[i] += Richieste[i]
+     Necessità[i] -= Richieste[i]
+
+IV.  Esegui algoritmo di sicurezza:
+     Se SICURO  → assegna le risorse
+     Se INSICURO → Pᵢ deve attendere; annulla la simulazione
+```
+
+### Esempio completo
+
+**Sistema:** 4 processi (A, B, C, D), 5 tipi di risorse.
+`Disponibili = [0, 1, 3, 1, 2]`
+
+| Processo | Assegnate | Massimo | Necessità |
+|---|---|---|---|
+| A | 1 0 2 1 1 | 3 1 2 1 3 | **2 1 0 0 2** |
+| B | 2 0 1 1 1 | 3 3 4 2 1 | **1 3 3 1 0** |
+| C | 1 1 0 1 0 | 2 1 4 1 0 | **1 0 4 0 0** |
+| D | 1 1 1 1 0 | 1 1 3 2 1 | **0 0 2 1 1** |
+
+**Esecuzione** (Lavoro iniziale = `[0 1 3 1 2]`):
+
+| Passo | Processo | Necessità ≤ Lavoro? | Nuovo Lavoro |
+|---|---|---|---|
+| 1 | **D** | `[0 0 2 1 1]` ≤ `[0 1 3 1 2]` ✓ | `[1 2 4 2 2]` |
+| 2 | **C** | `[1 0 4 0 0]` ≤ `[1 2 4 2 2]` ✓ | `[2 3 4 3 2]` |
+| 3 | **A** | `[2 1 0 0 2]` ≤ `[2 3 4 3 2]` ✓ | `[3 3 6 4 3]` |
+| 4 | **B** | `[1 3 3 1 0]` ≤ `[3 3 6 4 3]` ✓ | — |
+
+**Sequenza sicura: D → C → A → B** → stato sicuro.
+
+---
+
+## Stato sicuro vs stato non sicuro
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/stato_sicuro_venn.svg"
+  darkSrc="/assets/sistemi-operativi/stato_sicuro_venn_scuro.svg"
+  alt="Diagramma di Venn: stati sicuri, non sicuri e deadlock"
+/>
+
+- **Stato sicuro:** esiste almeno una sequenza di esecuzione in cui tutti i processi completano
+- **Stato non sicuro:** non implica necessariamente deadlock immediato, ma non è possibile garantire l'assenza di stallo
+- **Deadlock** ⊂ **stati non sicuri** ⊂ **tutti gli stati**
+
+---
+
+## Riepilogo delle strategie
+
+| Strategia | Overhead | Restrizioni | Usato in |
+|---|---|---|---|
+| **Prevenzione** | Basso | Forti | Sistemi semplici / batch |
+| **Evitamento (Banchiere)** | Alto (O(MN²) per richiesta) | Conoscenza a priori del massimo | Sistemi specializzati |
+| **Rilevazione e recupero** | Medio (periodico) | Nessuna | Sistemi general-purpose |
+| **Indifferenza** | Nessuno | Nessuna | La maggior parte degli S/O comuni |

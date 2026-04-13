@@ -1,0 +1,189 @@
+---
+title: "Processi e Thread"
+type: "riassunto"
+tags: ["processo", "thread", "fork", "exec", "pthread", "PCB", "IPC", "daemon"]
+excerpt: "Spazio di indirizzamento di un processo, thread POSIX, fork/execve/clone, comunicazione tra processi e daemon."
+readingTime: 10
+---
+
+## Il processo
+
+Un **processo** è un programma in esecuzione. Ha uno **spazio di indirizzamento** suddiviso in 4 sezioni (UNIX):
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/spazio_indirizzamento.svg"
+  darkSrc="/assets/sistemi-operativi/spazio_indirizzamento_scuro.svg"
+  alt="Spazio di indirizzamento di un processo UNIX"
+/>
+
+---
+
+## Thread
+
+Un **thread** è un flusso di controllo indipendente all'interno di un processo. Tutti i thread di un processo condividono:
+- Spazio di indirizzamento (codice, dati globali, heap)
+- File aperti
+- Variabili globali
+
+Ogni thread ha il proprio:
+- Stack (e record di attivazione)
+- Registri CPU (contesto)
+- Stato (pronto, in esecuzione, in attesa)
+
+### Perché i thread
+
+| Caratteristica | Processo | Thread |
+|---|---|---|
+| Spazio di indirizzamento | Privato | Condiviso con gli altri thread |
+| Creazione | Costosa (`fork`) | Economica |
+| Context switch | Pesante | Leggero |
+| Comunicazione | IPC (pipe, socket, segnali) | Variabili condivise |
+
+---
+
+## Thread POSIX (pthread)
+
+```c
+// Creazione
+int pthread_create(pthread_t *tid, pthread_attr_t *attr,
+                   void *(*fun)(void *), void *arg);
+// tid   → identificatore del thread creato
+// attr  → attributi (NULL = default)
+// fun   → funzione da eseguire
+// arg   → argomento passato a fun
+
+pthread_exit(void *retval);         // il thread termina sé stesso
+pthread_join(pthread_t tid, ...);   // attende la terminazione di tid
+pthread_mutex_init(pthread_mutex_t *m, ...);   // inizializza mutex
+pthread_mutex_destroy(pthread_mutex_t *m);     // distrugge mutex
+pthread_mutex_lock(pthread_mutex_t *m);        // acquisisce il mutex (P)
+pthread_mutex_unlock(pthread_mutex_t *m);      // rilascia il mutex (V)
+```
+
+---
+
+## Operazioni sui processi in UNIX
+
+### fork()
+
+```c
+pid_t pid = fork();
+// Nel processo padre: pid = PID del figlio (> 0)
+// Nel processo figlio: pid = 0
+// In caso di errore: pid = -1
+```
+
+- Crea un **clone** del processo chiamante con stessa memoria e file aperti
+- Il codice del figlio è lo stesso del padre fino alla chiamata di `exec`
+- Il figlio ha memoria **indipendente** dal padre dopo la prima modifica (copy-on-write)
+- I figli di uno stesso processo formano un **gruppo**
+
+**Quanti processi crea N fork() in sequenza?** $2^N$ processi totali.
+
+### execve() / exec()
+
+```c
+execve(const char *path, char *const argv[], char *const envp[]);
+```
+
+- Sostituisce il codice del processo chiamante con un nuovo programma
+- Non crea un nuovo processo: stesso PID, nuovo codice
+- I file aperti rimangono aperti (salvo flag `O_CLOEXEC`)
+
+### Esecuzione di un comando di shell (fork + exec)
+
+```c
+while (TRUE) {
+    type_prompt();
+    read_command(cmd, par);
+
+    pid = fork();
+    if (pid < 0) { /* errore */ continue; }
+    if (pid != 0) {
+        waitpid(-1, &status, 0);   // padre: attende il figlio
+    } else {
+        execve(cmd, par, 0);       // figlio: esegue il comando
+    }
+}
+```
+
+### waitpid() e terminazione
+
+- Processo figlio che sopravvive al genitore → **orfano** (potenzialmente dannoso)
+- Il S/O assicura che i processi terminati vengano "raccolti" dal genitore
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/fork_exec.svg"
+  darkSrc="/assets/sistemi-operativi/fork_exec_scuro.svg"
+  alt="Schema fork + execve"
+/>
+
+---
+
+## clone() — GNU/Linux
+
+GNU/Linux offre maggiore granularità rispetto a `fork()`:
+
+```c
+pid_t pid = clone(function, stack_ptr, ctrl, arg);
+```
+
+| Parametro | Descrizione |
+|---|---|
+| `function` | Funzione da eseguire nel nuovo task |
+| `stack_ptr` | Indirizzo dello stack del nuovo task |
+| `ctrl` | Grado di condivisione: spazio di memoria, FS, file, segnali, identità |
+| `arg` | Argomento passato a `function` |
+
+`clone()` consente di creare sia processi (spazio di memoria separato) che thread (spazio di memoria condiviso) con la stessa chiamata.
+
+---
+
+## Problemi del multi-threading con fork()
+
+Se il processo che chiama `fork()` ha più thread, ci sono due scelte problematiche:
+
+- **Clonare tutti i thread:** difficile gestire l'accesso concorrente a dati e risorse condivise
+- **Clonare solo un thread:** possibile inconsistenza rispetto alle esigenze di cooperazione
+
+Complessità aggiuntive:
+- **File system:** consistenza nell'uso concorrente di file
+- **Segnali:** quale thread riceve un segnale inviato al processo?
+- **I/O bloccante:** chi riceve i dati se più thread erano bloccati in lettura?
+
+---
+
+## Tabella dei processi (GNU/Linux)
+
+La tabella è permanentemente in RAM per tutti i processi. Contiene:
+
+- Parametri di ordinamento (priorità, tempo di esecuzione cumulato, tempo di sospensione)
+- Descrittore della memoria virtuale del processo
+- Lista dei segnali significativi e del loro stato
+- Stato, identità, relazioni di parentela, gruppo di appartenenza
+
+---
+
+## Comunicazione tra processi
+
+| Meccanismo | Descrizione |
+|---|---|
+| **Pipe** | Canale unidirezionale (o bidirezionale); sequenza di byte o messaggi |
+| **Signal** | Notifica asincrona di evento (es. SIGKILL, SIGTERM) |
+| **Shared memory** | Area di memoria condivisa tra processi |
+| **Socket** | Comunicazione in rete (locale o remota) |
+| **Message passing** | `send(dest, msg)` / `receive(src, msg)` — senza memoria condivisa |
+
+---
+
+## Daemon
+
+Processi di sistema attivati direttamente dal S/O per operazioni di background:
+
+| Daemon | Funzione |
+|---|---|
+| `page daemon` | Libera page frame a intervalli regolari |
+| `kswapd` | Page daemon GNU/Linux (periodo 1 s) |
+| `bdflush` | Riscrittura pagine modificate su disco |
+| `init` (PID 1) | Capostipite di tutti i processi utente |
+| `getty` | Gestione terminali e login |

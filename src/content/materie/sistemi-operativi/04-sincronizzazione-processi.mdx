@@ -1,0 +1,298 @@
+---
+title: "Sincronizzazione tra Processi"
+type: "riassunto"
+tags: ["race condition", "sezione critica", "semaforo", "mutex", "monitor", "produttore-consumatore", "lettori-scrittori", "filosofi"]
+excerpt: "Race condition, condizioni di ammissibilità, TSL, Peterson, semafori, monitor, message passing e problemi classici di sincronizzazione."
+readingTime: 14
+---
+
+## Il problema della condivisione
+
+Quando più processi condividono risorse o variabili si crea il rischio di **race condition**: il risultato dipende dalla temporizzazione relativa delle operazioni.
+
+**Esempio:** A deve incrementare X di 2, B deve decrementarla di 4. X = 10.
+- A legge X=10 → viene prerilasciato
+- B legge X=10, scrive 6
+- A scrive 12 (non 8 atteso!)
+
+**Sezione critica:** porzione di codice che accede a una risorsa condivisa — deve essere eseguita in **mutua esclusione**.
+
+---
+
+## Condizioni di ammissibilità
+
+Una soluzione è **ammissibile** se e solo se:
+
+1. **Accesso esclusivo** — al più un processo alla volta nella sezione critica
+2. **Attesa finita** — un processo in attesa entra nella sezione critica in tempo finito
+3. **Nessuna assunzione sull'ambiente** — non dipende dalla velocità della CPU o dal numero di core
+4. **Indipendenza dall'esterno** — i processi fuori dalla sezione critica non bloccano gli altri
+
+---
+
+## Soluzioni hardware
+
+### TSL — Test-and-Set-Lock
+
+Istruzione atomica che legge e scrive il lock in un'unica operazione non interrompibile (blocca il bus di memoria):
+
+```asm
+enter_region:
+    TSL R1, LOCK    ; copia LOCK in R1 e pone LOCK = 1 (atomico)
+    CMP R1, 0       ; lock era 0 (libero)?
+    JNE enter_region ; no → attesa attiva
+    RET             ; sì → siamo nella sezione critica
+
+leave_region:
+    MOV LOCK, 0     ; rilascia il lock
+    RET
+```
+
+**Problema:** **busy wait** (spreco di CPU) e **priority inversion**.
+
+### Soluzione di Peterson (software, 2 processi)
+
+```c
+void IN(int i) {
+    int j = 1 - i;
+    flag[i] = TRUE;
+    turn = i;
+    while (flag[j] && turn == i) { /* busy wait */ }
+}
+void OUT(int i) { flag[i] = FALSE; }
+```
+
+Soddisfa le condizioni di ammissibilità ma usa ancora busy wait.
+
+---
+
+## Sleep & Wakeup — perché non bastano
+
+Prima dei semafori si usavano primitive `sleep()` (sospende il processo) e `wakeup()` (risveglia un processo sospeso). Il problema è che le **wakeup non vengono memorizzate**: se arriva una wakeup quando nessun processo è addormentato, viene persa.
+
+**Race condition nel Produttore-Consumatore con sleep/wakeup:**
+
+1. Il buffer è vuoto; il Consumer legge `count = 0`
+2. Prima di chiamare `sleep`, lo scheduler sospende il Consumer ed esegue il Producer
+3. Il Producer inserisce un elemento, porta `count = 1`, emette `wakeup` — ma il Consumer non è ancora addormentato → la wakeup è **persa**
+4. Il Consumer riprende e chiama `sleep` — ma la wakeup corrispondente non arriverà mai
+
+**Conseguenza:** Consumer e Producer rimangono entrambi bloccati indefinitamente. Questo problema motiva l'introduzione dei **semafori** di Dijkstra.
+
+---
+
+## Semafori (Dijkstra, 1965)
+
+Soluzione senza busy wait. Un **semaforo** è una variabile intera con due operazioni atomiche:
+
+| Operazione | Comportamento |
+|---|---|
+| **P (down, wait)** | Decrementa il contatore; se < 0 → accoda il processo (sospende) |
+| **V (up, signal)** | Incrementa il contatore; se ≤ 0 → sveglia il primo processo in coda |
+
+**Interpretazione del valore:**
+- `valore > 0` → disponibilità non esaurita
+- `valore = 0` → risorsa esaurita, nessuno in attesa
+- `valore < 0` → `|valore|` processi in coda d'attesa
+
+### Semaforo binario (mutex)
+
+```c
+void P(sem s) {
+    if (s.valore == 1) s.valore = 0;
+    else { suspend(self, s.coda); schedule(); }
+}
+void V(sem s) {
+    s.valore = 1;
+    if (!empty(s.coda)) { ready(get(s.coda)); schedule(); }
+}
+```
+
+### Semaforo contatore
+
+```c
+void P(sem s) {
+    s.valore--;
+    if (s.valore < 0) { suspend(self, s.coda); schedule(); }
+}
+void V(sem s) {
+    s.valore++;
+    if (s.valore <= 0) { ready(get(s.coda)); schedule(); }
+}
+```
+
+### Produttore-Consumatore con semafori
+
+```c
+semaforo mutex    = 1;   // mutua esclusione sul buffer
+semaforo non_pieno = N;  // spazi liberi nel buffer
+semaforo non_vuoto = 0;  // elementi presenti nel buffer
+
+void produttore() {
+    while (1) {
+        prod = produci();
+        P(&non_pieno);   // attende spazio
+        P(&mutex);
+        inserisci(prod);
+        V(&mutex);
+        V(&non_vuoto);   // segnala elemento disponibile
+    }
+}
+void consumatore() {
+    while (1) {
+        P(&non_vuoto);   // attende elemento
+        P(&mutex);
+        prod = preleva();
+        V(&mutex);
+        V(&non_pieno);   // segnala spazio liberato
+        consuma(prod);
+    }
+}
+```
+
+> **Attenzione:** l'ordine delle P è critico. Invertire `P(&mutex)` e `P(&non_pieno)` nel produttore causa **deadlock**.
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/produttore_consumatore.svg"
+  darkSrc="/assets/sistemi-operativi/produttore_consumatore_scuro.svg"
+  alt="Schema produttore-consumatore con semafori"
+/>
+
+---
+
+## Monitor (Hoare 1974, Brinch-Hansen 1975)
+
+Struttura linguistica che garantisce automaticamente la mutua esclusione:
+- Solo i sottoprogrammi del monitor possono accedere alle variabili interne
+- **Solo un processo alla volta** è attivo nel monitor
+
+### Variabili di condizione
+
+| Operazione | Comportamento |
+|---|---|
+| `wait(cond)` | Forza l'attesa del chiamante; rilascia il monitor |
+| `signal(cond)` | Risveglia il primo processo in attesa su quella condizione |
+
+**Differenza chiave:** `signal` non ha memoria (va perso se nessuno aspetta), ma non può essere "perso prima della sleep" perché tutta la sezione è protetta dalla mutua esclusione.
+
+### Produttore-Consumatore con monitor
+
+```pascal
+monitor PC
+    condition non_vuoto, non_pieno;
+    integer contenuto := 0;
+
+    procedure inserisci(prod);
+    begin
+        if contenuto = N then wait(non_pieno);
+        <inserisci>; contenuto++;
+        if contenuto = 1 then signal(non_vuoto);
+    end;
+
+    function preleva : integer;
+    begin
+        if contenuto = 0 then wait(non_vuoto);
+        preleva := <preleva>; contenuto--;
+        if contenuto = N-1 then signal(non_pieno);
+    end;
+end monitor;
+```
+
+---
+
+## Message Passing
+
+Per sistemi **senza memoria condivisa** (processi su macchine diverse):
+
+```c
+send(destination, &msg);
+receive(source, &msg);
+```
+
+---
+
+## Barriere
+
+Sincronizzazione di **gruppi di processi** in attività cooperative suddivise in fasi:
+- Ogni processo che raggiunge la barriera si sospende
+- Quando **tutti** i processi sono arrivati, vengono tutti rilasciati simultaneamente
+
+---
+
+## Problemi classici di sincronizzazione
+
+### Filosofi a cena
+
+N filosofi a tavolo circolare; ciascuno ha 1 piatto e 1 forchetta alla sua destra; per mangiare servono **2 forchette**.
+
+| Soluzione | Problema |
+|---|---|
+| Ogni filosofo prende la forchetta destra, poi la sinistra | **Deadlock** se tutti prendono la forchetta destra contemporaneamente |
+| Rilascia la destra se la sinistra non è disponibile, attende T | **Starvation** possibile con attesa fissa |
+| **Mutex globale** attorno all'acquisizione di entrambe le forchette | Corretto ma riduce parallelismo |
+| **"Filosofo mancino"** (un filosofo prende prima la sinistra) | Corretto, parallelismo migliore |
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/filosofi_cena.svg"
+  darkSrc="/assets/sistemi-operativi/filosofi_cena_scuro.svg"
+  alt="Filosofi a cena"
+/>
+
+### Lettori e Scrittori
+
+Banca dati condivisa: più lettori simultanei consentiti; uno scrittore esclude tutti.
+
+```c
+semaforo db    = 1;  // accesso esclusivo ai dati
+semaforo mutex = 1;  // protezione del contatore rc
+int rc = 0;          // numero di lettori attivi
+
+void reader() {
+    P(&mutex); rc++;
+    if (rc == 1) P(&db);   // primo lettore blocca gli scrittori
+    V(&mutex);
+    /* leggi */
+    P(&mutex); rc--;
+    if (rc == 0) V(&db);   // ultimo lettore sblocca gli scrittori
+    V(&mutex);
+}
+void writer() {
+    P(&db); /* scrivi */ V(&db);
+}
+```
+
+> Questa soluzione può causare **starvation degli scrittori** se i lettori arrivano continuamente.
+
+### Barbiere che dorme
+
+Un barbiere, N sedie d'attesa; cliente trova il barbiere addormentato → lo sveglia; se tutte le sedie occupate → se ne va.
+
+```c
+semaforo clienti  = 0;  // clienti in attesa
+semaforo barbieri = 0;  // barbieri disponibili
+semaforo mutex    = 1;  // protezione contatore
+int sedia_libere  = N;
+
+// Barbiere:
+while(1) { P(&clienti); P(&mutex); sedia_libere++;
+           V(&barbieri); V(&mutex); taglia_capelli(); }
+
+// Cliente:
+P(&mutex);
+if (sedia_libere > 0) { sedia_libere--;
+    V(&clienti); V(&mutex); P(&barbieri); siediti(); }
+else { V(&mutex); /* vai via */ }
+```
+
+---
+
+## Riepilogo meccanismi
+
+| Meccanismo | Memoria condivisa | Busy wait | Garanzie |
+|---|---|---|---|
+| Lock naive | Sì | Sì | No (race condition) |
+| Peterson | Sì | Sì | Sì (2 processi) |
+| TSL | Sì | Sì | Sì |
+| Semaforo | Sì | No | Sì |
+| Monitor | Sì | No | Sì (a livello linguaggio) |
+| Message Passing | No | No | Sì |

@@ -1,0 +1,253 @@
+---
+title: "Ordinamento dei Processi (Scheduling)"
+type: "riassunto"
+tags: ["scheduling", "FCFS", "SJF", "SRTN", "Round Robin", "priorità", "real-time", "inversione di priorità", "Banchiere"]
+excerpt: "Scheduler vs dispatcher, metriche, algoritmi batch e interattivi, sistemi real-time, inversione di priorità, scheduling Linux e Windows."
+readingTime: 16
+---
+
+## Concetti fondamentali
+
+### Scheduler vs Dispatcher
+
+| Componente | Ruolo |
+|---|---|
+| **Scheduler** | *Decide* quale processo eseguire; progettato prima dei processi che governa; parametrico rispetto agli attributi dei processi |
+| **Dispatcher** | *Attua* le scelte: salva il contesto del processo uscente, installa quello dell'entrante (context switch), cede il controllo |
+
+### Quando si decide
+
+- Alla **creazione** di un nuovo processo
+- Alla **terminazione** di un processo
+- Quando il processo in esecuzione si **blocca** (I/O, semaforo, ...)
+- All'occorrenza di un **interrupt I/O**
+- Ad ogni k-esima occorrenza dell'**interrupt periodico** (~50–60 Hz)
+
+### Tipi di scambio
+
+| Tipo | Descrizione | Esempio |
+|---|---|---|
+| **Cooperativo** (*non pre-emptive*) | Il processo cede il controllo da solo | Windows 3.1 |
+| **Pre-emptive a priorità** | Un processo ad alta priorità preleva la CPU | Sistemi real-time |
+| **Pre-emptive a quanto** | Il processo viene interrotto all'esaurimento del quanto | Unix, Windows NT |
+
+---
+
+## Metriche di valutazione
+
+| Metrica | Definizione |
+|---|---|
+| **Utilizzo CPU** | Tempo utile / tempo totale (al netto di scheduler e dispatcher) |
+| **Throughput** | Processi completati per unità di tempo |
+| **Tempo di attesa** | Permanenza in stato Pronto |
+| **Tempo di turn-around** | Completamento totale (dalla creazione alla terminazione) |
+| **Tempo di risposta** | Reattività all'avvio (importante per sistemi interattivi) |
+
+> Tempo di turn-around = Tempo di attesa + Tempo di esecuzione (+ eventuali prerilasci)
+
+---
+
+## Algoritmi per sistemi batch
+
+### FCFS — First Come First Served
+
+- **Senza prerilascio**, senza priorità
+- Ordine di esecuzione = ordine di arrivo
+- Penalizza i processi I/O-bound se arrivano dopo un processo CPU-bound lungo
+
+**Esempio:** P1(arrivo 0, durata 24), P2(arrivo 0, durata 3), P3(arrivo 0, durata 3)
+```
+Gantt: [P1: 0–24][P2: 24–27][P3: 27–30]
+Attesa: P1=0, P2=24, P3=27  →  Media = 17
+```
+
+### SJF — Shortest Job First
+
+- **Senza prerilascio**; esegue prima il job con durata rimanente minore
+- Ottimizza il throughput e riduce il tempo di attesa medio
+- Non equo con lavori lunghi arrivati tardi
+
+### SRTN — Shortest Remaining Time Next
+
+- Variante di SJF **con prerilascio**
+- All'arrivo di un nuovo processo si confronta il suo tempo residuo con quello del processo in esecuzione
+- Se il nuovo processo è più breve → prerilascio immediato
+
+---
+
+## Algoritmi per sistemi interattivi
+
+### Round Robin (RR)
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/round_robin.svg"
+  darkSrc="/assets/sistemi-operativi/round_robin_scuro.svg"
+  alt="Schema Round Robin"
+/>
+
+- **Con prerilascio**, senza priorità; ogni processo esegue al più per un **quanto q**
+- Coda circolare; processo che esaurisce il quanto torna in fondo alla coda
+- Se il processo termina o si blocca prima del quanto, libera volontariamente la CPU
+
+**Regola pratica:** quanto troppo grande → degenera in FCFS; quanto troppo piccolo → overhead eccessivo di context switch.
+
+**Esempio RR con q=2:**
+Processi: P1(arr=0, dur=5), P2(arr=0, dur=3), P3(arr=0, dur=4)
+```
+Gantt: [P1:0-2][P2:2-4][P3:4-6][P1:6-8][P2:8-9][P3:9-11][P1:11-12]
+```
+
+### Round Robin con priorità (OQP)
+
+- Code separate per livello di priorità (es. 0 = più alta, 31 = più bassa)
+- All'interno della stessa coda: Round Robin
+- Un processo a priorità più alta preleva la CPU da uno a priorità più bassa
+- Priorità possono essere **statiche** (assegnate alla creazione) o **dinamiche** (cambiano durante l'esecuzione)
+
+### GP — Con garanzia per processo
+
+- Promessa di una quota di CPU (es. 1/n per n processi)
+- Esegue prima il processo maggiormente penalizzato rispetto alla promessa
+
+### SG — Senza garanzia (lotteria)
+
+- Ogni processo riceve "biglietti"; priorità maggiore = più biglietti
+- Ad ogni assegnazione si estrae un biglietto; vince il processo possessore
+- Statisticamente equo nel lungo periodo
+
+### GU — Con garanzia per utente
+
+- Come GP ma con garanzia per utente (anche se possiede più processi)
+
+### Fair Priority (GNU/Linux variante)
+
+- Priorità dinamica: **premio** per alta interattività I/O, **penalità** per bassa
+- Struttura **vettore attivo / vettore scaduto** per ogni livello di priorità (0–99)
+  - Ogni task migra dall'attivo allo scaduto all'esaurimento del quanto
+  - Quando il vettore attivo si svuota, i due vettori si scambiano di ruolo
+- Livello **nice** (da −20 a +19): regola l'importanza relativa e l'ampiezza del quanto
+
+---
+
+## Sistemi in tempo reale
+
+I sistemi real-time devono produrre il valore corretto **entro un tempo fissato** (deadline).
+
+Lo scheduler deve essere:
+- **Analizzabile staticamente** (predicibile)
+- In grado di fornire **garanzie di completamento**
+
+### Modello a esecutivo ciclico (Cyclic Executive)
+
+- Insieme fisso di processi **periodici, indipendenti e con caratteristiche note**
+- L'ordinamento è costruito **a tavolino** come sequenza di chiamate a procedure
+- **Ciclo maggiore** = MCM di tutti i periodi
+- **Ciclo minore** = periodo più breve
+
+**Esempio:**
+
+| Processo | Periodo T | Durata C |
+|---|---|---|
+| A | 25 | 10 |
+| B | 25 | 8 |
+| C | 50 | 5 |
+| D | 50 | 4 |
+| E | 100 | 2 |
+
+- Utilizzo: U = 46/50 = 0,92
+- Ciclo maggiore: 100; ciclo minore: 25
+- Schema: `[A B D E] [A B C] [A B D] [A B C]`
+
+### Rate Monotonic (RM)
+
+- Priorità assegnata secondo il **periodo**: periodo più breve → priorità più alta
+- **Test di ammissibilità** (Liu & Layland 1973, sufficiente ma non necessario):
+
+$$U = \sum_{i=1}^{n} \frac{C_i}{T_i} \leq n\left(2^{1/n} - 1\right)$$
+
+Per n → ∞: limite converge a $\ln 2 \approx 0{,}693$.
+
+- Se il test **passa** → sistema sicuramente ammissibile
+- Se il test **fallisce** → potrebbe essere ammissibile lo stesso
+
+---
+
+## Inversione di priorità
+
+**Scenario:** tre processi L (bassa), M (media), H (alta priorità); L e H condividono risorsa R.
+
+1. L acquisisce R
+2. H diventa attivo → vuole R → **H deve attendere L**
+3. M diventa attivo → preleva la CPU a L (M ha priorità su L)
+4. H deve attendere che M finisca, poi che L rilasci R → **starvation di H**
+
+**Caso reale: Mars Pathfinder (1997)** — frequenti reset di sistema causati da inversione di priorità in VxWorks.
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/inversione_priorita.svg"
+  darkSrc="/assets/sistemi-operativi/inversione_priorita_scuro.svg"
+  alt="Inversione di priorità"
+/>
+
+### Soluzione 1 — Basic Priority Inheritance (BPI)
+
+Quando H si blocca sulla risorsa di L, L eredita temporaneamente la priorità di H:
+1. L (con priorità innalzata) completa la sezione critica senza interruzioni
+2. All'arrivo di un processo ancora più prioritario → prerilascio; si ricade al punto 1
+
+> **BPI non previene il deadlock.**
+
+### Soluzione 2 — Immediate Ceiling Priority (ICP)
+
+- Ogni risorsa ha un **priority ceiling** = massima priorità di base tra i processi che possono usarla
+- Un processo acquisisce una risorsa solo se la sua priorità dinamica è maggiore del ceiling di tutte le risorse già in possesso di altri
+
+**Proprietà:** un processo ad alta priorità può essere bloccato **al più una volta** durante l'intera esecuzione.
+
+> **ICP previene il deadlock.**
+
+---
+
+## Calcolo del tempo di risposta (sistemi RT)
+
+Tempo di blocco massimo subito da i a causa di processi a priorità più bassa:
+
+$$B_i = \max_k C_k \quad (k \text{ usa risorse a cui accede } i)$$
+
+Equazione di risposta (soluzione iterativa):
+
+$$R_i = C_i + B_i + \sum_{j \in hp(i)} \left\lceil \frac{R_i}{T_j} \right\rceil C_j$$
+
+con $R_i^{(0)} = C_i$; si itera finché $R_i$ converge o supera la deadline.
+
+---
+
+## Scheduling in GNU/Linux (≥ 2.6)
+
+**3 classi di priorità per task:**
+
+| Classe | Politica | Descrizione |
+|---|---|---|
+| **Tempo reale FCFS** | FCFS a priorità, senza prerilascio | A parità di priorità: task in attesa da più tempo |
+| **Tempo reale RR** | RR a priorità | Prerilascio per quanti; ritorno in fondo alla coda |
+| **Timesharing** | Fair Priority dinamica | Vettori attivo/scaduto; priorità 0–99 |
+
+**Prerilascio nel nucleo (kernel ≥ 2.6):**
+- **Top half** (gestore immediato): disabilita le interruzioni
+- **Bottom half** (parte differita): non disabilita, ma ha precedenza su tutto tranne le top half
+- Sezioni critiche lunghe: disabilitazione minima delle interruzioni
+- Sezioni critiche brevi: semafori convenzionali
+
+---
+
+## Scheduling in Windows
+
+- **32 livelli di priorità** (0–31): 31–16 di sistema (real-time), 15–0 ordinari
+- **6 classi di priorità per processo:** Realtime, High, Above-normal, Normal, Below-normal, Idle
+- **7 classi di priorità per thread:** Time-critical, Highest, Above-normal, Normal, Below-normal, Lowest, Idle
+
+**Priorità dinamica:**
+- Aumenta dopo I/O (+ ampliamento temporaneo del quanto)
+- Aumenta dopo acquisizione semaforo / evento
+- Decresce a ogni quanto consumato
+- Mitigazione inversione: thread non selezionato per troppo tempo → boost di +priorità per 2 quanti

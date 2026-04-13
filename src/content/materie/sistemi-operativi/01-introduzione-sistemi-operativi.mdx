@@ -1,0 +1,208 @@
+---
+title: "Introduzione ai Sistemi Operativi"
+type: "riassunto"
+tags: ["sistema operativo", "processo", "PCB", "interruzioni", "boot", "system call", "architettura"]
+excerpt: "Definizione di S/O, storia, concetto di processo e PCB, risorse, architettura hardware, interruzioni, boot e system call."
+readingTime: 14
+---
+
+## Definizione
+
+Un **Sistema Operativo** è un insieme di utilità progettate per:
+1. **Offrire un'astrazione** più semplice e potente della macchina fisica (macchina virtuale)
+2. **Gestire ottimamente le risorse** fisiche e logiche (CPU, memoria, I/O)
+
+---
+
+## Cenni storici
+
+| Periodo | Evento chiave |
+|---|---|
+| 1944 | Colossus per decifrare Enigma |
+| 1947 | ENIAC — primo calcolatore elettronico; operatori umani come "S/O" |
+| 1949 | EDVAC — architettura von Neumann, programma memorizzato, sistema binario |
+| Anni '50 | Esecuzione **batch** (a lotti); tutto l'elaboratore a un solo programma |
+| Anni '60 | Nuovi linguaggi (BASIC); serie PDP; gestione a lotti migliorata |
+| '61–'64 | CTSS, DTSS → primi sistemi **time-sharing**; nascita di MULTICS |
+| 1969 | UNICS → **UNIX** (Ken Thompson, Bell Labs); kernel scritto in assembler |
+| 1974 | UNIX riscritto in **C** (Dennis Ritchie); enorme portabilità |
+| Anni '70 | IBM, Microsoft, Apple fondate; prima installazione commerciale UNIX |
+| Anni '80 | PC e console; plug & play; multitasking preemptive (Amiga 500 prima di Windows) |
+| Anni '90 | WWW; centinaia di milioni di PC; Windows 95 introduce preemption |
+| 2000+ | Laptop > desktop; smartphone > laptop; Cloud computing |
+
+---
+
+## Nozione di processo
+
+Un **processo** è un programma in esecuzione. Corrisponde a:
+- L'insieme ordinato degli **stati** assunti nel corso dell'esecuzione (*automa a stati*)
+- L'insieme ordinato delle **azioni** effettuate nel corso dell'esecuzione (*attore*)
+
+Ogni processo ha uno **spazio di indirizzamento logico** (memoria virtuale) contenente programma, dati e aree di lavoro.
+
+### PCB — Process Control Block
+
+Ogni processo è rappresentato da un descrittore (**PCB**) nella tabella dei processi:
+
+| Campo | Contenuto |
+|---|---|
+| Identificatore | PID del processo |
+| Contesto di esecuzione | Registri CPU (da ripristinare dopo sospensione) |
+| Stato di avanzamento | Pronto / Esecuzione / Attesa / ... |
+| Priorità | Iniziale e corrente |
+| Diritti di accesso | Privilegi e risorse autorizzate |
+| Discendenza familiare | Puntatori a genitore e figli |
+| Risorse assegnate | Lista delle risorse in uso |
+
+### Diagramma degli stati
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/diagramma_degli_stati.svg"
+  darkSrc="/assets/sistemi-operativi/diagramma_degli_stati_scuro.svg"
+  alt="Diagramma degli stati di un processo"
+/>
+
+| Transizione | Descrizione |
+|---|---|
+| Crea() (CREAZIONE) | Inserisce il nuovo processo nella ready list |
+| Avvia() (SELEZIONE) | Dispatcher assegna la CPU al primo processo pronto |
+| Sospendi() (PRERILASCIO) | Il processo esaurisce il quanto → torna in PRONTO |
+| Attendi() (SOSPENSIONE) | Il processo richiede risorsa non disponibile → ATTESA |
+| Notifica() (NOTIFICA) | La risorsa è libera → il processo torna in PRONTO |
+| Termina() (TERMINA) | Il processo rilascia la macchina virtuale |
+
+---
+
+## Tipi di processo e scambio
+
+- **CPU-bound:** lunghe fasi di elaborazione CPU
+- **I/O-bound:** brevi fasi CPU alternate a lunghe attese I/O (FCFS penalizza questi)
+
+**Scambio cooperativo:** il processo decide da solo quando cedere il controllo (es. Windows 3.1) — nessuna garanzia di fairness.
+
+**Scambio a prerilascio:** il S/O forza il cambio:
+- Per priorità (*priority-based*, sistemi real-time)
+- All'esaurimento del quanto (*time-sharing*, Unix/Windows NT)
+
+---
+
+## Risorse
+
+**Risorsa** = qualsiasi elemento necessario alla creazione, esecuzione e avanzamento di processi.
+
+| Proprietà | Tipi |
+|---|---|
+| Durata | Durevole (CPU) / Consumabile (segnale) |
+| Accesso | Individuale / Molteplice |
+| Divisibilità | Divisibile (tollera alternanza) / Indivisibile |
+
+- **CPU:** risorsa indispensabile; a livello logico → macchina virtuale
+- **Memoria:** scrittura → individuale; lettura → multipla; virtualizzabile con disco
+- **I/O:** riutilizzabili, non prerilasciabili, accesso individuale
+
+---
+
+## Architettura hardware rilevante
+
+### Gerarchia di memoria
+
+| Livello | Accesso | Capacità |
+|---|---|---|
+| Registri CPU | ~1 ciclo | 32–64 registri |
+| Cache L1 | ~2 cicli | Decine di KB |
+| Cache L2 | ~10 cicli | Centinaia di KB – pochi MB |
+| RAM | ~100 cicli | 16 MB – 16 GB |
+| Disco magnetico | ~10 ms | 1 TB+ |
+
+Cache: suddivisa in **line** da 64 B; write-through o copy-back. L2: condivisa (Intel) o per core (AMD).
+
+**SSD** vs **HDD:** SSD fino a 200× più veloce, silenzioso, ~2 W; HDD più capiente ed economico. Soluzioni ibride: S/O su SSD, dati su HDD.
+
+### Dischi magnetici
+
+- **Tracce:** anelli concentrici sul piatto; suddivise in **settori**
+- **Cilindro:** insieme delle tracce alla stessa distanza radiale su tutti i piatti
+
+### Rilocazione e MMU
+
+**Problema:** quando si compila un programma non si sa dove verrà caricato in RAM.
+
+**Soluzione:** registri **base** e **limite**:
+- `indirizzo fisico = base + indirizzo logico`
+- Ogni accesso verifica: `indirizzo logico ≤ limite`
+
+La **MMU** (*Memory Management Unit*) interposta tra CPU e bus esegue questa traduzione.
+
+---
+
+## Interruzioni e I/O
+
+**Senza interruzioni:** polling (verifica continua) — spreco di CPU.
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/sequenza_gestione_interruzione_io.svg"
+  darkSrc="/assets/sistemi-operativi/sequenza_gestione_interruzione_io_scuro.svg"
+  alt="Sequenza di gestione di un'interruzione I/O"
+/>
+
+**CMOS:** memoria volatile a batteria per ora, dispositivo di boot, configurazione BIOS.
+
+**Plug & Play** (Intel + Microsoft): il sistema assegna centralmente livelli di interrupt e indirizzi I/O per evitare conflitti.
+
+---
+
+## Boot
+
+1. BIOS verifica RAM e periferiche; scannerizza bus ISA e PCI; configura Plug & Play
+2. Legge il settore 0 del disco di boot (MBR) in RAM e lo esegue
+3. L'MBR individua la partizione attiva e carica il boot loader
+4. Il boot loader carica il S/O dalla partizione attiva
+5. Il S/O interroga il BIOS, carica i driver, avvia il login / GUI
+
+---
+
+## Chiamate di sistema (System Call)
+
+- **Interruzioni:** asincrone
+- **System call:** sincrone
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/system_call.svg"
+  darkSrc="/assets/sistemi-operativi/system_call_scuro.svg"
+  alt="Schema di una system call"
+/>
+
+---
+
+## Architetture del S/O
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/architetture_so.svg"
+  darkSrc="/assets/sistemi-operativi/architetture_so_scuro.svg"
+  alt="Architetture del sistema operativo"
+/>
+
+**Dibattito Torvalds vs Tanenbaum:**
+- Linux = monolitico
+- Minix = microkernel
+- Windows / macOS = ibridi
+
+| Architettura | Descrizione | Pro | Contro |
+|---|---|---|---|
+| **Monolitica** | Un unico file oggetto; ogni procedura può chiamarne un'altra | Semplice, prestazioni elevate | Nessun information hiding |
+| **A strati** | Livelli gerarchici; ogni livello usa solo quello sotto | Modularità | Chiamate più costose |
+| **Microkernel** | Nucleo minimo (processi + IPC); resto in processi utente | Flessibilità, affidabilità | Prestazioni scadenti |
+| **Macchina virtuale** | Virtualizzazione hardware sotto vari S/O | Isolamento completo | Complessità |
+
+---
+
+## Unità metriche
+
+| Prefisso | Valore decimale | Valore binario (IEC) |
+|---|---|---|
+| Kilo (K) | 10³ | 2¹⁰ = 1.024 |
+| Mega (M) | 10⁶ | 2²⁰ |
+| Giga (G) | 10⁹ | 2³⁰ |
+| Tera (T) | 10¹² | 2⁴⁰ |
+| Peta (P) | 10¹⁵ | 2⁵⁰ |

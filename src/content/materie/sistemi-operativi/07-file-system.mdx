@@ -1,0 +1,227 @@
+---
+title: "File System"
+type: "riassunto"
+tags: ["file system", "i-node", "FAT", "NTFS", "directory", "allocazione blocchi", "RAID", "consistenza"]
+excerpt: "Struttura dei file, directory, allocazione dei blocchi (contigua, FAT, i-node), gestione blocchi liberi, integrità, RAID e cache."
+readingTime: 15
+---
+
+## Esigenze fondamentali
+
+1. **Persistenza** dei dati oltre la vita dei processi
+2. **Condivisione** tra applicazioni distinte
+3. **Nessun limite di dimensione** fissato a priori
+
+Il **file system (FS)** è il servizio del S/O che soddisfa queste esigenze.
+
+---
+
+## Il file
+
+Un file è un insieme di dati correlati in memoria secondaria trattati unitariamente.
+
+### Attributi principali
+
+| Attributo | Descrizione |
+|---|---|
+| **Nome** | 8–255 caratteri; MS-DOS: 8+3 case-insensitive; UNIX: fino a 255, case-sensitive |
+| **Dimensione** | Corrente |
+| **Date** | Creazione, ultima modifica |
+| **Creatore / Proprietario** | Possono essere distinti |
+| **Permessi** | Lettura (r), scrittura (w), esecuzione (x) |
+| **Tipo** | ASCII, binario, eseguibile, ecc. |
+| **Accesso** | Sequenziale, casuale |
+| **Lock** | 0 = libero; ≠0 = bloccato |
+
+### Strutture dati dei file
+
+| Struttura | Descrizione | Usato in |
+|---|---|---|
+| **Byte stream** | Sequenza di byte; struttura definita dall'applicazione | UNIX, Windows |
+| **Record fisso** | Record di lunghezza fissa | Obsoleto |
+| **Record variabile** | Record con chiave (ISAM) | Mainframe |
+
+### Modalità di accesso
+
+| Modalità | Descrizione |
+|---|---|
+| **Sequenziale** | Puntatore avanza di record in record; scrittura solo in coda |
+| **Diretto** | Accesso a posizione arbitraria tramite offset |
+| **ISAM** | Indicizzato: tabella di chiavi → offset → accesso diretto |
+
+### Operazioni sui file
+
+Creazione, distruzione, apertura (→ handle), chiusura, seek, lettura, scrittura, append, rename, stat, chmod.
+
+### File mappati in memoria
+
+Il S/O può mappare un file direttamente nello spazio di indirizzamento virtuale del processo:
+- Il file continua a risiedere in memoria secondaria
+- Ogni indirizzo del file corrisponde a un indirizzo virtuale (base + offset)
+- **Meccanismo:** accesso all'indirizzo → page fault → caricamento della pagina → operazione → rimpiazzo → salvataggio su disco
+- A fine sessione tutte le modifiche devono essere riportate in memoria secondaria
+- Le DLL di Windows e le librerie condivise di Linux usano questo meccanismo (codice in sola lettura condiviso; dati copiati per processo con copy-on-write)
+
+| | |
+|---|---|
+| **Vantaggi** | Riduce gli accessi espliciti a disco; semplifica la programmazione |
+| **Svantaggi** | Problemi di condivisione (chi ha la versione corrente: RAM o disco?); difficoltà con file molto grandi |
+
+---
+
+## Directory
+
+### Tipi di organizzazione
+
+| Tipo | Caratteristiche |
+|---|---|
+| **Singolo livello** | Un'unica lista globale; nomi unici obbligatori |
+| **Due livelli** | Root Directory + User File Directory (UFD) per utente |
+| **Albero** | Livelli arbitrari; path assoluto (`/`) e relativo (`.`, `..`) |
+| **Grafo aciclico** | Un file appartiene a più directory → condivisione; hard link e symbolic link |
+
+### Hard link vs Symbolic link
+
+| | Hard link | Symbolic (soft) link |
+|---|---|---|
+| Tipo | Puntatore diretto all'i-node | File speciale con path del file originario |
+| FS | Stesso FS obbligatorio | Qualsiasi FS (anche remoto) |
+| Vie d'accesso | 2 dirette allo stesso i-node | 1 indiretta via path |
+| Problema | Il file non si cancella finché esistono link | Il link si rompe se il file originario è cancellato |
+
+### Tabella dei file aperti (UNIX, a due livelli)
+
+- **Tabella di processo:** descrittori utente dei file aperti da quel processo; ogni entry punta alla tabella globale
+- **Tabella globale:** per ogni file aperto: diritti R/W, posizione corrente, puntatore all'i-node
+  - Stessa entry per file condivisi da processi della stessa famiglia
+  - Entry distinte per processi non apparentati dello stesso file
+
+---
+
+## Struttura di partizione
+
+```
+MBR (settore 0) | Boot block | Superblocco | Lista liberi | I-node | Radice | Dati
+```
+
+- **MBR:** settore 0 del disco; tabella delle partizioni e partizione attiva
+- **Superblocco:** numero di i-node, numero di blocchi, puntatore alla lista dei blocchi liberi
+
+---
+
+## Strategie di allocazione dei blocchi
+
+### 1 — Allocazione contigua
+
+- File su blocchi consecutivi; descritto da (primo blocco, numero blocchi)
+- **Problemi:** frammentazione esterna; difficile stimare la dimensione a priori
+
+### 2 — Allocazione a lista concatenata
+
+- File come lista di blocchi; ogni blocco contiene il puntatore al successivo
+- **Problemi:** accesso diretto costoso; un blocco guasto corrompe l'intero file
+
+### 3 — Allocazione indicizzata
+
+**FAT (File Allocation Table)** — tabella di puntatori; una riga per blocco del disco:
+- La porzione relativa ai file in uso deve risiedere **interamente in RAM**
+- **Problema di scalabilità:** disco da 200 GB, blocchi da 1 KB → FAT da **800 MB di RAM**
+
+| Versione | Bit | Cluster | Limite partizione |
+|---|---|---|---|
+| FAT-12 | 12 | ≥512 B | ~2 MB |
+| FAT-16 | 16 | 32 KB | **2 GB** |
+| FAT-32 | 28 | 4–32 KB | **2 TB** |
+
+> FAT-32 usa 28 bit perché il limite fisico è 2³² settori × 512 B = 2 TB.
+
+**I-node (UNIX/Linux)** — struttura indice per file: attributi + puntatori a blocchi dati.
+
+```
+i-node:
+┌──────────────┐
+│  Attributi   │
+├──────────────┤
+│ ptr  0–11    │──► [dati diretti]       ← 12 puntatori diretti
+├──────────────┤
+│ 1a indirez.  │──► [ptr₀..ptrN] ──► [dati]
+├──────────────┤
+│ 2a indirez.  │──► [ptr→[ptr→dati]]
+├──────────────┤
+│ 3a indirez.  │──► [ptr→[ptr→[ptr→dati]]]
+└──────────────┘
+```
+
+**Calcolo dimensione massima** (blocco = B, i-node = I, indirizzo = A):
+- NIB = B/A (indirizzi per blocco)
+- Max con 1ª indirez. = (12 + NIB) × B
+- Max con 2ª indirez. = (12 + NIB + NIB²) × B
+- Max con 3ª indirez. = (12 + NIB + NIB² + NIB³) × B
+
+**Solo i-node dei file in uso** risiedono in RAM (non tutti quelli della partizione).
+
+---
+
+## Gestione dei blocchi liberi
+
+| Metodo | Descrizione |
+|---|---|
+| **Bitmap** | Un bit per blocco (0=libero, 1=occupato); compatta; ricerca hardware rapida |
+| **Lista concatenata** | I blocchi liberi formano una lista; i puntatori usano i blocchi stessi |
+
+---
+
+## Integrità e consistenza del FS
+
+### Blocchi danneggiati
+
+- **Via hardware:** lista di blocchi danneggiati con sostituti in un settore del disco
+- **Via software:** "file fantasma" che occupa tutti i blocchi danneggiati
+
+### Consistenza dei blocchi
+
+Dopo un crash si costruiscono 2 vettori contatori per ogni blocco b:
+- `in_uso[b]` = quante volte b appare nelle liste dei file
+- `libero[b]` = quante volte b appare nella lista dei liberi
+
+| Situazione | in_uso | libero | Azione correttiva |
+|---|---|---|---|
+| **Consistente** | 1 | 0 oppure 0 | 1 | Nessuna |
+| **Blocco perso** | 0 | 0 | Aggiungere alla lista dei liberi |
+| **Duplicato liberi** | 0 | 2 | Ricostruire la lista dei liberi |
+| **Duplicato file** | 2 | 0 | Allocare nuovo blocco, copiare contenuto |
+
+### Consistenza delle directory
+
+Confrontare il **contatore di hard link** nell'i-node con il numero di entry che puntano a quell'i-node:
+- Contatore > entry → i-node non raggiungibile ma non libero → decrementare
+- Contatore < entry → rischio di liberare i-node ancora in uso → incrementare
+
+### RAID
+
+| Livello | Descrizione | Pro/Contro |
+|---|---|---|
+| RAID 0 | Striping puro (dati distribuiti su più dischi) | Prestazioni max, nessuna protezione |
+| RAID 1 | Mirroring completo | Ottima protezione, costo 2× |
+| RAID 5 | Striping con parità distribuita | Buon compromesso |
+| RAID 6 | Come RAID 5 con doppia parità | Sopravvive a 2 guasti |
+
+### Cache e prestazioni
+
+| Sistema | Politica di scrittura | Pro | Contro |
+|---|---|---|---|
+| **MS-DOS / Windows** | **Write-through** (scrittura immediata) | Consistenza sicura | Alto costo I/O |
+| **UNIX / GNU/Linux** | **Write-back** (daemon `sync`) | Prestazioni elevate | Rischio perdita dati a crash |
+
+---
+
+## Prospettiva storica
+
+| Sistema | Anno | Caratteristiche principali |
+|---|---|---|
+| **CP/M** | 1973–81 | Directory singola, FAT in RAM, nomi 8+3, max 16 blocchi per file |
+| **MS-DOS** | 1981–97 | FS gerarchico, FAT, nomi 8+3, entry 32 B |
+| **UNIX v7** | 1979 | Albero + grafo aciclico, nomi 14 car., max 64 K file (2¹⁶ i-node) |
+| **BSD** | 1977+ | Nomi fino a 255 car., entry a lunghezza variabile |
+| **ext2 (Linux)** | 1993+ | Gruppi di blocchi, i-node 128 B, indirizzi 4 B (→ 4 TB partizione) |
+| **NTFS (Windows)** | 1993+ | Unicode 255 car., MFT, run list, supporto hard+soft link |

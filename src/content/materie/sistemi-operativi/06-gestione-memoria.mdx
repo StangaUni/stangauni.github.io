@@ -1,0 +1,270 @@
+---
+title: "Gestione della Memoria"
+type: "riassunto"
+tags: ["memoria virtuale", "paginazione", "TLB", "page fault", "rimpiazzo", "working set", "segmentazione", "swap"]
+excerpt: "Multiprogrammazione, paginazione, TLB, algoritmi di rimpiazzo, anomalia di Belady, working set, thrashing e segmentazione."
+readingTime: 16
+---
+
+## Requisiti fondamentali
+
+L'utente vuole:
+- Memoria **grande** (nessun limite a priori)
+- Memoria **veloce** (come i registri CPU)
+- Memoria **persistente** (non volatile)
+- Memoria **privata** (isolamento tra processi)
+
+Nessun singolo dispositivo soddisfa tutti i requisiti → la gerarchia (registri/cache/RAM/disco) è gestita dal S/O.
+
+---
+
+## Sistemi monoprogrammati
+
+Tre architetture storiche:
+
+```
+(a) RAM + ROM          (b) RAM + ROM (I/O)     (c) S/O in RAM
+┌────────┐             ┌────────┐              ┌────────┐
+│  ROM   │ ROM         │Drivers │ RAM           │ Prog.  │
+├────────┤             ├────────┤              │ utente │
+│Prog.   │             │Prog.   │              ├────────┤
+│utente  │ RAM         │utente  │              │  S/O   │
+├────────┤             ├────────┤              └────────┘
+│  S/O   │             │  S/O   │ ROM
+└────────┘             └────────┘
+```
+
+---
+
+## Multiprogrammazione
+
+### Partizioni fisse
+
+- RAM suddivisa in N partizioni di dimensione fissa
+- Ogni processo occupa una partizione
+
+| Problema | Descrizione |
+|---|---|
+| **Frammentazione interna** | Spazio sprecato dentro la partizione (processo più piccolo) |
+| **Frammentazione esterna** | Spazio libero ma non contiguo tra partizioni |
+
+**Valutazione probabilistica:** con N partizioni, la probabilità che CPU sia occupata è:
+
+$$P(\text{CPU occupata}) = 1 - p^N$$
+
+dove p = probabilità che un singolo processo stia aspettando I/O.
+
+| N | p = 0,8 | p = 0,5 |
+|---|---|---|
+| 4 | 59% | 94% |
+| 8 | 83% | 99,6% |
+| 16 | 97% | ≈100% |
+
+### Swapping
+
+- **Swapper:** gestore che porta interi processi su disco e li ricarica quando necessario
+- Necessaria **rilocazione dinamica** (base + limite)
+- Costo del ricompattamento: spostare 512 MB a 1 GB/s → **5,37 s** (operazione costosa)
+
+### Gestione dei blocchi liberi
+
+**Bitmap:** un bit per blocco (0=libero, 1=occupato). Compatta, ricerca efficiente con istruzioni hardware.
+
+**Lista concatenata:** strategie di allocazione:
+
+| Strategia | Descrizione | Pro | Contro |
+|---|---|---|---|
+| **First Fit** | Primo blocco sufficientemente grande | Veloce | Frammentazione all'inizio |
+| **Next Fit** | Come First Fit ma riparte da dove si era fermati | Distribuisce | Prestazioni mediocri |
+| **Best Fit** | Il blocco più piccolo sufficiente | Spreco minimo | Lento; molti frammenti piccoli |
+| **Worst Fit** | Il blocco più grande disponibile | Frammenti grandi e utili | Distrugge i blocchi grandi |
+
+---
+
+## Memoria virtuale (dal 1961)
+
+**Principio:** un processo può avere spazio virtuale più grande della RAM — il S/O carica solo le pagine necessarie.
+
+```
+CPU → [indirizzo virtuale] → MMU → [indirizzo fisico] → RAM
+                                         ↑
+                              Page table (traduzione)
+```
+
+### Paginazione
+
+- Memoria virtuale suddivisa in **pagine** (dimensione fissa, tipicamente 4 KB)
+- RAM suddivisa in **page frame** della stessa dimensione
+- Quando una pagina mancante viene riferita → **page fault** (trap al S/O)
+
+**Traduzione dell'indirizzo (32 bit, pagina 4 KB):**
+```
+┌──────────────────────────┬────────────────┐
+│    N° pagina (20 bit)    │  Offset (12 b) │
+└──────────────────────────┴────────────────┘
+            ↓ (indice in tabella delle pagine)
+     Page frame number
+            ↓
+┌──────────────────────────┬────────────────┐
+│    N° frame (20 bit)     │  Offset (12 b) │
+└──────────────────────────┴────────────────┘
+      Indirizzo fisico
+```
+
+**Formato di una riga della tabella:**
+
+| Campo | Funzione |
+|---|---|
+| Page frame | Indirizzo del frame corrispondente |
+| Presenza (P) | 1 = pagina in RAM |
+| Referenced (R) | 1 = accesso recente (azzerato periodicamente) |
+| Modified/Dirty (M) | 1 = pagina modificata (va salvata prima di rimuoverla) |
+| xrw | Permessi accesso |
+| Can cache | Può andare in cache |
+
+> L'indirizzo su disco della pagina **non è nella tabella**: serve al S/O, non alla MMU.
+
+### TLB — Translation Lookaside Buffer
+
+**Problema:** la page table è in RAM → ogni accesso richiede un accesso extra a RAM.
+
+**Soluzione:** piccola memoria associativa ad accesso parallelo:
+- **Hit:** traduzione in un ciclo, senza accedere alla RAM
+- **Miss:** la riga viene caricata dalla page table in RAM
+
+**Motivazione:** i processi accedono più frequentemente a poche pagine → **località temporale e spaziale**.
+
+### Tabella invertita (per architetture a 64 bit)
+
+- Una riga per **page frame** (non per pagina virtuale) → dimensione dipende dalla RAM, non dallo spazio virtuale
+- Traduzione accelerata con TLB + tabella hash
+
+---
+
+## Algoritmi di rimpiazzo
+
+Al page fault bisogna scegliere quale pagina rimuovere dalla RAM.
+
+| Algoritmo | Sceglie | Realizzabile | Note |
+|---|---|---|---|
+| **Optimal** | La pagina non usata per più tempo | No | Riferimento teorico |
+| **NRU** | Una pagina a caso nella classe più bassa tra {R,M} | Sì | 4 classi; R azzerato periodicamente |
+| **FIFO** | La pagina più vecchia in RAM | Sì | Soffre anomalia di Belady |
+| **Second Chance** | Come FIFO ma salta le pagine con R=1 (e azzera R) | Sì | Degenera in FIFO nel caso peggiore |
+| **Orologio (Clock)** | Come Second Chance con lista circolare | Sì | Efficiente in pratica |
+| **LRU** | La pagina usata meno recentemente | Difficile (HW) | Approssima Optimal; immune a Belady |
+| **NFU** | La meno frequentemente usata (contatore) | Sì | Non dimentica il passato |
+| **Aging** | NFU con shift-right e inserimento R come MSB | Sì | Approssima LRU; finestra di N tick |
+| **WS** | Pagina fuori dal Working Set corrente | Sì | Gestisce thrashing |
+| **WS + Clock** | WS approssimato con lista circolare | Sì | **Molto usato in pratica** |
+
+**Aging** (aggiornamento periodico):
+```
+C = (C >> 1) | (R << (N-1))   // shift right + R come bit più significativo
+```
+
+---
+
+## Anomalia di Belady
+
+Con l'algoritmo FIFO, aumentare il numero di page frame può **aumentare** il numero di page fault.
+
+**Sequenza:** `0 1 2 3 0 1 4 0 1 2 3 4`
+
+| RAM | Page fault |
+|---|---|
+| 3 frame | **9** |
+| 4 frame | **10** |
+
+Gli algoritmi **stack** sono immuni (LRU, Optimal). FIFO **non lo è**.
+
+---
+
+## Working Set e thrashing
+
+**Working Set (WS):** insieme di pagine che un processo ha usato negli ultimi τ unità di tempo virtuale.
+
+- Se la RAM non basta ad accogliere il WS → **thrashing** (page fault continui, CPU quasi inutilizzata)
+- Soluzione al thrashing: **swap** — rimuovere temporaneamente un processo dalla RAM
+
+**PFF (Page Fault Frequency):** se i page fault sono troppo frequenti → allocare più frame. Se troppo rari → deallocare frame.
+
+---
+
+## Gestione del page fault: sequenza completa
+
+1. L'hardware fa trap al kernel e salva il PC sullo stack
+2. Un programma assembler salva i registri e chiama il S/O
+3. Il S/O identifica la pagina mancante
+4. Verifica che l'indirizzo virtuale sia valido (altrimenti: kill del processo)
+5. Cerca un page frame libero o rimpiazzabile
+6. Se la pagina da rimuovere è **dirty** (M=1): la salva su disco (processo sospeso)
+7. Copia la pagina richiesta nel page frame (processo sospeso)
+8. Aggiorna la page table
+9. Reimposta il PC all'istruzione che ha causato il fault
+10. Riporta il processo in stato Pronto
+11. Il programma assembler ricarica i registri e torna in user space
+
+---
+
+## Politiche locali vs globali
+
+| | Locale | Globale |
+|---|---|---|
+| Rimpiazzo | Nel WS del processo che ha generato il fault | Tra tutti i page frame |
+| Allocazione | Quota fissa per processo | Dinamica |
+| Efficacia | Inferiore | Superiore (con WS variabile) |
+
+Le politiche **globali sono più efficaci**.
+
+---
+
+## Dimensione ottimale della pagina
+
+$$p_{opt} = \sqrt{2se}$$
+
+dove s = dimensione media di un processo, e = dimensione di una riga in tabella delle pagine (byte).
+
+**Esempio:** s = 1 MB, e = 8 B → p_opt ≈ **4 KB** (valore standard oggi).
+
+---
+
+## Area di swap
+
+Parte del disco riservata per le pagine rimpiazzate.
+
+| Sistema | Implementazione |
+|---|---|
+| **Linux** | Partizione dedicata con proprio FS; per ibernazione serve almeno la dimensione della RAM |
+| **Windows** | `hiberfil.sys` (ibernazione) + `pagefile.sys` (memoria virtuale) |
+
+---
+
+## Segmentazione
+
+Unità logica (nota al programmatore): procedura, variabili, stack.
+
+- Spazi di indirizzamento **indipendenti** (dimensione variabile)
+- Protezione specifica per tipo di contenuto
+- Causa **frammentazione esterna** → ricompattamento periodico (costoso)
+
+| Caratteristica | Paginazione | Segmentazione |
+|---|---|---|
+| Nota al programmatore | No | Sì |
+| N spazi indirizzi lineari | 1 | N ≥ 1 |
+| Può eccedere RAM | Sì | Sì |
+| Separa codice e dati | No | Sì |
+| Gestisce contenuti variabili | No | Sì |
+| Condivisione tra processi | No | Sì |
+| Tipo di frammentazione | Interna | Esterna |
+
+### Intel Pentium: segmentazione + paginazione
+
+**Schema di traduzione:**
+```
+(selettore, offset)
+    ↓ LDT/GDT → base del segmento
+indirizzo lineare (32 bit)
+    ↓ tabella pagine a 2 livelli (10+10+12 bit)
+indirizzo fisico
+```
