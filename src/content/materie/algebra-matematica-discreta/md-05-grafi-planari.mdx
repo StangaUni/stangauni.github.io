@@ -1,0 +1,131 @@
+---
+title: "Grafi Planari"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["grafi planari", "formula di Eulero", "Kuratowski", "minori", "facce"]
+excerpt: "Grafi planari, formula di Eulero, teorema di Kuratowski e disuguaglianza e ≤ 3v−6."
+---
+
+# Grafi Planari
+
+## Definizione
+
+**Definizione.** Un grafo (o multigrafo) è **planare** se può essere disegnato nel piano senza intersezioni degli archi. Tale disegno si chiama **rappresentazione piana**.
+
+**Esempi:**
+- $K_4$ è planare (si disegna un triangolo con un vertice interno collegato agli altri tre).
+- $K_{3,3}$ e $K_5$ **non** sono planari.
+
+---
+
+## Minori di un Grafo
+
+**Tre operazioni** su un grafo:
+1. **Contrazione** di un arco $e = ab$: fondi $a$ e $b$ in un unico vertice $ab$, elimina il cappio risultante.
+2. **Rimozione** di un arco.
+3. **Rimozione** di un vertice isolato.
+
+**Definizione.** $G'$ è un **minore** di $G$ se si ottiene $G'$ da $G$ con le tre operazioni sopra.
+
+**Proprietà fondamentale:**
+$$\boxed{G \text{ planare} \implies G' \text{ planare}} \qquad \text{equivalente a} \qquad \boxed{G' \text{ non planare} \implies G \text{ non planare}}$$
+
+---
+
+## Teorema di Kuratowski
+
+$$\boxed{G \text{ è planare} \iff \text{né } K_{3,3} \text{ né } K_5 \text{ sono minori di } G}$$
+
+**Esempio:** il grafo di Petersen non è planare (ha $K_5$ come minore).
+
+---
+
+## Metodo dei Cerchi e delle Corde
+
+Metodo per verificare la planarità di un grafo che possiede un **circuito hamiltoniano**.
+
+1. Trova un circuito hamiltoniano e disegnalo come un **cerchio**.
+2. Elenca gli archi **non** nel circuito: le **corde**.
+3. Inserisci le corde dentro o fuori il cerchio cercando di evitare incroci (scegliendo le corde forzate ad ogni passo).
+
+- Se tutte le corde si inseriscono senza incroci $\Rightarrow$ il grafo è **planare**.
+- Altrimenti $\Rightarrow$ il grafo **non è planare**.
+
+**Esempio — $K_{3,3}$:** 3 corde da inserire. Seguendo le scelte forzate, la terza interseca inevitabilmente le altre → **non è planare**.
+
+**Esempio — $K_5$:** 5 corde da inserire. La quinta corda interseca inevitabilmente le altre → **non è planare**.
+
+---
+
+## Planarità di $K_n$
+
+| $n$ | $K_n$ planare? |
+|---|---|
+| $n \leq 4$ | sì |
+| $n \geq 5$ | **no** |
+
+**Motivazione per $n \geq 5$:** $K_5$ è minore di $K_n$ per ogni $n \geq 5$.
+
+---
+
+## Regioni (Facce) di un Grafo Planare
+
+**Definizione.** Ogni rappresentazione piana di un grafo connesso divide il piano in **facce** (o **regioni**).
+
+> Il numero di facce dipende **solo dal grafo**, non dal particolare disegno.
+
+> Una delle facce è sempre quella **illimitata** (esterna).
+
+---
+
+## Formula di Eulero
+
+**Teorema.** Se $G(V, E)$ è **connesso** e **planare**, allora:
+
+$$\boxed{r = e - v + 2}$$
+
+dove $r$ = numero di facce, $e = |E|$, $v = |V|$.
+
+**Dimostrazione** (per aggiunta di archi a un albero ricoprente).
+
+Sia $T(V, E')$ un albero ricoprente di $G$: ha $v-1$ archi e 1 sola faccia. Verifica: $r_T = 1 = (v-1) - v + 2$ ✓.
+
+Ogni nuovo arco aggiunto divide una faccia in due ($r$ aumenta di 1). Dopo aver aggiunto tutti gli $e - (v-1)$ archi rimanenti:
+
+$$r = 1 + (e - v + 1) = e - v + 2 \quad \square$$
+
+**Esempi:**
+
+| $v$ | $e$ | $r$ | Grafo |
+|---|---|---|---|
+| 4 | 6 | 4 | $K_4$ |
+| 5 | 9 | 6 | — |
+| 7 | 10 | 5 | — |
+
+---
+
+## Teorema: $e \leq 3v - 6$
+
+**Teorema.** Se $G(V, E)$ è **semplice**, **connesso** e **planare**, allora:
+
+$$\boxed{e \leq 3v - 6}$$
+
+**Dimostrazione.**
+
+Ogni faccia ha perimetro $\ell(f) \geq 3$. Ogni arco è sul bordo di **due** facce, quindi:
+
+$$2e = \sum_f \ell(f) \geq 3r \implies r \leq \frac{2e}{3}$$
+
+Per la Formula di Eulero $r = e - v + 2$:
+
+$$e - v + 2 \leq \frac{2e}{3} \implies e \leq 3v - 6 \quad \square$$
+
+**Applicazione — non-planarità di $K_5$:**
+
+$$K_5: \quad v = 5, \; e = 10 \qquad 10 \leq 3 \cdot 5 - 6 = 9 \quad \text{Falso!} \implies K_5 \text{ non è planare}$$
+
+---
+
+## Teorema — Ogni Grafo Planare Connesso ha un Vertice di Grado $\leq 5$
+
+**Dimostrazione** (per assurdo). Se ogni vertice avesse $d(v) \geq 6$, allora $2e \geq 6v$, ma $2e \leq 6v - 12$ per il teorema → contraddizione. $\square$

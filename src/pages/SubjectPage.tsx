@@ -41,49 +41,94 @@ function DifficultyDots({ level }: { level: 1 | 2 | 3 }) {
 
 // ─── Riassunti list ──────────────────────────────────────────────────────────
 
-function RiassuntiList({ notes, subjectSlug }: { notes: Note[]; subjectSlug: string }) {
+function NoteRow({ note, subjectSlug, delay }: { note: Note; subjectSlug: string; delay: number }) {
   return (
-    <div className="divide-y divide-border">
-      {notes.map((note, i) => (
-        <motion.div
-          key={note.slug}
-          id={note.slug}
-          className="scroll-mt-28"
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: i * 0.04 }}
-        >
-          <Link
-            to={`/materia/${subjectSlug}/${note.slug}`}
-            className="group flex items-start justify-between gap-4 px-3 py-4 rounded-md transition-colors hover:bg-secondary/50"
-          >
-            <div className="flex-1 min-w-0">
-              <h3 className="font-sans font-semibold text-foreground group-hover:text-primary transition-colors">
-                {note.title}
-              </h3>
-              {note.excerpt && (
-                <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{note.excerpt}</p>
-              )}
-              {note.tags.length > 0 && (
-                <p className="mt-1.5 text-xs text-muted-foreground/70">
-                  {note.tags.slice(0, 5).join(' · ')}
-                </p>
-              )}
-            </div>
+    <motion.div
+      id={note.slug}
+      className="scroll-mt-28"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, delay }}
+    >
+      <Link
+        to={`/materia/${subjectSlug}/${note.slug}`}
+        className="group flex items-start justify-between gap-4 px-3 py-4 rounded-md transition-colors hover:bg-secondary/50"
+      >
+        <div className="flex-1 min-w-0">
+          <h3 className="font-sans font-semibold text-foreground group-hover:text-primary transition-colors">
+            {note.title}
+          </h3>
+          {note.excerpt && (
+            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{note.excerpt}</p>
+          )}
+          {note.tags.length > 0 && (
+            <p className="mt-1.5 text-xs text-muted-foreground/70">
+              {note.tags.slice(0, 5).join(' · ')}
+            </p>
+          )}
+        </div>
 
-            <div className="flex items-center gap-2 shrink-0 pt-0.5">
-              {note.readingTime && (
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {note.readingTime} min
-                </span>
-              )}
-              <ChevronRight
-                size={15}
-                className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all"
-              />
-            </div>
-          </Link>
-        </motion.div>
+        <div className="flex items-center gap-2 shrink-0 pt-0.5">
+          {note.readingTime && (
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {note.readingTime} min
+            </span>
+          )}
+          <ChevronRight
+            size={15}
+            className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all"
+          />
+        </div>
+      </Link>
+    </motion.div>
+  )
+}
+
+function sectionId(name: string) {
+  return `section-${name.toLowerCase().replace(/\s+/g, '-')}`
+}
+
+function RiassuntiList({ notes, subjectSlug }: { notes: Note[]; subjectSlug: string }) {
+  const hasSections = notes.some((n) => n.section)
+
+  if (!hasSections) {
+    return (
+      <div className="divide-y divide-border">
+        {notes.map((note, i) => (
+          <NoteRow key={note.slug} note={note} subjectSlug={subjectSlug} delay={i * 0.04} />
+        ))}
+      </div>
+    )
+  }
+
+  const sections = new Map<string, Note[]>()
+  for (const note of notes) {
+    const s = note.section ?? 'Altro'
+    if (!sections.has(s)) sections.set(s, [])
+    sections.get(s)!.push(note)
+  }
+
+  let globalIdx = 0
+  return (
+    <div className="space-y-8">
+      {Array.from(sections.entries()).map(([section, sectionNotes]) => (
+        <div key={section}>
+          <div
+            id={sectionId(section)}
+            className="scroll-mt-28 flex items-center gap-3 mb-1"
+          >
+            <h2 className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              {section}
+            </h2>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+          <div className="divide-y divide-border">
+            {sectionNotes.map((note) => {
+              const delay = (globalIdx++) * 0.04
+              return <NoteRow key={note.slug} note={note} subjectSlug={subjectSlug} delay={delay} />
+            })}
+          </div>
+        </div>
       ))}
     </div>
   )
@@ -271,9 +316,40 @@ function ExtraList({ notes, subjectSlug }: { notes: Note[]; subjectSlug: string 
 // ─── Quick Nav sidebar ───────────────────────────────────────────────────────
 
 function QuickNav({ notes, hasTabs }: { notes: Note[]; hasTabs?: boolean }) {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
+  const hasSections = notes.some((n) => n.section)
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
-    document.getElementById(slug)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  if (!hasSections) {
+    return (
+      <nav className="flex flex-col flex-1 min-h-0">
+        <p className={`mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground shrink-0 ${hasTabs ? 'mt-3' : ''}`}>
+          In questa sezione
+        </p>
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none space-y-0.5">
+          {notes.map((note) => (
+            <a
+              key={note.slug}
+              href={`#${note.slug}`}
+              onClick={(e) => handleClick(e, note.slug)}
+              className="block rounded-md px-2 py-1.5 text-xs leading-snug text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              {note.title}
+            </a>
+          ))}
+        </div>
+      </nav>
+    )
+  }
+
+  const sections = new Map<string, Note[]>()
+  for (const note of notes) {
+    const s = note.section ?? 'Altro'
+    if (!sections.has(s)) sections.set(s, [])
+    sections.get(s)!.push(note)
   }
 
   return (
@@ -281,16 +357,29 @@ function QuickNav({ notes, hasTabs }: { notes: Note[]; hasTabs?: boolean }) {
       <p className={`mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground shrink-0 ${hasTabs ? 'mt-3' : ''}`}>
         In questa sezione
       </p>
-      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none space-y-0.5">
-        {notes.map((note) => (
-          <a
-            key={note.slug}
-            href={`#${note.slug}`}
-            onClick={(e) => handleClick(e, note.slug)}
-            className="block rounded-md px-2 py-1.5 text-xs leading-snug text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-          >
-            {note.title}
-          </a>
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
+        {Array.from(sections.entries()).map(([section, sectionNotes]) => (
+          <div key={section} className="mb-3">
+            <a
+              href={`#${sectionId(section)}`}
+              onClick={(e) => handleClick(e, sectionId(section))}
+              className="block px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            >
+              {section}
+            </a>
+            <div className="space-y-0.5">
+              {sectionNotes.map((note) => (
+                <a
+                  key={note.slug}
+                  href={`#${note.slug}`}
+                  onClick={(e) => handleClick(e, note.slug)}
+                  className="block rounded-md px-2 py-1.5 text-xs leading-snug text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                >
+                  {note.title}
+                </a>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </nav>

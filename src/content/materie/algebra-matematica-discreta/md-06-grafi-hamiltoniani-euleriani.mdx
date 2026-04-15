@@ -1,0 +1,103 @@
+---
+title: "Grafi Hamiltoniani ed Euleriani"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["hamiltoniano", "euleriano", "Dirac", "circuito hamiltoniano", "percorso euleriano"]
+excerpt: "Circuiti hamiltoniani, condizioni necessarie e teorema di Dirac; percorsi euleriani e teorema di Eulero."
+---
+
+# Grafi Hamiltoniani ed Euleriani
+
+## Circuiti Hamiltoniani e Grafi Hamiltoniani
+
+**Definizione.** Un **circuito hamiltoniano** è un ciclo che attraversa tutti i vertici del grafo **esattamente una volta**.
+
+**Definizione.** Un grafo è **hamiltoniano** se possiede un circuito hamiltoniano.
+
+> D'ora in poi si assume che i grafi siano **semplici**.
+
+---
+
+## $K_n$ è Hamiltoniano per $n \geq 2$
+
+Il circuito $1 \to 2 \to 3 \to \cdots \to n \to 1$ è hamiltoniano. $\square$
+
+---
+
+## $K_{r,s}$ è Hamiltoniano $\iff$ $r = s \geq 2$
+
+**Dimostrazione ($\Leftarrow$):** con $r = s$, il circuito $v_1 \to u_1 \to v_2 \to u_2 \to \cdots \to v_r \to u_r \to v_1$ è hamiltoniano (alterna $V_1$ e $V_2$). $\square$
+
+**Dimostrazione ($\Rightarrow$):** in $K_{r,s}$ ogni arco collega $V_1$ a $V_2$, quindi qualsiasi percorso **alterna** vertici di $V_1$ e $V_2$. In un circuito hamiltoniano si usano $r$ vertici di $V_1$ e $s$ vertici di $V_2$ in alternanza stretta $\Rightarrow r = s$. $\square$
+
+> $K_{1,1}$ non è hamiltoniano: il "circuito" $a \to b \to a$ percorre lo stesso arco due volte.
+
+---
+
+## Condizioni Necessarie per l'Hamiltonicità
+
+Sia $G$ hamiltoniano con circuito $\delta$. Allora:
+
+**Condizione 1 — Grado minimo:**
+$$d(v) \geq 2 \quad \forall\, v \in V$$
+
+**Condizione 2 — Connettività:**
+$$\kappa(G - S) \leq |S| \quad \forall\, S \subseteq V,\ S \neq \emptyset$$
+dove $\kappa(G - S)$ = numero di componenti connesse di $G - S$.
+
+> Se esiste $S$ con $\kappa(G - S) > |S|$, allora $G$ **non è hamiltoniano**.
+
+---
+
+## Teorema di Dirac
+
+**Teorema (Dirac).** Sia $G(V, E)$ un grafo semplice con $|V| = n \geq 3$. Se:
+
+$$d(v) \geq \frac{n}{2} \quad \forall\, v \in V$$
+
+allora $G$ è **hamiltoniano**.
+
+> Questa è una condizione **sufficiente** ma non necessaria: un grafo può essere hamiltoniano senza soddisfarla.
+
+**Procedura costruttiva del circuito (quando Dirac si applica):**
+1. Scegli un cammino e estendilo finché possibile.
+2. Se passa per tutti i vertici e si chiude → circuito trovato.
+3. Se non si chiude, "ruota" per includere i vertici mancanti (sfruttando il grado elevato).
+
+---
+
+## Percorsi Euleriani e Grafi Euleriani
+
+**Definizione.** Un percorso è **euleriano** se è **chiuso** e attraversa ogni arco del grafo **esattamente una volta**.
+
+**Definizione.** Un grafo è **euleriano** se possiede un percorso euleriano.
+
+---
+
+## Teorema di Eulero
+
+**Teorema.** Un grafo $G(V, E)$ è euleriano se e solo se:
+1. $G$ è **connesso**
+2. Ogni vertice ha **grado pari**
+
+$$\boxed{G \text{ euleriano} \iff G \text{ connesso e } d(v) \text{ pari } \forall\, v \in V}$$
+
+**Costruzione del percorso euleriano:**
+1. Trova un percorso chiuso nel grafo.
+2. Se non tutti gli archi sono stati attraversati, individua un altro percorso chiuso partendo da un vertice già visitato.
+3. "Cuci" i due percorsi nel punto di giunzione.
+4. Ripeti fino ad aver attraversato tutti gli archi.
+
+---
+
+## Confronto: Euleriano vs Hamiltoniano
+
+| | **Euleriano** | **Hamiltoniano** |
+|---|---|---|
+| Obiettivo | Ogni **arco** esattamente una volta | Ogni **vertice** esattamente una volta |
+| Condizione necessaria e sufficiente | Connesso + tutti gradi pari | Non esiste una caratterizzazione completa |
+| Condizione sufficiente semplice | — | Teorema di Dirac ($d(v) \geq n/2$) |
+| $K_n$ | Sì per $n$ dispari; no per $n$ pari ($n \geq 4$) | Sì per $n \geq 2$ |
+| $K_{r,s}$ | Solo se $r = s$ e sono entrambi pari | Solo se $r = s \geq 2$ |
+
+> **Collegamento storico:** il problema dei Sette Ponti di Königsberg (Eulero, 1736) è equivalente a cercare un percorso euleriano nel multigrafo dei ponti. La risposta è **no**, perché ci sono vertici di grado dispari.

@@ -1,0 +1,92 @@
+---
+title: "Numeri Complessi"
+type: "riassunto"
+section: "Algebra"
+tags: ["numeri complessi", "modulo", "coniugato", "forma trigonometrica", "radici"]
+excerpt: "Definizioni, operazioni, modulo, coniugato, forma trigonometrica e radici dei numeri complessi."
+---
+
+# Numeri Complessi
+
+## Definizioni di base
+
+**Unità immaginaria:** $i$ è il numero tale che $i^2 = -1$ (soluzione di $z^2 = -1$).
+
+**Numero complesso** (forma algebrica):
+$$z = a + ib \qquad a, b \in \mathbb{R}$$
+- $a$ = parte reale, $b$ = parte immaginaria
+
+**Insieme dei numeri complessi:**
+$$\mathbb{C} = \{ a + ib \mid a, b \in \mathbb{R} \}$$
+
+**Gerarchia degli insiemi numerici:**
+$$\mathbb{N} \subseteq \mathbb{Z} \subseteq \mathbb{Q} \subseteq \mathbb{R} \subseteq \mathbb{C}$$
+
+**Piano di Gauss:** $z = a + ib$ è rappresentato dal punto $(a, b)$ nel piano cartesiano.
+
+- $b = 0$ → numero **reale** (asse delle ascisse)
+- $a = 0$ → numero **immaginario puro** (asse delle ordinate)
+
+---
+
+## Somma e Prodotto
+
+Siano $z = a + ib$, $w = c + id$.
+
+$$z + w = (a+c) + i(b+d)$$
+
+$$z \cdot w = (ac - bd) + i(bc + ad)$$
+
+*(nel prodotto si usa $i^2 = -1$)*
+
+---
+
+## Coniugato
+
+$$\boxed{\bar{z} = a - ib}$$
+
+Geometricamente: $\bar{z}$ è il simmetrico di $z$ rispetto all'asse reale.
+
+### Proprietà
+
+Siano $z, w \in \mathbb{C}$:
+
+| # | Proprietà |
+|---|-----------|
+| 1 | $\overline{z+w} = \bar{z} + \bar{w}$ |
+| 2 | $\overline{z \cdot w} = \bar{z} \cdot \bar{w}$ |
+| 3 | $\bar{\bar{z}} = z$ |
+| 4 | $z = \bar{z} \iff z \in \mathbb{R}$ |
+
+---
+
+## Modulo
+
+$$\boxed{|z| = \sqrt{a^2 + b^2}}$$
+
+Geometricamente: $|z|$ è la distanza dall'origine nel piano di Gauss.
+
+**Osservazioni:**
+- $|z| \geq 0$ sempre
+- $|z| = 0 \iff z = 0$
+
+### Proprietà
+
+| # | Proprietà | Note |
+|---|-----------|------|
+| 1 | $\lvert z \rvert^2 = z \cdot \bar{z}$ | dem.: $(a+ib)(a-ib) = a^2+b^2$ |
+| 2 | $\lvert z \cdot w \rvert = \lvert z \rvert \cdot \lvert w \rvert$ | |
+| 3 | $\lvert z + w \rvert \leq \lvert z \rvert + \lvert w \rvert$ | **disuguaglianza triangolare** |
+
+---
+
+## Inverso
+
+Sia $z \neq 0$. Allora:
+
+$$\frac{1}{z} = \frac{\bar{z}}{|z|^2}$$
+
+**Strategia di calcolo:** moltiplicare e dividere per $\bar{z}$.
+
+**Esempio:** $z = 2 - 3i$
+$$\frac{1}{2-3i} = \frac{2+3i}{4+9} = \frac{2+3i}{13} = \frac{2}{13} + \frac{3}{13}i$$

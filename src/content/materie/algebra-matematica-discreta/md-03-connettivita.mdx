@@ -1,0 +1,103 @@
+---
+title: "Connettività"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["connettività", "arcoconnettività", "Menger", "separatori", "taglio"]
+excerpt: "Arcoconnettività, connettività sui vertici, separatori e teorema di Menger."
+---
+
+# Connettività
+
+## Taglio Associato a $S$
+
+Sia $G = (V, E)$ un grafo o multigrafo e $S \subseteq V$.
+
+Il **taglio associato a $S$** è:
+
+$$\delta(S) = \{uv \in E : |S \cap \{u, v\}| = 1\} = \{\text{archi con esattamente un estremo in } S\}$$
+
+Il taglio $\delta(S)$ **separa** $w$ e $z$ se $S$ contiene esattamente uno tra $w$ e $z$.
+
+> **NB:** $\delta(S) = \delta(V \setminus S)$
+
+**Proprietà.** Se $\delta(S)$ separa $u$ e $v$ e $\gamma$ è un cammino con estremi $u$ e $v$, allora $\delta(S) \cap E(\gamma) \neq \emptyset$ (il taglio contiene almeno un arco di $\gamma$).
+
+---
+
+## Arcoconnettività tra $u$ e $v$
+
+$$K^E_{u,v}(G) = \min\bigl\{|\delta(S)| : \delta(S) \text{ separa } u \text{ e } v\bigr\}$$
+
+**Proprietà 1.** $K^E_{u,v}(G)$ è il minimo numero di archi da rimuovere per disconnettere $u$ da $v$.
+
+**Proprietà 2.** $K^E_{u,v}(G)$ è il numero massimo di **cammini arco-disgiunti** (senza archi in comune) con estremi $u$ e $v$.
+
+> Per i multigrafi, i cappi non influiscono su $K^E_{u,v}$.
+
+---
+
+## Arcoconnettività di un Grafo
+
+$$K^E(G) = \min_{u,v \in V} K^E_{u,v}(G)$$
+
+Se $G$ è connesso, $K^E(G)$ è il **minimo numero di archi da rimuovere per disconnettere il grafo**.
+
+---
+
+## Connettività sui Vertici — Separatori
+
+Sia $G = (V, E)$ un grafo **semplice, connesso e non completo**.
+
+Un insieme $S \subseteq V$ è un **separatore** di $G$ se il grafo $G \setminus S$ (ottenuto rimuovendo i vertici di $S$ e tutti gli archi incidenti) è **disconnesso**.
+
+**Connettività sui vertici:**
+
+$$K(G) = \min\bigl\{|S| : S \text{ è un separatore di } G\bigr\}$$
+
+> **Convenzione:** $K(K_n) = n - 1$ (in $K_n$ non esiste separatore, ma togliendo $n-1$ vertici rimane un solo punto).
+
+---
+
+## Connettività tra Due Vertici Non Adiacenti
+
+Per $u, v \in V$ **non adiacenti**:
+
+$$K_{uv}(G) = \min\bigl\{|S| : S \text{ separa } u \text{ e } v \text{ in } G \setminus S\bigr\}$$
+
+$$K(G) = \min_{\substack{u,v \in V \\ u,v \text{ non adiacenti}}} K_{uv}(G)$$
+
+---
+
+## Teorema di Menger (versione vertici)
+
+> Per ogni $u, v \in V$ non adiacenti:
+> $$K_{uv}(G) = \text{numero massimo di cammini \textbf{internamente disgiunti} con estremi } u \text{ e } v$$
+
+(Due cammini sono **internamente disgiunti** se non hanno vertici interni in comune.)
+
+---
+
+## Grado Minimo
+
+$$d^{\min}(G) = \min\bigl\{d(v) : v \in V\bigr\}$$
+
+---
+
+## Teorema Fondamentale: $K(G) \leq K^E(G) \leq d^{\min}(G)$
+
+Sia $G$ semplice e connesso con almeno due vertici:
+
+$$\boxed{K(G) \leq K^E(G) \leq d^{\min}(G)}$$
+
+**Conseguenza:** se $K(G) = d^{\min}(G)$, allora tutte e tre le misure di connettività coincidono.
+
+---
+
+## Risultati Notevoli
+
+| Grafo | $K(G)$ | $K^E(G)$ | $d^{\min}(G)$ |
+|---|---|---|---|
+| $K_n$ | $n-1$ | $n-1$ | $n-1$ |
+| $K_{m,n}$ con $m \geq n$ | $n$ | $n$ | $n$ |
+
+$$\boxed{K(K_{m,n}) = K^E(K_{m,n}) = n} \quad (m \geq n)$$

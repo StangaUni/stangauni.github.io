@@ -1,0 +1,122 @@
+---
+title: "Alberi"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["alberi", "foreste", "foglie", "Kruskal", "Dijkstra", "albero di peso minimo"]
+excerpt: "Proprietà degli alberi, caratterizzazioni equivalenti, algoritmo di Kruskal e algoritmo di Dijkstra."
+---
+
+# Alberi
+
+## Definizioni
+
+**Foresta:** grafo **aciclico** (senza cicli).
+
+**Albero:** foresta **connessa** (aciclico e connesso).
+
+**Foglia:** vertice di grado 1 in un albero.
+
+---
+
+## Proprietà 1 — Almeno 2 Foglie
+
+> Ogni albero $T(V, E)$ con $|V| \geq 2$ ha almeno **2 foglie**.
+
+**Dimostrazione.** Sia $v_1\,v_2\cdots v_m$ un cammino massimale (non estendibile). Supponiamo per assurdo $d(v_m) \geq 2$: esiste $w \neq v_{m-1}$ adiacente a $v_m$.
+- Se $w \notin \{v_1,\ldots,v_{m-1}\}$: il cammino si estende a $v_1\cdots v_m\,w$ — contraddizione con la massimalità.
+- Se $w = v_i$ per qualche $i$: si forma il ciclo $v_i\,v_{i+1}\cdots v_m\,v_i$ — contraddizione con l'assiclicità.
+
+Quindi $d(v_m) = 1$, e analogamente $d(v_1) = 1$. $\square$
+
+---
+
+## Proprietà 2 — $|E| = |V| - 1$
+
+> Ogni albero $T(V, E)$ con $|V| \geq 2$ soddisfa $|E| = |V| - 1$.
+
+**Dimostrazione** (per induzione su $n = |V|$).
+
+*Base* $n = 2$: un albero su 2 vertici ha 1 arco. ✓
+
+*Passo induttivo:* sia $|V| = n+1$. Per la Proprietà 1, esiste una foglia $v$ con unico vicino $w$. Il grafo $T' = T \setminus \{v\}$ è ancora un albero con $n$ vertici, quindi per ipotesi induttiva $|E(T')| = n - 1$.
+
+$$|E(T)| = |E(T')| + 1 = (n-1) + 1 = n = |V| - 1 \quad \square$$
+
+$$\boxed{|E| = |V| - 1}$$
+
+---
+
+## Caratterizzazione degli Alberi
+
+**Teorema.** Sia $T(V, E)$ un grafo. Sono equivalenti:
+
+| | Condizione |
+|---|---|
+| **(a)** | $T$ è un **albero** (connesso e aciclico) |
+| **(b)** | $T$ è **arcoconnesso** (ogni arco è un ponte) |
+| **(c)** | $\forall\, x \neq y \in V$, esiste un **unico** cammino con estremi $x$ e $y$ |
+| **(2)** | $T$ è **aciclico** e $|E| = |V| - 1$ |
+| **(3)** | $T$ è **connesso** e $|E| = |V| - 1$ |
+
+---
+
+## Alberi con 5 Vertici (a meno di isomorfismo)
+
+Per ogni albero con $|V| = 5$: $|E| = 4$ e $\sum d(v) = 8$.
+
+| Sequenza dei gradi | Forma |
+|---|---|
+| $4, 1, 1, 1, 1$ | Stella $K_{1,4}$ |
+| $3, 2, 1, 1, 1$ | Albero a "forchetta" |
+| $2, 2, 2, 1, 1$ | Cammino $P_5$ |
+
+Esistono esattamente **3 alberi** con 5 vertici a meno di isomorfismo.
+
+---
+
+## Algoritmo di Kruskal
+
+**Problema.** Dato $G(V, E)$ connesso con pesi $w(e) > 0$ sugli archi, trovare un albero ricoprente $T(V, E')$ con $E' \subseteq E$ che minimizza $\sum_{e \in E'} w(e)$.
+
+1. Ordina gli archi per peso crescente: $w(e_1) \leq w(e_2) \leq \cdots \leq w(e_m)$.
+2. Esamina gli archi nell'ordine:
+   - **Inserisci** l'arco se non crea cicli con gli archi già inseriti.
+   - **Rigetta** altrimenti.
+3. Fermati quando hai $|V| - 1$ archi (albero completo).
+
+---
+
+## Algoritmo di Dijkstra
+
+**Problema.** Dato $G(V, E)$ connesso con lunghezze $l(e) > 0$, trovare i **cammini minimi** da un vertice sorgente $u$ a tutti gli altri vertici.
+
+**Distanza** $d(u, w)$: lunghezza del cammino minimo tra $u$ e $w$.
+
+### Formula iterativa
+
+$$\boxed{d_i(w) = \min\bigl\{d_{i-1}(w),\ \min_{z \in \Delta(w)} \bigl(d_{i-1}(z) + l(wz)\bigr)\bigr\}}$$
+
+$d_i(w)$ = distanza minima usando cammini con al più $i$ archi.
+
+### Schema dell'algoritmo
+
+**Inizializzazione** ($i = 0$):
+$$d_0(u) = 0, \quad d_0(w) = \infty \; \forall\, w \neq u, \quad S_0 = \{u\}$$
+
+**Iterazione** $i > 0$: tra i vertici in $V \setminus S_{i-1}$, scegli $u_i$ con $d_i(u_i)$ minimo; poni $S_i = S_{i-1} \cup \{u_i\}$.
+
+**Fine** quando $i = |V| - 1$.
+
+### Esempio — Grafo $\{u, a, b, c, d\}$
+
+Archi: $ua=2$, $ud=12$, $ad=8$, $ab=14$, $ac=3$, $bd=1$, $bc=6$, $dc=2$.
+
+| $i$ | $S_i$ | $u$ | $a$ | $b$ | $c$ | $d$ |
+|---|---|---|---|---|---|---|
+| 0 | $\{u\}$ | **0** | $\infty$ | $\infty$ | $\infty$ | $\infty$ |
+| 1 | $\{u,a\}$ | 0 | **2** | $\infty$ | $\infty$ | 12 |
+| 2 | $\{u,a,c\}$ | 0 | 2 | 13 | **5** | 10 |
+| 3 | $\{u,a,c,d\}$ | 0 | 2 | 11 | 5 | **7** |
+| 4 | $\{u,a,b,c,d\}$ | 0 | 2 | **8** | 5 | 7 |
+
+**Distanze:** $d(u,a)=2$, $d(u,b)=8$, $d(u,c)=5$, $d(u,d)=7$.

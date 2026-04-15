@@ -1,0 +1,98 @@
+---
+title: "Interi Modulo n"
+type: "riassunto"
+section: "Algebra"
+tags: ["Z_n", "invertibilità", "funzione di Eulero", "phi", "elementi invertibili"]
+excerpt: "Struttura di ℤₙ, elementi invertibili e funzione di Eulero φ(n)."
+---
+
+# Interi Modulo $n$ e Invertibilità
+
+## $\mathbb{Z}_n$: l'Insieme degli Interi Modulo $n$
+
+$$\boxed{\mathbb{Z}_n = \{[0]_n,\, [1]_n,\, \ldots,\, [n-1]_n\}} \qquad n \in \mathbb{N},\; n \neq 0$$
+
+> **Attenzione:** gli elementi di $\mathbb{Z}_n$ non sono numeri interi, ma **classi di congruenza**.
+
+---
+
+## Somma e Prodotto in $\mathbb{Z}_n$
+
+$$[a]_n + [b]_n = [a+b]_n \qquad [a]_n \cdot [b]_n = [a \cdot b]_n$$
+
+Le operazioni sono **ben definite** (non dipendono dal rappresentante scelto).
+
+**Esempio ($n=4$):** $[2]_4 + [3]_4 = [5]_4 = [1]_4$
+
+> **Osservazione:** $[2]_4 \cdot [2]_4 = [4]_4 = [0]_4$ — due elementi **non nulli** il cui prodotto è $[0]_4$. In $\mathbb{Z}_4$ **non** vale la legge di cancellazione del prodotto.
+
+**Tavole per $\mathbb{Z}_2$:**
+
+| $+$ | $[0]_2$ | $[1]_2$ |     | $\cdot$ | $[0]_2$ | $[1]_2$ |
+|-----|---------|---------|-----|---------|---------|---------|
+| $[0]_2$ | $[0]_2$ | $[1]_2$ |     | $[0]_2$ | $[0]_2$ | $[0]_2$ |
+| $[1]_2$ | $[1]_2$ | $[0]_2$ |     | $[1]_2$ | $[0]_2$ | $[1]_2$ |
+
+---
+
+## Legame con le Congruenze
+
+La congruenza $a \cdot x \equiv b \pmod{n}$ corrisponde all'**equazione in $\mathbb{Z}_n$**:
+
+$$[a]_n \cdot X = [b]_n$$
+
+- $x_0 \in \mathbb{Z}$ soluzione della congruenza $\iff$ $[x_0]_n$ soluzione dell'equazione in $\mathbb{Z}_n$, e viceversa.
+
+**Differenza rispetto a $\mathbb{C}$:** in $\mathbb{C}$, $ax=b$ ha sempre un'unica soluzione ($x = b/a$). In $\mathbb{Z}_n$:
+1. Un'equazione lineare può **non avere soluzioni** (es. $[2]_4 \cdot X = [3]_4$)
+2. Può avere **più soluzioni** (es. $[2]_6 \cdot X = [4]_6$ ha $[2]_6$ e $[5]_6$)
+
+---
+
+## Elementi Invertibili in $\mathbb{Z}_n$
+
+**Definizione:**
+- $a \in \mathbb{Z}$ è **invertibile modulo $n$** se $a \cdot x \equiv 1 \pmod{n}$ ha soluzione.
+- $[a]_n \in \mathbb{Z}_n$ è **invertibile** se $[a]_n \cdot X = [1]_n$ ha soluzione.
+
+**Criterio:** $a$ è invertibile mod $n$ $\iff$ $\text{MCD}(a, n) = 1$ ($a$ e $n$ coprimi).
+
+Se $[a]_n$ è invertibile, la soluzione di $[a]_n \cdot X = [1]_n$ è **unica** e si chiama **inverso** di $[a]_n$:
+$$[a]_n^{-1}$$
+
+### Proprietà
+
+| # | Proprietà |
+|---|-----------|
+| 1 | $[1]_n^{-1} = [1]_n$ |
+| 2 | $[n-1]_n^{-1} = [n-1]_n$ |
+| 3 | Se $[a]_n$ è invertibile, anche $[a]_n^{-1}$ lo è, e $([a]_n^{-1})^{-1} = [a]_n$ |
+
+> **Esempi:**
+> - $6$ invertibile mod $9$? **No.** $\text{MCD}(6,9)=3 \neq 1$
+> - $4$ invertibile mod $9$? **Sì.** $\text{MCD}(4,9)=1$, e $[4]_9^{-1} = [7]_9$
+
+---
+
+## Funzione di Eulero
+
+$$\varphi : \mathbb{N} \to \mathbb{N}, \qquad n \mapsto \varphi(n) = \#\{\text{elementi invertibili di } \mathbb{Z}_n\}$$
+
+cioè $\varphi(n)$ = numero di interi $a$ con $0 \leq a < n$ e $\text{MCD}(a, n) = 1$.
+
+### Formula
+
+Se $n = p_1^{m_1} \cdot p_2^{m_2} \cdots p_t^{m_t}$ (fattorizzazione in primi), allora:
+
+$$\boxed{\varphi(n) = n \cdot \left(1 - \frac{1}{p_1}\right)\left(1 - \frac{1}{p_2}\right)\cdots\left(1 - \frac{1}{p_t}\right)}$$
+
+**Caso primo:** se $p$ è primo, $\varphi(p) = p - 1$ (tutti i non-nulli di $\mathbb{Z}_p$ sono invertibili).
+
+### Esempi
+
+| $n$ | Fattorizzazione | $\varphi(n)$ | Calcolo |
+|-----|----------------|-------------|---------|
+| $4$ | $2^2$ | $2$ | invertibili: $[1]_4, [3]_4$ |
+| $5$ | primo | $4$ | $[1],[2],[3],[4]_5$ |
+| $10$ | $2 \cdot 5$ | $4$ | $10 \cdot \frac{1}{2} \cdot \frac{4}{5} = 4$ |
+| $20$ | $2^2 \cdot 5$ | $8$ | $20 \cdot \frac{1}{2} \cdot \frac{4}{5} = 8$ |

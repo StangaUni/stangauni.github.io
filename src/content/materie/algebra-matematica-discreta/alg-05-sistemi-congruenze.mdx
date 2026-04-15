@@ -1,0 +1,110 @@
+---
+title: "Sistemi di Congruenze"
+type: "riassunto"
+section: "Algebra"
+tags: ["sistemi di congruenze", "teorema cinese dei resti", "Newton", "Lagrange", "TCR"]
+excerpt: "Teorema Cinese dei Resti, metodo di Newton e metodo di Lagrange per sistemi di congruenze."
+---
+
+# Sistemi di Congruenze
+
+## Definizione
+
+Un **sistema di congruenze** è della forma:
+
+$$\begin{cases} a_1 x \equiv b_1 \pmod{h_1} \\ a_2 x \equiv b_2 \pmod{h_2} \\ \quad\vdots \\ a_t x \equiv b_t \pmod{h_t} \end{cases}$$
+
+$x_0$ è **soluzione del sistema** se è soluzione di ogni congruenza simultaneamente.
+
+**Risolvere** significa: stabilire se esistono soluzioni e trovare **tutte** le classi a cui appartengono.
+
+### Osservazioni
+
+1. Se anche **una sola** congruenza non ha soluzioni → il sistema non ha soluzioni.
+2. Anche se ogni congruenza ha soluzioni, il sistema potrebbe **non** averne.
+
+---
+
+## Strategia per Sistemi Generici
+
+Per risolvere un sistema generico, si riduce a una forma standard con moduli coprimi e coefficienti 1.
+
+**Passo 1:** Per ogni $i$, calcolare $d_i = \text{MCD}(a_i, m_i)$.
+- Se $d_i \nmid c_i$ → la congruenza $i$ non ha soluzioni → il **sistema non ha soluzioni**.
+- Se $d_i \mid c_i$ per ogni $i$: sostituire ogni congruenza con l'equivalente ridotta:
+$$a_i x \equiv c_i \pmod{m_i} \;\longrightarrow\; \frac{a_i}{d_i} x \equiv \frac{c_i}{d_i} \pmod{\underbrace{\frac{m_i}{d_i}}_{n_i}}$$
+
+**Passo 2:** Poiché $\text{MCD}\!\left(\tfrac{a_i}{d_i}, n_i\right) = 1$, le soluzioni della congruenza ridotta appartengono a un'**unica classe** modulo $n_i$. Trovando una soluzione particolare $b_i$, si ottiene il sistema equivalente:
+$$\begin{cases} x \equiv b_1 \pmod{n_1} \\ \vdots \\ x \equiv b_t \pmod{n_t} \end{cases}$$
+
+**Passo 3:** Se i moduli $n_1, \ldots, n_t$ sono a 2 a 2 coprimi → applicare TCR + Newton o Lagrange. Altrimenti servono altre tecniche.
+
+> **Esempio:** $\begin{cases} 2x \equiv 8 \pmod{12} \\ 3x \equiv 4 \pmod{5} \end{cases}$
+>
+> $d_1 = \text{MCD}(2,12)=2 \mid 8$ → ①$'$: $x \equiv 4 \pmod{6}$
+>
+> $d_2 = \text{MCD}(3,5)=1 \mid 4$, Bézout: $\alpha=2$ → ②$'$: $x \equiv 8 \pmod{5}$
+>
+> $\text{MCD}(6,5)=1$ → soluzioni: $[28]_{30}$
+
+---
+
+## Teorema Cinese dei Resti
+
+Si consideri il sistema con **coefficienti 1**:
+
+$$\begin{cases} x \equiv b_1 \pmod{n_1} \\ x \equiv b_2 \pmod{n_2} \\ \quad\vdots \\ x \equiv b_t \pmod{n_t} \end{cases}$$
+
+con $b_i \in \mathbb{Z}$, $n_i \in \mathbb{N} \setminus \{0\}$, e $n_1, \ldots, n_t$ **a due a due coprimi** ($\text{MCD}(n_i, n_j) = 1$ per $i \neq j$).
+
+Allora il sistema ha **infinite soluzioni intere**, tutte nella stessa classe di congruenza modulo $n = n_1 \cdot n_2 \cdot \ldots \cdot n_t$.
+
+> **Attenzione:** la condizione di coprimalità è *sufficiente*, non necessaria: se non è soddisfatta, il sistema potrebbe avere comunque soluzioni.
+
+---
+
+## Metodo di Newton
+
+### Caso: 2 congruenze
+
+$$\begin{cases} x \equiv b_1 \pmod{n_1} \\ x \equiv b_2 \pmod{n_2} \end{cases} \qquad \text{MCD}(n_1, n_2) = 1$$
+
+| Passo | Azione |
+|-------|--------|
+| 1 | $x_1 = b_1$ (soluzione di ①) |
+| 2 | $x_2 = x_1 + K_2 \cdot n_1$, con $K_2 \in \mathbb{Z}$ scelto affinché $x_2$ soddisfi ② |
+| 3 | Tutte le soluzioni: $[x_2]_{n_1 \cdot n_2}$ |
+
+### Caso: $t$ congruenze
+
+| Passo $i$ | Azione |
+|-----------|--------|
+| 1 | $x_1 = b_1$ |
+| 2 | $x_2 = x_1 + K_2 \cdot n_1$, $K_2$ t.c. $x_2$ soddisfi ② |
+| 3 | $x_3 = x_2 + K_3 \cdot (n_1 n_2)$, $K_3$ t.c. $x_3$ soddisfi ③ |
+| $\vdots$ | $\vdots$ |
+| $t$ | $x_t = x_{t-1} + K_t \cdot (n_1 \cdots n_{t-1})$, $K_t$ t.c. $x_t$ soddisfi $(t)$ |
+
+Tutte le soluzioni: $[x_t]_{n_1 \cdot n_2 \cdots n_t}$.
+
+**Esempio:** $\begin{cases} x \equiv 4 \pmod{6} \\ x \equiv 3 \pmod{5} \end{cases}$, $\text{MCD}(6,5)=1$.
+
+- Passo 1: $x_1 = 4$
+- Passo 2: $4 + 6K_2 \equiv 3 \pmod{5}$ → $K_2 \equiv -1 \pmod{5}$, prendo $K_2 = -1$ → $x_2 = -2$
+- Soluzioni: $[-2]_{30} = [28]_{30} = \{28 + 30k : k \in \mathbb{Z}\}$
+
+---
+
+## Metodo di Lagrange (per 2 congruenze)
+
+$$\begin{cases} x \equiv b_1 \pmod{n_1} \\ x \equiv b_2 \pmod{n_2} \end{cases} \qquad \text{MCD}(n_1, n_2) = 1$$
+
+Bézout: $1 = \alpha_1 n_1 + \alpha_2 n_2$. Una soluzione è:
+
+$$\boxed{x_0 = \alpha_1 n_1 b_2 + \alpha_2 n_2 b_1}$$
+
+Tutte le soluzioni: $[x_0]_{n_1 \cdot n_2}$.
+
+**Esempio:** $\begin{cases} x \equiv 4 \pmod{6} \\ x \equiv 3 \pmod{5} \end{cases}$ — Bézout: $1 = 1\cdot6 + (-1)\cdot5$, quindi $\alpha_1=1$, $\alpha_2=-1$.
+
+$$x_0 = (1)(6)(3) + (-1)(5)(4) = 18 - 20 = -2 \qquad \text{Soluzioni: } [-2]_{30} = [28]_{30}$$

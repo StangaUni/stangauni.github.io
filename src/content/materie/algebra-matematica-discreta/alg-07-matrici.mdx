@@ -1,0 +1,181 @@
+---
+title: "Matrici e Sistemi Lineari"
+type: "riassunto"
+section: "Algebra"
+tags: ["matrici", "sistemi lineari", "Gauss", "Gauss-Jordan", "determinante", "rango", "invertibilità"]
+excerpt: "Operazioni matriciali, eliminazione di Gauss, rango, invertibilità e determinante."
+---
+
+# Matrici e Sistemi Lineari
+
+## Definizione
+
+Una **matrice $m \times n$** è una tabella con $m$ righe e $n$ colonne contenente $m \cdot n$ **coefficienti** di un insieme $S$, disposti ordinatamente.
+
+- **Matrice quadrata di ordine $n$:** stessa quantità di righe e colonne.
+- **Notazione:** $M_{m,n}(S)$ = matrici $m\times n$ a coeff. in $S$; $M_n(S)$ = quadrate di ordine $n$.
+
+D'ora in poi si lavorerà principalmente con $S = \mathbb{C}$.
+
+### Coefficiente di posto $(i,j)$
+
+$$A = (a_{ij})_{\substack{1 \leq i \leq m \\ 1 \leq j \leq n}} \qquad a_{ij} = \text{elemento a riga } i \text{, colonna } j$$
+
+> **Nota:** le parentesi di una matrice possono essere tonde o quadre, **mai graffe**.
+
+---
+
+## Matrici Speciali
+
+| Nome | Definizione | Notazione |
+|------|------------|-----------|
+| **Matrice nulla** | tutti i coefficienti sono $0$ | $\mathbb{O} \in M_{m,n}(\mathbb{C})$ |
+| **Matrice identità** di ordine $n$ | $1$ sulla diagonale principale, $0$ altrove | $\mathbb{I}_n \in M_n(\mathbb{C})$ |
+| **Vettore colonna** | matrice $m \times 1$ | $u \in \mathbb{C}^m$ |
+| **Vettore riga** | matrice $1 \times n$ | $u \in \mathbb{C}_n$ |
+
+---
+
+## Operazioni con le Matrici
+
+### 1) Prodotto Matrice × Scalare
+
+$$\lambda \cdot A = (\lambda \cdot a_{ij}) \in M_{m,n}(\mathbb{C}) \qquad \lambda \in \mathbb{C},\; A \in M_{m,n}(\mathbb{C})$$
+
+### 2) Somma di Matrici
+
+$$A + B = (a_{ij} + b_{ij}) \in M_{m,n}(\mathbb{C}) \qquad A, B \in M_{m,n}(\mathbb{C})$$
+
+> Definita **solo** se $A$ e $B$ hanno le stesse dimensioni.
+
+### 3) Prodotto Riga per Colonna
+
+Siano $A \in M_{m,r}(\mathbb{C})$ e $B \in M_{r,n}(\mathbb{C})$. Il prodotto $A \cdot B \in M_{m,n}(\mathbb{C})$ è definito da:
+
+$$\boxed{(A \cdot B)_{ij} = \sum_{k=1}^r a_{ik} \cdot b_{kj}} \qquad = (\text{riga } i \text{ di } A) \cdot (\text{colonna } j \text{ di } B)$$
+
+> **Attenzione:** $A \cdot B$ è definito **solo se** $\#\text{colonne}(A) = \#\text{righe}(B)$.
+
+> **Attenzione:** il prodotto riga per colonna **NON** è commutativo: in generale $A \cdot B \neq B \cdot A$.
+
+---
+
+## Matrici e Sistemi Lineari
+
+**Definizione.** Un **sistema lineare** a coefficienti complessi di $m$ equazioni in $n$ incognite è un insieme di $m$ equazioni di 1° grado nelle incognite $x_1, \ldots, x_n$:
+
+$$\begin{cases} a_{11}x_1 + \cdots + a_{1n}x_n = b_1 \\ \quad\vdots \\ a_{m1}x_1 + \cdots + a_{mn}x_n = b_m \end{cases}$$
+
+In notazione matriciale compatta: $\boxed{A \cdot x = b}$
+
+**Matrice completa (aumentata):**
+
+$$\boxed{(A \mid b) = \begin{pmatrix} a_{11} & \cdots & a_{1n} & \mid & b_1 \\ \vdots & & \vdots & \mid & \vdots \\ a_{m1} & \cdots & a_{mn} & \mid & b_m \end{pmatrix} \in M_{m,n+1}(\mathbb{C})}$$
+
+---
+
+## Algoritmo di Eliminazione di Gauss
+
+L'algoritmo trasforma $(A \mid b)$ in una matrice a gradini $(C \mid d)$ tramite **operazioni elementari sulle righe**.
+
+### Operazioni elementari sulle righe
+
+| Notazione | Operazione |
+|-----------|-----------|
+| $E_{ij}$ | Scambio delle righe $i$ e $j$ |
+| $E_i(\alpha)$, $\alpha \neq 0$ | Moltiplica la riga $i$ per $\alpha \in \mathbb{C}$ |
+| $E_{ij}(\alpha)$, $\alpha \neq 0$ | Somma alla riga $i$ il multiplo $\alpha$ della riga $j$ |
+
+### Matrici a gradini
+
+Una **matrice a gradini** soddisfa:
+1. Tutte le righe nulle sono in fondo.
+2. In ogni riga non-nulla, il primo elemento non-zero è $1$ (**PIVOT**).
+3. Ogni pivot si trova **strettamente a destra** del pivot della riga precedente.
+
+Le colonne contenenti un pivot sono **dominanti**; le altre sono **libere**.
+
+### Lettura delle soluzioni dalla forma ridotta
+
+| Caso | Condizione | Soluzioni |
+|------|-----------|-----------|
+| **1** | $d$ è colonna **dominante** | **nessuna** (l'ultima eq. è $0 = 1$) |
+| **2** | $d$ è libera e **tutte** le colonne di $C$ sono dominanti | **una** (unica) |
+| **3** | $d$ è libera e in $C$ ci sono $K \geq 1$ colonne libere | **infinite**, dipendenti da $K$ parametri |
+
+---
+
+## Rango di una Matrice
+
+**Definizione.** Il **rango** di $A \in M_{m,n}(\mathbb{C})$ è il numero di colonne dominanti di una sua forma ridotta di Gauss. Si indica con $\mathrm{rk}(A)$.
+
+$$\boxed{\mathrm{rk}(A) \leq \min(m, n)}$$
+
+---
+
+## Matrici Invertibili e Gauss-Jordan
+
+**Definizione.** $A \in M_n(\mathbb{C})$ è **invertibile** se esiste $B \in M_n(\mathbb{C})$ tale che $A \cdot B = \mathbb{1}_n = B \cdot A$.
+
+### Caratterizzazione
+
+Sia $A \in M_n(\mathbb{C})$. Sono **equivalenti**:
+1. $A$ è invertibile.
+2. $A \cdot x = b$ ha un'unica soluzione per ogni $b \in \mathbb{C}^n$.
+3. Una forma ridotta di $A$ ha tutte le colonne dominanti.
+4. $\mathrm{rk}(A) = n$.
+
+### Algoritmo per calcolare $A^{-1}$
+
+1. Formare la matrice aumentata $(A \mid \mathbb{1}_n) \in M_{n,2n}(\mathbb{C})$.
+2. Applicare operazioni elementari sulle righe fino ad ottenere $(C \mid D)$.
+3. **Se** $C = \mathbb{1}_n$: $A$ è invertibile e $\boxed{A^{-1} = D}$.
+
+---
+
+## Determinante di Matrici Quadrate
+
+**Definizione.** Il **determinante** $\det(A) \in \mathbb{C}$ è definito ricorsivamente:
+- $n=1$: $\det(a_{11}) = a_{11}$.
+- $n=2$: $\boxed{\det\begin{pmatrix}a&b\\c&d\end{pmatrix} = ad - bc}$.
+- $n \geq 3$: tramite lo sviluppo di Laplace.
+
+### Sviluppo di Laplace
+
+$$\boxed{\det(A) = \sum_{j=1}^n a_{ij}\, A_{ij}} \quad \text{(rispetto alla riga } i\text{)}$$
+
+dove il **cofattore** è $A_{ij} = (-1)^{i+j} \det(C_{ij})$.
+
+### Teorema — Determinante e invertibilità
+
+$$\boxed{A \in M_n(\mathbb{C}) \text{ è invertibile} \iff \det(A) \neq 0}$$
+
+Formula per $2\times 2$: se $\det(A) = ad-bc \neq 0$,
+$$A^{-1} = \frac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$$
+
+### Proprietà del determinante
+
+| # | Proprietà |
+|---|-----------|
+| 1 | $\det(A^T) = \det(A)$ |
+| 2 | $\det(A \cdot B) = \det(A) \cdot \det(B)$ |
+| 3 | $\det(\alpha \cdot A) = \alpha^n \cdot \det(A)$ |
+
+---
+
+## Trasposta, Coniugata e H-Trasposta
+
+| Nome | Definizione | Spazio |
+|------|------------|--------|
+| **Trasposta** $A^T$ | $(A^T)_{ij} = a_{ji}$ | $M_{n,m}(\mathbb{C})$ |
+| **Coniugata** $\overline{A}$ | $(\overline{A})_{ij} = \overline{a_{ij}}$ | $M_{m,n}(\mathbb{C})$ |
+| **H-trasposta** $A^H$ | $A^H = \overline{(A^T)}$ | $M_{n,m}(\mathbb{C})$ |
+
+### Matrici simmetriche e hermitiane
+
+| Nome | Condizione |
+|------|-----------|
+| **Simmetrica** | $A = A^T$ |
+| **Antisimmetrica** | $A = -A^T$ |
+| **Hermitiana** | $A = A^H$ |
+| **Antihermitiana** | $A = -A^H$ |

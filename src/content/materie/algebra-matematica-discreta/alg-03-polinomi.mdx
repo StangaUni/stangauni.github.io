@@ -1,0 +1,92 @@
+---
+title: "Polinomi"
+type: "riassunto"
+section: "Algebra"
+tags: ["polinomi", "zeri", "Ruffini", "teorema fondamentale dell'algebra", "discriminante"]
+excerpt: "Operazioni su polinomi, zeri, teorema di Ruffini e teorema fondamentale dell'algebra."
+---
+
+# Polinomi
+
+## Definizioni
+
+Sia $S \in \{\mathbb{Z}, \mathbb{Q}, \mathbb{R}, \mathbb{C}\}$.
+
+$$S[x] = \left\{ f(x) = a_0 + a_1 x + \ldots + a_n x^n \;\middle|\; a_i \in S,\; a_n \neq 0,\; n \in \mathbb{N} \right\}$$
+
+- **Grado:** $\deg(f) = n$
+- **Coefficiente direttore:** $a_n$
+- **Polinomio nullo:** $f(x) = 0$, con $\deg(0) = -\infty$
+- I numeri non-nulli di $S$ sono polinomi di grado $0$
+
+---
+
+## Operazioni
+
+### Somma
+
+$$(a_0 + a_1 x + \ldots + a_n x^n) + (b_0 + b_1 x + \ldots + b_m x^m) = \sum_k (a_k + b_k) x^k$$
+
+$$\boxed{\deg(f+g) \leq \max\{\deg f,\, \deg g\}}$$
+
+Se $\deg f > \deg g$, allora $\deg(f+g) = \deg f$ (i termini di grado massimo non si cancellano).
+
+### Prodotto
+
+$$f(x) \cdot g(x) = \sum_{j=0}^{n+m} \left(\sum_{k=0}^{j} a_k b_{j-k}\right) x^j$$
+
+$$\boxed{\deg(f \cdot g) = \deg f + \deg g}$$
+
+### Divisione con resto
+
+Sia $S \in \{\mathbb{Q}, \mathbb{R}, \mathbb{C}\}$, $g(x) \neq 0$.
+
+**Esistono unici** $q(x), r(x) \in S[x]$ tali che:
+$$f(x) = q(x) \cdot g(x) + r(x) \qquad \deg(r) < \deg(g)$$
+
+**Esempio:** $f = 7x^4 + 3x - 2$, $g = x^2 + x + 1$
+
+$$7x^4+3x-2 = (7x^2 - 7x)(x^2+x+1) + (10x-2)$$
+
+---
+
+## Zeri (Radici)
+
+$z \in \mathbb{C}$ è **zero** di $f(x) \in S[x]$ se $f(z) = 0$.
+
+Se $z \in \mathbb{R}$: **zero reale**.
+
+### Teorema di Ruffini
+
+$$z \text{ è zero di } f \iff (x-z) \mid f(x) \text{ in } \mathbb{C}[x]$$
+
+cioè $\exists\, q(x) \in \mathbb{C}[x]$ tale che $f(x) = (x-z) \cdot q(x)$.
+
+### Zeri coniugati (per $f \in \mathbb{R}[x]$)
+
+Se $z \in \mathbb{C}$ è zero di $f$, allora anche $\bar{z}$ è zero di $f$.
+
+→ Gli zeri non-reali di un polinomio reale vengono **sempre in coppie coniugate**.
+
+---
+
+## Teorema Fondamentale dell'Algebra
+
+Ogni polinomio di grado $n > 0$ ha **esattamente $n$ zeri complessi** (contati con molteplicità).
+
+Equivalentemente:
+$$f(x) = a_n \cdot (x-z_1)(x-z_2)\cdots(x-z_n) \qquad z_i \in \mathbb{C}$$
+
+### Polinomi reali di 1° grado: $f(x) = bx + c$
+
+Unico zero: $z = -\dfrac{c}{b} \in \mathbb{R}$
+
+### Polinomi reali di 2° grado: $f(x) = ax^2 + bx + c$
+
+$\Delta = b^2 - 4ac$
+
+| Caso | Condizione | Zeri |
+|------|-----------|------|
+| 1 | $\Delta > 0$ | $z_{1,2} = \dfrac{-b \pm \sqrt{\Delta}}{2a} \in \mathbb{R}$, distinti |
+| 2 | $\Delta = 0$ | $z_1 = z_2 = -\dfrac{b}{2a} \in \mathbb{R}$, molteplicità 2 |
+| 3 | $\Delta < 0$ | $z_{1,2} = \dfrac{-b \pm i\sqrt{-\Delta}}{2a} \in \mathbb{C} \setminus \mathbb{R}$, coniugati |

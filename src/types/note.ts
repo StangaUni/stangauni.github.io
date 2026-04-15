@@ -12,4 +12,5 @@ export interface Note {
   difficulty?: 1 | 2 | 3
   hasSolution?: boolean
   week?: number
+  section?: string
 }

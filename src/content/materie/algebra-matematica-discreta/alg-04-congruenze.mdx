@@ -1,0 +1,135 @@
+---
+title: "Congruenze"
+type: "riassunto"
+section: "Algebra"
+tags: ["congruenze", "classi di congruenza", "equazioni modulari", "relazione d'equivalenza"]
+excerpt: "Relazione di congruenza, classi di equivalenza e risoluzione di equazioni modulari."
+---
+
+# Congruenze
+
+## Definizione
+
+Siano $a, b \in \mathbb{Z}$, $n \in \mathbb{N}$, $n \neq 0$.
+
+$a$ è **congruo a $b$ modulo $n$** se $n \mid (a-b)$.
+
+$$a \equiv b \pmod{n} \qquad \text{(anche scritto } a \equiv_n b\text{)}$$
+
+**Caratterizzazione:** $a \equiv b \pmod{n} \iff a$ e $b$ hanno lo stesso resto nella divisione per $n$.
+
+---
+
+## Proprietà della congruenza
+
+La congruenza modulo $n$ è una **relazione d'equivalenza**:
+
+| # | Proprietà | Dimostrazione |
+|---|-----------|--------------|
+| 1 | **Riflessiva:** $a \equiv a \pmod{n}$ | $n \mid 0$ |
+| 2 | **Simmetrica:** $a \equiv b \Rightarrow b \equiv a$ | $n \mid (a-b) \Rightarrow n \mid (b-a)$ |
+| 3 | **Transitiva:** $a \equiv b,\, b \equiv c \Rightarrow a \equiv c$ | $n \mid (a-b)+(b-c) = (a-c)$ |
+
+Inoltre è **compatibile** con le operazioni:
+
+| # | Proprietà |
+|---|-----------|
+| 4 | $a_1 \equiv b_1,\; a_2 \equiv b_2 \;\Rightarrow\; a_1+a_2 \equiv b_1+b_2 \pmod{n}$ |
+| 5 | $a_1 \equiv b_1,\; a_2 \equiv b_2 \;\Rightarrow\; a_1 \cdot a_2 \equiv b_1 \cdot b_2 \pmod{n}$ |
+
+---
+
+## Classi di Congruenza
+
+$$\boxed{[a]_n = \{ b \in \mathbb{Z} \mid b \equiv a \pmod{n} \}}$$
+
+Ogni elemento di $[a]_n$ è detto **rappresentante** della classe.
+
+### Proprietà
+
+1. $[a]_n = \{ a + kn \mid k \in \mathbb{Z} \}$
+2. $[a]_n = [a + kn]_n$ per ogni $k \in \mathbb{Z}$
+3. $c \in [a]_n \iff [a]_n = [c]_n$
+4. $a = qn + r \;\Rightarrow\; [a]_n = [r]_n$ *(ogni classe ha un rappresentante in $\{0, 1, \ldots, n-1\}$)*
+
+### Struttura
+
+Le $n$ classi $[0]_n, [1]_n, \ldots, [n-1]_n$ sono:
+- **disgiunte** (due classi diverse non hanno elementi comuni)
+- **esaustive**: $[0]_n \cup [1]_n \cup \ldots \cup [n-1]_n = \mathbb{Z}$
+
+→ Costituiscono una **partizione** di $\mathbb{Z}$.
+
+**Esempio $n=4$:**
+
+| Classe | Elementi |
+|--------|---------|
+| $[0]_4$ | $\{\ldots, -8, -4, 0, 4, 8, \ldots\}$ |
+| $[1]_4$ | $\{\ldots, -7, -3, 1, 5, 9, \ldots\}$ |
+| $[2]_4$ | $\{\ldots, -6, -2, 2, 6, 10, \ldots\}$ |
+| $[3]_4$ | $\{\ldots, -5, -1, 3, 7, 11, \ldots\}$ |
+
+---
+
+## Congruenze con Incognite
+
+Una **congruenza** è un'espressione della forma:
+$$a \cdot x \equiv b \pmod{n} \qquad (*)$$
+
+$x_0 \in \mathbb{Z}$ è **soluzione** di $(*)$ se $a \cdot x_0 \equiv b \pmod{n}$.
+
+> **Attenzione:** non tutte le congruenze hanno soluzioni!
+
+**Proposizione:** se $x_0$ è soluzione, allora **tutti gli interi di $[x_0]_n$** sono soluzioni.
+
+**Risolvere** $(*)$ significa:
+1. stabilire se ha soluzioni
+2. trovare **tutte** le classi di congruenza soluzione
+
+---
+
+## Teorema 1 — Esistenza di soluzioni
+
+$$a \cdot x \equiv b \pmod{n} \text{ ha soluzioni} \iff \text{MCD}(a, n) \mid b$$
+
+### Dimostrazione
+
+**($\Rightarrow$)** Sia $x_0$ soluzione: $a x_0 = b + kn$, quindi $b = ax_0 - kn$.
+$\text{MCD}(a,n)$ divide $a$ (quindi $ax_0$) e divide $n$ (quindi $kn$), dunque divide $b$. $\square$
+
+**($\Leftarrow$)** Per Bézout: $\exists\, \alpha, \beta \in \mathbb{Z}$ con $\text{MCD}(a,n) = \alpha a + \beta n$.
+Poiché $\text{MCD}(a,n) \mid b$, esiste $q$ con $b = q \cdot \text{MCD}(a,n)$:
+$$b = q(\alpha a + \beta n) = (q\alpha) \cdot a + (q\beta) \cdot n$$
+$$\Rightarrow a \cdot \underbrace{(q\alpha)}_{x_0} \equiv b \pmod{n} \quad \square$$
+
+### Metodo risolutivo
+
+1. Calcolare $d = \text{MCD}(a, n)$ con l'algoritmo di Euclide; verificare che $d \mid b$
+2. Trovare $\alpha, \beta$ tali che $d = \alpha a + \beta n$ (Euclide a ritroso)
+3. Una soluzione è $x_0 = \dfrac{b}{d} \cdot \alpha$
+
+---
+
+## Teorema 2 — Tutte le soluzioni
+
+Se $a \cdot x \equiv b \pmod{n}$ ammette soluzioni e $x_0$ è una soluzione particolare, allora **tutte e sole** le soluzioni sono:
+
+$$\boxed{x_k = x_0 + k \cdot \frac{n}{d}, \quad k \in \mathbb{Z}}$$
+
+dove $d = \text{MCD}(a, n)$.
+
+Le soluzioni si distribuiscono in esattamente $d$ classi di congruenza modulo $n$:
+
+$$[x_0]_n \cup [x_1]_n \cup \ldots \cup [x_{d-1}]_n \qquad \text{con } x_i = x_0 + i \cdot \tfrac{n}{d}$$
+
+---
+
+## Semplificazione di una congruenza
+
+Se $a \cdot x \equiv b \pmod{n}$ ha soluzioni, allora ha le **stesse soluzioni** di:
+
+$$\frac{a}{d} \cdot x \equiv \frac{b}{d} \pmod{\frac{n}{d}} \qquad \text{con } d = \text{MCD}(a,n)$$
+
+La congruenza ridotta ha $\text{MCD}\!\left(\tfrac{a}{d}, \tfrac{n}{d}\right) = 1$, quindi le soluzioni appartengono tutte a un'**unica classe** modulo $\tfrac{n}{d}$.
+
+> **Esempio:** $2x \equiv 4 \pmod{6}$, $d=2$ → $x \equiv 2 \pmod{3}$, soluzioni: $[2]_3 = [2]_6 \cup [5]_6$

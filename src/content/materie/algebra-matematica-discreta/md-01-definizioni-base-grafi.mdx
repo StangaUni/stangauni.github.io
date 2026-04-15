@@ -1,0 +1,82 @@
+---
+title: "Definizioni Base dei Grafi"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["grafi", "vertici", "archi", "grado", "handshaking lemma", "grafi completi"]
+excerpt: "Definizioni fondamentali: grafi semplici, multigrafi, gradi dei vertici e lemma delle strette di mano."
+---
+
+# Definizioni Base dei Grafi
+
+## Grafi Non Orientati
+
+**Definizione.** Un **grafo (non orientato)** $G(V, E)$ consiste di:
+1. Un insieme finito $V = \{v_1, \ldots, v_n\}$ di **vertici** o **nodi**
+2. Un insieme finito $E = \{e_1, \ldots, e_m\}$ di **archi** (coppie non ordinate di vertici)
+
+- Gli estremi di un arco $e = \{v_i, v_j\}$ sono i vertici $v_i$ e $v_j$
+- $e$ è **incidente** nei suoi estremi
+- Due vertici sono **adiacenti** se esiste un arco con loro come estremi
+
+---
+
+## Grafi Semplici e Multigrafi
+
+Un **grafo semplice** soddisfa:
+1. Fra ogni coppia di vertici c'è **al massimo un arco** (no archi paralleli)
+2. Ogni arco ha **due estremi distinti** (no cappi)
+
+Un **multigrafo** non richiede queste condizioni: può avere **archi paralleli** e **cappi**.
+
+---
+
+## Gradi dei Vertici
+
+Il **grado** $d(v)$ di un vertice $v$ è il numero di archi incidenti in $v$.
+
+**Lista di adiacenze:** tabella che indica per ogni vertice e arco se il vertice è estremo di quell'arco.
+
+---
+
+## Teorema 1 — Handshaking Lemma (Lemma delle Strette di Mano)
+
+$$\boxed{\sum_{v \in V} d(v) = 2 \cdot |E|}$$
+
+**Dimostrazione.** Ogni arco ha due estremi e contribuisce 2 alla somma dei gradi. $\square$
+
+**Corollario.** Il numero dei vertici di grado **dispari** è sempre **pari**.
+
+*Dim.* Scrivendo $\sum d(v) = \text{(somma gradi pari)} + \text{(somma gradi dispari)} = 2|E|$, la somma dei gradi dispari è pari; affinché una somma di numeri dispari sia pari occorre un numero pari di addendi. $\square$
+
+---
+
+## Grafi $k$-Regolari
+
+Un grafo è **$k$-regolare** se ogni suo vertice ha grado $k$.
+
+- Grafi 2-regolari: quadrato, esagono, ...
+- Grafi 3-regolari (**grafi cubici**): cubo, prisma triangolare, grafo di Petersen, ...
+
+---
+
+## Grafi Completi $K_n$
+
+Il **grafo completo** $K_n$ ha $n$ vertici e ogni coppia di vertici è collegata da un arco.
+
+$$|E(K_n)| = \binom{n}{2} = \frac{n(n-1)}{2}$$
+
+$K_n$ è $(n-1)$-regolare.
+
+---
+
+## Cammini, Cicli e Connessione
+
+**Cammino** di lunghezza $k$: sequenza di vertici distinti $v_0, v_1, \ldots, v_k$ con $v_i v_{i+1} \in E$.
+
+**Ciclo** di lunghezza $k \geq 3$: cammino chiuso $v_0, v_1, \ldots, v_{k-1}, v_0$.
+
+**Ciclo $C_n$:** grafo formato da un unico ciclo di lunghezza $n$.
+
+**Grafo connesso:** per ogni $u, v \in V$ esiste un cammino da $u$ a $v$.
+
+**Componente connessa:** sottografo massimale connesso.

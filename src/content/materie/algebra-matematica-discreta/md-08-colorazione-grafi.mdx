@@ -1,0 +1,53 @@
+---
+title: "Colorazione dei Grafi"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["colorazione", "numero cromatico", "teorema dei quattro colori", "k-colorabile"]
+excerpt: "k-colorabilità, numero cromatico e teorema dei quattro colori di Appel–Haken."
+---
+
+# Colorazione dei Grafi
+
+## Motivazione
+
+Data una superficie piana divisa in regioni, si vuole colorare le regioni in modo che regioni adiacenti abbiano colori diversi. Il problema si traduce su grafi: si assegna un colore a ogni vertice in modo che vertici adiacenti abbiano colori diversi.
+
+---
+
+## $k$-Colorabilità
+
+**Definizione.** Un grafo $G(V, E)$ è **$k$-colorabile** ($k \in \mathbb{N}$) se esiste un'assegnazione di $k$ colori ai vertici tale che ogni coppia di vertici adiacenti abbia colori distinti.
+
+Il **numero cromatico** $\chi(G)$ è il minimo $k$ per cui $G$ è $k$-colorabile.
+
+---
+
+## Esempi
+
+| Grafo | $\chi(G)$ | Motivazione |
+|---|---|---|
+| Grafo bipartito $G(V_1, V_2, E)$ | 2 | Colora $V_1$ di verde, $V_2$ di giallo |
+| Ciclo $C_n$ pari | 2 | Alterna due colori |
+| Ciclo $C_n$ dispari | 3 | Non 2-colorabile (contiene ciclo dispari) |
+| Grafo di Petersen | 3 | 3-colorabile, non 2-colorabile |
+| $K_n$ | $n$ | Ogni coppia è adiacente |
+
+---
+
+## Grafo Bipartito $\iff$ 2-Colorabile
+
+**Teorema.** Un grafo $G$ è bipartito **se e solo se** è 2-colorabile.
+
+> Equivalentemente: $G$ è bipartito $\iff$ $G$ non contiene cicli di lunghezza dispari.
+
+---
+
+## Teorema dei Quattro Colori
+
+**Teorema (Appel–Haken, 1976).** Data una superficie piana divisa in regioni, sono sufficienti **4 colori** per colorare ogni regione in modo che regioni adiacenti abbiano colori diversi.
+
+Nella terminologia dei grafi:
+
+$$\boxed{\text{Ogni grafo planare è 4-colorabile.}}$$
+
+> Questo teorema è stato il primo grande risultato dimostrato con l'ausilio di un computer (verifica di circa 1900 casi).

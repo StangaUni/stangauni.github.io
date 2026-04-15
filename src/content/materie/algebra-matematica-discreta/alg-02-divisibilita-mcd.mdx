@@ -1,0 +1,109 @@
+---
+title: "Divisibilità e MCD"
+type: "riassunto"
+section: "Algebra"
+tags: ["divisibilità", "MCD", "algoritmo di Euclide", "Bézout"]
+excerpt: "Divisione con resto in ℤ, algoritmo di Euclide e identità di Bézout."
+---
+
+# Divisibilità e MCD
+
+## Divisione con resto
+
+### In $\mathbb{N}$
+
+Dati $a, b \in \mathbb{N}$, $b \neq 0$, **esistono unici** $q, r \in \mathbb{N}$ tali che:
+$$a = q \cdot b + r \qquad 0 \leq r < b$$
+
+### In $\mathbb{Z}$
+
+Dati $a, b \in \mathbb{Z}$, $b \neq 0$, **esistono unici** $q, r \in \mathbb{Z}$ tali che:
+$$a = q \cdot b + r \qquad 0 \leq r < |b|$$
+
+> **Il resto è sempre $\geq 0$** (è un numero naturale), anche quando $a$ o $b$ sono negativi.
+
+---
+
+## Divisibilità
+
+$b \mid a$ ("$b$ divide $a$") se $a = q \cdot b$ per qualche $q \in \mathbb{Z}$ (resto zero).
+
+Equivalente: "$a$ è multiplo di $b$".
+
+### Proprietà (per $a, b, c \in \mathbb{Z}$ non nulli)
+
+1. $a \mid b$ e $b \mid a \;\Rightarrow\; a = \pm b$
+2. $a \mid b$ e $a \mid c \;\Rightarrow\; a \mid (b+c)$
+3. $a \mid b$ e $b \mid c \;\Rightarrow\; a \mid c$
+
+---
+
+## Massimo Comun Divisore (MCD)
+
+### In $\mathbb{N}$ (non entrambi zero)
+
+$d \in \mathbb{N}$ è MCD di $a$ e $b$ se:
+1. $d \mid a$ e $d \mid b$
+2. $\forall z \in \mathbb{N}$: se $z \mid a$ e $z \mid b$, allora $z \mid d$
+
+Se $a, b$ non sono entrambi zero, il MCD **esiste ed è unico** → si indica $\text{MCD}(a, b)$.
+
+### In $\mathbb{Z}$
+
+Stessa definizione con $d, z \in \mathbb{Z}$, ma **l'unicità non vale**: se $d$ è MCD, anche $-d$ lo è.
+
+### Proprietà del MCD in $\mathbb{N}$
+
+1. $\text{MCD}(0, b) = b$ per $b \neq 0$
+2. $\text{MCD}(a, b) = \text{MCD}(b, a)$
+3. $b \mid a \;\Rightarrow\; \text{MCD}(a, b) = b$
+4. $a = q \cdot b + r \;\Rightarrow\; \text{MCD}(a, b) = \text{MCD}(b, r)$ *(chiave dell'algoritmo di Euclide)*
+
+**Dim. prop. 4:** Poniamo $X = \{d \in \mathbb{N} : d \mid a,\, d \mid b\}$ e $Y = \{d \in \mathbb{N} : d \mid b,\, d \mid r\}$.
+- $d \in X \Rightarrow d \mid a$ e $d \mid b \Rightarrow d \mid (a - qb) = r \Rightarrow d \in Y$
+- $d \in Y \Rightarrow d \mid b$ e $d \mid r \Rightarrow d \mid (qb + r) = a \Rightarrow d \in X$
+
+Quindi $X = Y$. $\square$
+
+---
+
+## Algoritmo di Euclide
+
+Sequenza di divisioni successive (più veloce della fattorizzazione).
+
+**Dati** $a, b \in \mathbb{N}$, $a, b \neq 0$:
+
+$$a = q_1 \cdot b + r_1$$
+$$b = q_2 \cdot r_1 + r_2$$
+$$r_1 = q_3 \cdot r_2 + r_3$$
+$$\vdots$$
+
+Si ferma quando il resto è $0$. **Il MCD è l'ultimo resto non-nullo.**
+
+**Esempio:** $\text{MCD}(36, 28)$
+$$36 = 1 \cdot 28 + 8$$
+$$28 = 3 \cdot 8 + \mathbf{4}$$
+$$8 = 2 \cdot 4 + 0 \quad \leftarrow \text{stop}$$
+$$\text{MCD}(36, 28) = 4$$
+
+### In $\mathbb{Z}$
+
+Due metodi:
+1. Applicare Euclide a $|a|$ e $|b|$ → i MCD sono $\pm\,\text{MCD}(|a|, |b|)$
+2. Applicare Euclide direttamente in $\mathbb{Z}$ (**tutti i resti devono essere $\geq 0$**)
+
+---
+
+## Identità di Bézout
+
+Dati $a, b \in \mathbb{Z}$ non entrambi nulli, se $d$ è un MCD di $a$ e $b$, **esistono** $m, n \in \mathbb{Z}$ tali che:
+$$\boxed{d = m \cdot a + n \cdot b}$$
+
+**Strategia di calcolo:** applicare Euclide e ripercorrerlo a ritroso sostituendo i resti.
+
+**Esempio:** $a = -36$, $b = 28$, $d = \text{MCD}(36, 28) = 4$
+
+$$4 = 28 - 3 \cdot 8 = 28 - 3[36 - 1 \cdot 28] = (-3) \cdot 36 + 4 \cdot 28$$
+
+Aggiustando i segni ($a = -36$):
+$$4 = \underset{m}{3} \cdot (-36) + \underset{n}{4} \cdot 28$$

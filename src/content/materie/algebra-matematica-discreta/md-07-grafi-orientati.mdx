@@ -1,0 +1,91 @@
+---
+title: "Grafi Orientati"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["grafi orientati", "digrafi", "grado entrante", "grado uscente", "fortemente connesso"]
+excerpt: "Definizioni di grafi orientati, gradi entrante e uscente, forte connessione e somma dei gradi."
+---
+
+# Grafi Orientati
+
+## Definizione
+
+**Definizione.** Un **grafo orientato** (o **digrafo**) $D(V, A)$ consiste di:
+1. Un insieme finito di **vertici** $V$
+2. Un insieme finito di **archi orientati** $A$, dove ogni arco è una **coppia ordinata** $(u, v)$
+
+Per un arco $(u, v) \in A$:
+- $u$ è la **coda** (vertice iniziale, da cui parte la freccia)
+- $v$ è la **testa** (vertice finale, dove arriva la freccia)
+
+**Rappresentazione grafica:** gli archi sono **frecce** che indicano la direzione.
+
+---
+
+## Tipi di Grafi Orientati
+
+**Multigrafo orientato:** ammette **archi paralleli** (due archi con stessa coda e stessa testa) e **cappi** (arco $(v, v)$).
+
+**Grafo semplice orientato:** non ha archi paralleli né cappi.
+
+> **Attenzione:** $(u, v)$ e $(v, u)$ sono **archi distinti** (non paralleli) anche in un grafo semplice: hanno direzioni opposte.
+
+---
+
+## Cammino Orientato
+
+**Definizione.** Un **cammino orientato** in un grafo orientato semplice è una sequenza di vertici **distinti** $v_1, v_2, \ldots, v_k$ tale che $(v_i, v_{i+1}) \in A$ per ogni $i$.
+
+- La **lunghezza** del cammino è il numero di archi.
+
+> **Attenzione:** se $\gamma = v_1 v_2 \cdots v_n$ è un cammino orientato, il cammino inverso $\gamma^{-1} = v_n \cdots v_1$ **non** è in generale un cammino (le frecce vanno nel verso sbagliato).
+
+---
+
+## Grafo Fortemente Connesso
+
+**Definizione.** Un grafo orientato $D(V, A)$ è **fortemente connesso** se per ogni coppia $u, v \in V$ esistono:
+- un cammino orientato da $u$ a $v$, **e**
+- un cammino orientato da $v$ a $u$.
+
+---
+
+## Numero Massimo di Archi
+
+> Il numero **massimo** di archi in un grafo orientato semplice con $n$ vertici è $n(n-1)$.
+
+(Per ogni coppia ordinata $(u,v)$ con $u \neq v$ si può avere al più un arco.)
+
+**Confronto:** i grafi non orientati con $n$ vertici hanno al massimo $\dfrac{n(n-1)}{2}$ archi.
+
+---
+
+## Grado Entrante e Uscente
+
+Sia $D(V, A)$ un grafo orientato e $v \in V$.
+
+$$\boxed{d^{\text{in}}(v)} = \text{grado entrante di } v = \text{numero di archi con } v \text{ come testa}$$
+
+$$\boxed{d^{\text{out}}(v)} = \text{grado uscente di } v = \text{numero di archi con } v \text{ come coda}$$
+
+---
+
+## Teorema — Somma dei Gradi
+
+**Teorema.** Per ogni grafo orientato $D(V, A)$:
+
+$$\boxed{|A| = \sum_{v \in V} d^{\text{in}}(v) = \sum_{v \in V} d^{\text{out}}(v)}$$
+
+**Motivazione.** Ogni arco $(u,v)$ contribuisce 1 a $d^{\text{out}}(u)$ e 1 a $d^{\text{in}}(v)$.
+
+> **Confronto con i grafi non orientati:** $2|E| = \displaystyle\sum_{v \in V} d(v)$.
+
+---
+
+## Differenza con i Grafi Non Orientati
+
+| | Grafo non orientato | Grafo orientato |
+|---|---|---|
+| Arco | Coppia **non ordinata** $\{u,v\}$ | Coppia **ordinata** $(u,v)$ |
+| Archi paralleli | $\{u,v\}$ e $\{u,v\}$ (stessi estremi) | $(u,v)$ e $(u,v)$ (stessa direzione) |
+| "Inverso" | — | $(u,v)$ e $(v,u)$ sono archi distinti |
