@@ -1,0 +1,507 @@
+---
+title: "Esercizi da Esame — Primo Compitino"
+type: "extra"
+tags: ["esame", "compitino", "vero/falso", "scheduling", "semafori", "deadlock", "banchiere", "lettori-scrittori", "filosofi", "esercizi originali"]
+excerpt: "Esercizi estratti direttamente dagli esami 2015–2024 con soluzioni ufficiali. Vero/falso, scheduling, tracce con semafori, grafo di allocazione, algoritmo del banchiere, lettori-scrittori, filosofi."
+readingTime: 35
+---
+
+# Esercizi Originali da Primo Parziale
+
+> Esercizi estratti direttamente dagli esami 2015–2024 con soluzioni ufficiali.
+> Per ciascun esercizio è riportata la fonte (anno e versione).
+> Argomenti: vero/falso, scheduling, semafori, deadlock, banchiere, lettori-scrittori, filosofi.
+
+---
+
+## Esercizio 1 — Vero/Falso: Domande Ricorrenti
+
+> **Fonte:** tutti gli esami 2015–2024 (Quesito 1)
+
+Le seguenti affermazioni compaiono in modo ricorrente nei compitini. Indicare V o F.
+
+| # | Domanda | V/F |
+|---|---------|-----|
+| 1 | Una variabile **semaforo contatore** può assumere solo valore 0 o 1 | F |
+| 2 | Una variabile **semaforo binario** può assumere solo valore 0 o 1 | V |
+| 3 | La politica SRTN minimizza il tempo medio di **turn-around** dei processi | V |
+| 4 | La politica SRTN minimizza il tempo medio di **attesa** dei processi | V |
+| 5 | La politica SRTN minimizza il tempo medio di **risposta** dei processi | F |
+| 6 | L'algoritmo del banchiere **evita** i deadlock nell'allocazione delle risorse | V |
+| 7 | I semafori consentono **solo** la mutua esclusione come forma di sincronizzazione | F |
+| 8 | L'inversione di priorità si verifica in ambiente multiprogrammato | V |
+| 9 | Un processo per lanciare un nuovo processo deve fare una system call | V |
+| 10 | Una system call dà sempre luogo a un *mode switch* utente→kernel | V |
+| 11 | Un interrupt viene gestito in modalità utente | F |
+| 12 | Un *process switch* tra processi utente avviene contestualmente a 2 *mode switch* | V |
+| 13 | 4 fork() successive → il sistema si trova con **8** processi che eseguono InstrX | F |
+| 14 | Se un processo è in blocco da 10 ms → 10 ms fa ha eseguito una system call | V |
+| 15 | Ogni interrupt è associato a un processo che ha richiesto un'operazione di I/O | F |
+| 16 | L'inversione di priorità è una *tecnica* per evitare la starvation | F |
+| 17 | La possibilità di prerilascio è necessaria per il funzionamento di Round Robin | V |
+| 18 | Con FCFS senza priorità, il tempo di attesa è sempre uguale al tempo di risposta | V |
+| 19 | Un semaforo binario gestisce richieste di **al massimo 2** processi | F |
+| 20 | Gli interrupt sono asincroni; le chiamate di sistema (trap) sono sincrone | V |
+| 21 | L'accumulo di risorse e l'inibizione del prerilascio sono 2 delle 4 condizioni di deadlock | V |
+
+### Teoria
+
+> Riferimento: `Riassunti/02. Processi e thread.md`, `Riassunti/03. Ordinamento dei processi.md`, `Riassunti/04. Sincronizzazione tra processi.md`, `Riassunti/05. Deadlock.md`
+
+**Note sulle risposte non ovvie:**
+
+- **#1 vs #2:** il semaforo *binario* è limitato a \{0,1\}; il semaforo *contatore* può assumere qualsiasi intero.
+- **#3 vs #5:** SRTN minimizza attesa e turn-around, **non** il tempo di risposta (prima assegnazione CPU). Processi a burst elevato possono attendere a lungo la prima esecuzione.
+- **#13:** 4 fork() producono $2^4 = \mathbf{16}$ processi totali, non 8.
+- **#15:** gli interrupt possono provenire anche da periferiche autonome (timer, rete) non associate a nessun processo.
+- **#16:** l'inversione di priorità è un **problema** (processo ad alta priorità bloccato da uno a bassa), non una tecnica.
+- **#17:** Round Robin richiede il prerilascio per togliere la CPU al processo corrente allo scadere del quanto.
+- **#18:** con FCFS, il processo aspetta in coda poi esegue senza interruzioni: `t. risposta = t. attesa = inizio − arrivo`.
+
+---
+
+## Esercizio 2 — Scheduling: Quattro Politiche a Confronto
+
+> **Fonte:** 15 aprile 2024 – Ver. B, Quesito 5 (politiche A e B); 15 aprile 2024 – Ver. C, Quesito 4 (politiche C e D)
+
+Quattro processi batch (priorità: 5 = massima, 0 = minima):
+
+| Processo | Arrivo | Burst CPU | Priorità |
+|---------|--------|-----------|---------|
+| A | 0 | 5 | 3 |
+| B | 1 | 7 | 5 |
+| C | 2 | 2 | 3 |
+| D | 6 | 3 | 2 |
+
+Determinare tempo medio di risposta, attesa e turn-around per ognuna delle seguenti politiche:
+
+**A)** Round Robin con priorità, **senza prerilascio** per priorità, quanto `q = 3`.  
+**B)** A priorità, **senza prerilascio**.  
+**C)** Round Robin con priorità, **con prerilascio** per priorità, quanto `q = 2`. *(Nota: per questa politica le priorità di C e D sono invertite: C=2, D=3.)*  
+**D)** Shortest Remaining Time Next (SRTN). *(Le priorità non influenzano SRTN.)*
+
+### Teoria
+
+> Riferimento: `Riassunti/03. Ordinamento dei processi.md` — §Scheduling con priorità, §Round Robin, §SRTN
+
+- **Tempo di risposta** = primo inizio CPU − arrivo.
+- **Tempo di attesa** = turn-around − burst.
+- **Turn-around** = fine − arrivo.
+- **RR senza prerilascio:** allo scadere del quanto si sceglie il processo a priorità massima; un nuovo arrivo a priorità più alta non interrompe il quanto in corso.
+- **RR con prerilascio:** ogni nuovo arrivo a priorità superiore interrompe il processo corrente anche a metà quanto.
+- **SRTN:** ogni nuovo arrivo confronta il proprio burst col residuo del processo in esecuzione; se è minore, prerilascio immediato. Le priorità non hanno ruolo.
+
+### Soluzione
+
+#### A) RR con priorità, senza prerilascio, q = 3
+
+```
+t=0:  Coda=[A(3)]. A esegue (3u).
+t=3:  A residuo=2. Coda=[B(5),C(3),A(3)]. B max → B (3u).
+t=6:  B residuo=4. D arriva. Coda=[C(3),A(3),D(2),B(5)]. B max → B (3u).
+t=9:  B residuo=1. B max → B (1u) → B finisce.
+t=10: Coda=[C(3),A(3),D(2)]. C in coda da t=3, prima di A → C (2u) → C finisce.
+t=12: Coda=[A(3),D(2)]. A → A (2u) → A finisce. D (3u) → D finisce.
+```
+
+Gantt: `[A:0-3][B:3-10][C:10-12][A:12-14][D:14-17]`
+
+| Processo | Arrivo | Fine | t. risposta | t. attesa | turn-around |
+|---------|--------|------|-------------|-----------|-------------|
+| A | 0 | 14 | 0 | 9 | 14 |
+| B | 1 | 10 | 2 | 2 | 9 |
+| C | 2 | 12 | 8 | 8 | 10 |
+| D | 6 | 17 | 8 | 8 | 11 |
+| **Medie** | | | **4,5** | **6,75** | **11** |
+
+#### B) A priorità, senza prerilascio
+
+```
+t=0: A (unico) → A (5u).
+t=5: Coda=[B(5),C(3)]. B → B (7u).
+t=12: Coda=[C(3),D(2)]. C → C (2u) → C finisce. D (3u) → D finisce.
+```
+
+Gantt: `[A:0-5][B:5-12][C:12-14][D:14-17]`
+
+| Processo | Arrivo | Fine | t. risposta | t. attesa | turn-around |
+|---------|--------|------|-------------|-----------|-------------|
+| A | 0 | 5 | 0 | 0 | 5 |
+| B | 1 | 12 | 4 | 4 | 11 |
+| C | 2 | 14 | 10 | 10 | 12 |
+| D | 6 | 17 | 8 | 8 | 11 |
+| **Medie** | | | **5,5** | **5,5** | **9,75** |
+
+#### C) RR con priorità e prerilascio, q = 2 *(C=2, D=3)*
+
+```
+t=0:  A(3) esegue.
+t=1:  B arriva (5>3) → prerilascio A (res=4). B esegue (q=2).
+t=3,5,7: B ancora il più prioritario → B continua. t=8: B finisce (7u totali).
+t=8:  Coda=[A(3,res=4), D(3,res=3), C(2,res=2)]. A e D pari: A in coda da t=1 → A (2u).
+t=10: Coda=[D(3,res=3), C(2), A(3,res=2)]. D e A pari: D aspetta da t=6 → D (2u).
+t=12: Coda=[A(3,res=2), C(2), D(3,res=1)]. A e D pari: A in coda da t=10 → A (2u) → A finisce.
+t=14: D(1u) → D finisce. C(2u) → C finisce.
+```
+
+Gantt: `[A:0-1][B:1-8][A:8-10][D:10-12][A:12-14][D:14-15][C:15-17]`
+
+| Processo | Arrivo | Fine | t. risposta | t. attesa | turn-around |
+|---------|--------|------|-------------|-----------|-------------|
+| A | 0 | 14 | 0 | 9 | 14 |
+| B | 1 | 8 | 0 | 0 | 7 |
+| C | 2 | 17 | 13 | 13 | 15 |
+| D | 6 | 15 | 4 | 6 | 9 |
+| **Medie** | | | **4,25** | **7** | **11,25** |
+
+#### D) SRTN *(le priorità non contano)*
+
+```
+t=0:  A (res=5) esegue.
+t=1:  B arriva (res=7 > A res=4) → nessun prerilascio.
+t=2:  C arriva (res=2 < A res=3) → prerilascio A! C esegue → t=4: C finisce.
+t=4:  A(res=3) < B(res=7) → A. t=7: A finisce.
+t=7:  D(arr=6,res=3) < B(res=7) → D. t=10: D finisce.
+t=10-17: B (res=7) → B finisce.
+```
+
+Gantt: `[A:0-2][C:2-4][A:4-7][D:7-10][B:10-17]`
+
+| Processo | Arrivo | Fine | t. risposta | t. attesa | turn-around |
+|---------|--------|------|-------------|-----------|-------------|
+| A | 0 | 7 | 0 | 2 | 7 |
+| B | 1 | 17 | 9 | 9 | 16 |
+| C | 2 | 4 | 0 | 0 | 2 |
+| D | 6 | 10 | 1 | 1 | 4 |
+| **Medie** | | | **2,5** | **3** | **7,25** |
+
+---
+
+## Esercizio 3 — Traccia Esecuzione con Semafori
+
+> **Fonte:** 15 aprile 2024 – Ver. B, Quesito 2
+
+Tre processi condividono una variabile `x`:
+
+```
+P1:                       P2:              P3:
+P(SemA)                   P(SemB)          P(SemC)
+P(Mutex)                  P(Mutex)         P(Mutex)
+x = x - 2                x = x + 1        if (x<0) then V(SemB)
+V(Mutex)                  V(Mutex)         V(Mutex)
+V(SemC)                   V(SemC)          P(SemC)
+P(SemA)                   P(SemB)          print(x)
+P(Mutex)
+x = x - 1
+V(Mutex)
+V(SemC)
+```
+
+Valori iniziali: `x = 1`, `SemA = 1`, `SemB = 0`, `SemC = 0`, `Mutex = 1`.
+
+a) `print(x)` sarà mai eseguita da P3? In caso affermativo, qual è il valore stampato?  
+b) Vi sono porzioni di codice mai eseguite? Indicarle.
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Semafori
+
+`P(s)`: se `s > 0` decrementa e procede; altrimenti sospende il processo in coda. `V(s)`: incrementa; se c'erano processi in coda ne sveglia uno. I semafori inizializzati a 0 fungono da barriere di sincronizzazione.
+
+### Soluzione
+
+Stato iniziale: `x=1, SemA=1, SemB=0, SemC=0, Mutex=1`.
+
+- P1: `P(SemA)` → SemA:1→0, non si blocca.
+- P2: `P(SemB)` → SemB:0→−1, **P2 si blocca**.
+- P3: `P(SemC)` → SemC:0→−1, **P3 si blocca**.
+
+P1 continua: `P(Mutex)`→0; `x = 1−2 = −1`; `V(Mutex)`→1; `V(SemC)`→SemC:−1→0, **P3 si sblocca**.
+
+P3 continua: `P(Mutex)`→0; `x=−1<0` → `V(SemB)`→SemB:−1→0, **P2 si sblocca**; `V(Mutex)`→1; `P(SemC)`→SemC:0→−1, **P3 si blocca di nuovo**.
+
+P2 continua: `P(Mutex)`→0; `x = −1+1 = 0`; `V(Mutex)`→1; `V(SemC)`→SemC:−1→0, **P3 si sblocca**.
+
+P3 continua: **`print(x)` → stampa `x = 0`** ✓
+
+Dopo: P2 esegue `P(SemB)`→SemB:0→−1, **P2 si blocca** definitivamente. P1 esegue la seconda `P(SemA)`→SemA:0→−1, **P1 si blocca** definitivamente.
+
+**Risposte:**
+
+a) **Sì**, `print(x) = 0`.
+
+b) Non viene mai eseguita la porzione finale di P1 (il secondo `P(SemA)` blocca P1 permanentemente):
+```
+P(Mutex)
+x = x - 1
+V(Mutex)
+V(SemC)
+```
+
+---
+
+## Esercizio 4 — Grafo di Allocazione delle Risorse e Deadlock
+
+> **Fonte:** 12 aprile 2019 – Ver. A, Quesito 2 (identico in: 20 aprile 2017 – Ver. A; 24 aprile 2015 – Ver. A)
+
+Un sistema ha **7 processi** (P1…P7) e **6 risorse** (R1…R6) in **singola istanza**. Stato corrente:
+
+- P1 occupa R1 e richiede R2
+- P2 non occupa risorse, richiede R3
+- P3 occupa R2
+- P4 occupa R4 e richiede R2 e R3
+- P5 occupa R3 e richiede R5
+- P6 occupa R6 e richiede R2
+- P7 occupa R5 e richiede R4
+
+a) Costruire il grafo di allocazione delle risorse.  
+b) Il sistema è in deadlock? Se sì, quali processi e risorse sono coinvolti?
+
+### Teoria
+
+> Riferimento: `Riassunti/05. Deadlock.md` — §Grafo di assegnazione delle risorse
+
+`R→P`: risorsa assegnata al processo; `P→R`: processo richiede la risorsa. Con risorse a singola istanza: **deadlock ↔ ciclo nel grafo**.
+
+### Soluzione
+
+**Archi del grafo:**
+- Assegnazione (R→P): `R1→P1`, `R2→P3`, `R4→P4`, `R3→P5`, `R6→P6`, `R5→P7`
+- Richiesta (P→R): `P1→R2`, `P2→R3`, `P4→R2`, `P4→R3`, `P5→R5`, `P6→R2`, `P7→R4`
+
+**Ciclo trovato:**
+```
+P4 → R3 → P5 → R5 → P7 → R4 → P4
+```
+
+Tutte le risorse nel ciclo (R3, R4, R5) hanno molteplicità 1 → **deadlock certo**.
+
+Processi coinvolti: **P4, P5, P7**. Risorse coinvolte: **R3, R4, R5**.
+
+P1, P2, P3, P6 richiedono R2 (detenuta da P3) ma non appartengono al ciclo e non sono in stallo.
+
+---
+
+## Esercizio 5 — Algoritmo del Banchiere
+
+> **Fonte:** [5-a/b] 20 aprile 2017 – Ver. A, Quesito 4 (identico in: 12 aprile 2019 – Ver. A); [5-c] 15 aprile 2024 – Ver. C, Quesito 5; [5-d] 9 aprile 2018 – Ver. A, Quesito 4
+
+### Struttura dati comune (scenari a/b/c)
+
+Sistema con **4 processi** e **5 risorse** (R1…R5). La tabella seguente è usata per gli scenari [a] e [b]:
+
+| Processo | Allocate | Massimo |
+|---------|---------|---------|
+| A | 1 **0** 2 1 1 | 3 1 2 1 3 |
+| B | 2 0 1 1 1 | 3 3 4 2 1 |
+| C | 1 1 0 1 0 | 2 1 4 1 0 |
+| D | 1 1 1 1 0 | 1 1 3 2 1 |
+
+**[5-a]** Con `Disponibili = [0 0 3 1 2]`, il sistema è in uno stato sicuro? Come si chiama l'algoritmo di verifica?
+
+**[5-b]** Si modifichi **solo** `Allocate[A][R2]` da 0 a **1** (tutto il resto invariato, stesso `Disponibili`). Il sistema è ora in uno stato sicuro? Trovare la sequenza.
+
+> *Nota: i due scenari mostrano come una differenza minima nell'allocazione possa cambiare radicalmente il risultato.*
+
+**[5-c]** Scenario diverso (`Disponibili = [0 1 3 1 3]`):
+
+| Processo | Allocate | Massimo |
+|---------|---------|---------|
+| A | 1 0 2 1 1 | 1 1 2 1 4 |
+| B | 2 0 1 1 1 | 2 3 4 2 1 |
+| C | 1 1 0 1 0 | 2 1 4 1 0 |
+| D | 2 1 1 1 0 | 2 1 3 2 1 |
+
+Il processo B chiede una risorsa aggiuntiva di tipo **R4** (richiesta `[0 0 0 1 0]`). La risorsa verrà assegnata?
+
+### Teoria
+
+> Riferimento: `Riassunti/05. Deadlock.md` — §Algoritmo del Banchiere
+
+**`Necessità[i] = Massimo[i] − Allocate[i]`**
+
+**Algoritmo di sicurezza:** `Lavoro = Disponibili`. Iterare: trovare un processo i con `Necessità[i] ≤ Lavoro`; se trovato, `Lavoro += Allocate[i]`, `Fine[i] = true`. Se tutti `Fine[i] = true` → stato sicuro.
+
+**Algoritmo di richiesta:**
+1. `Richiesta ≤ Necessità[i]` e `Richiesta ≤ Disponibili`.
+2. Simulare l'assegnazione.
+3. Verificare la sicurezza dello stato simulato.
+
+### Soluzione
+
+#### [5-a] Stato non sicuro (Allocate[A][R2] = 0)
+
+Necessità:
+
+| Processo | Necessità |
+|---------|---------|
+| A | **2 1 0 0 2** |
+| B | **1 3 3 1 0** |
+| C | **1 0 4 0 0** |
+| D | **0 0 2 1 1** |
+
+`Lavoro = [0 0 3 1 2]`:
+
+| Passo | Processo | Necessità ≤ Lavoro? | Nuovo Lavoro |
+|-------|---------|---------------------|-------------|
+| 1 | D | `[0 0 2 1 1] ≤ [0 0 3 1 2]` ✓ | `[1 1 4 2 2]` |
+| 2 | C | `[1 0 4 0 0] ≤ [1 1 4 2 2]` ✓ | `[2 2 4 3 2]` |
+| 3 | A | `[2 1 0 0 2] ≤ [2 2 4 3 2]` ✓ | `[3 2 6 4 3]` |
+| 4 | B | `[1 3 3 1 0] ≤ [3 2 6 4 3]`? **No** (R2: serve 3, disponibili 2) | — |
+
+**Il sistema NON è in uno stato sicuro.** — L'algoritmo è il **Banchiere** (*Banker's Algorithm*).
+
+#### [5-b] Stato sicuro (Allocate[A][R2] = 1)
+
+La sola modifica porta `Necessità[A] = [2 0 0 0 2]` (R2 scende da 1 a 0).
+
+`Lavoro = [0 0 3 1 2]`:
+
+| Passo | Processo | Necessità ≤ Lavoro? | Nuovo Lavoro |
+|-------|---------|---------------------|-------------|
+| 1 | D | `[0 0 2 1 1] ≤ [0 0 3 1 2]` ✓ | `[1 1 4 2 2]` |
+| 2 | C | `[1 0 4 0 0] ≤ [1 1 4 2 2]` ✓ | `[2 2 4 3 2]` |
+| 3 | A | `[2 0 0 0 2] ≤ [2 2 4 3 2]` ✓ | `[3 3 6 4 3]` |
+| 4 | B | `[1 3 3 1 0] ≤ [3 3 6 4 3]` ✓ | — |
+
+**Stato sicuro.** Sequenza: **D → C → A → B**.
+
+> La differenza rispetto a [5-a]: dopo A il `Lavoro[R2]` vale 3 (non 2) perché A aveva già 1 unità di R2. Questo rende B soddisfacibile.
+
+#### [5-c] Richiesta di risorse (B chiede R4)
+
+Necessità iniziali: A=[0 1 0 0 3], B=[0 3 3 1 0], C=[1 0 4 0 0], D=[0 0 2 1 1].
+
+**Passo 1:** `[0 0 0 1 0] ≤ Necessità[B]=[0 3 3 1 0]` ✓
+
+**Passo 2:** `[0 0 0 1 0] ≤ Disponibili=[0 1 3 1 3]` ✓
+
+**Passo 3 — Simulazione:** `Disponibili=[0 1 3 0 3]`; `Allocate[B]=[2 0 1 2 1]`; `Necessità[B]=[0 3 3 0 0]`.
+
+**Passo 4 — Verifica sicurezza** (`Lavoro = [0 1 3 0 3]`):
+
+| Passo | Processo | Necessità ≤ Lavoro? | Nuovo Lavoro |
+|-------|---------|---------------------|-------------|
+| 1 | A | `[0 1 0 0 3] ≤ [0 1 3 0 3]` ✓ | `[1 1 5 1 4]` |
+| 2 | C | `[1 0 4 0 0] ≤ [1 1 5 1 4]` ✓ | `[2 2 5 2 4]` |
+| 3 | D | `[0 0 2 1 1] ≤ [2 2 5 2 4]` ✓ | `[4 3 6 3 4]` |
+| 4 | B | `[0 3 3 0 0] ≤ [4 3 6 3 4]` ✓ | — |
+
+Stato sicuro → **la risorsa viene assegnata a B**. Sequenza: A → C → D → B.
+
+---
+
+## Esercizio 6 — Lettori-Scrittori: Correggere il Codice
+
+> **Fonte:** 20 aprile 2017 – Ver. A, Quesito 5 (identico in: 12 aprile 2019 – Ver. A, Quesito 5; 24 aprile 2015 – Ver. A, Quesito 6)
+
+Il codice seguente contiene errori. Correggerlo con il minor numero possibile di modifiche e riportare tipo e valore iniziale di ciascuna variabile.
+
+```c
+void Lettore (void) {
+    while (true) {
+        P(mutex);
+        numeroLettori++;
+        if (numeroLettori == 1) V(database);   // RIGA A
+        V(mutex);
+        // leggi il dato
+        numeroLettori--;                        // RIGA B — non protetto
+        if (numeroLettori == 0) V(database);
+        // usa il dato letto
+    }
+}
+void Scrittore (void) {
+    while (true) {
+        // prepara il dato da scrivere
+        V(database);   // RIGA C
+        // scrivi il dato
+        P(database);   // RIGA D
+    }
+}
+```
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Lettori-Scrittori
+
+Il semaforo `database` garantisce l'accesso esclusivo agli scrittori e condiviso ai lettori. Il **primo lettore** acquisisce `database` (P, blocca gli scrittori); l'**ultimo** lo rilascia (V). Il decremento di `numeroLettori` deve avvenire in sezione critica. Lo scrittore acquisisce (P) prima di scrivere, rilascia (V) dopo.
+
+### Soluzione
+
+**Errori:**
+- **RIGA A:** `V(database)` → deve essere `P(database)` (il primo lettore *acquisisce* il diritto esclusivo, non lo rilascia).
+- **RIGA B:** il decremento di `numeroLettori` e il `V(database)` condizionale avvengono fuori da `mutex` → aggiungere `P(mutex)` prima e `V(mutex)` dopo.
+- **RIGHE C/D:** lo scrittore esegue V prima e P dopo (invertito) → `P(database)` poi scrivere poi `V(database)`.
+
+**Codice corretto:**
+
+```c
+int      numeroLettori = 0;   /* intero, init 0 */
+semaforo mutex         = 1;   /* mutex sul contatore */
+semaforo database      = 1;   /* accesso al dato condiviso */
+
+void Lettore (void) {
+    while (true) {
+        P(mutex);
+        numeroLettori++;
+        if (numeroLettori == 1) P(database);   /* FIX A */
+        V(mutex);
+        // leggi il dato
+        P(mutex);                              /* FIX B: aggiunto */
+        numeroLettori--;
+        if (numeroLettori == 0) V(database);
+        V(mutex);                              /* FIX B: aggiunto */
+        // usa il dato letto
+    }
+}
+void Scrittore (void) {
+    while (true) {
+        // prepara il dato da scrivere
+        P(database);   /* FIX C */
+        // scrivi il dato
+        V(database);   /* FIX D */
+    }
+}
+```
+
+---
+
+## Esercizio 7 — Filosofi a Cena con Semafori
+
+> **Fonte:** 27 aprile 2023 – Ver. A, Quesito 5 (identico in: 9 aprile 2018 – Ver. A, Quesito 5)
+
+Realizzare una soluzione al problema dei **filosofi a cena** con semafori. La soluzione deve essere la più semplice possibile e non comportare rischi di **deadlock** né di **starvation**. Riportare tipo e valore iniziale di ciascuna variabile.
+
+*(P = down/wait; V = up/signal)*
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Filosofi a cena
+
+N filosofi, N forchette (una tra ogni coppia). La soluzione simmetrica naive porta a deadlock se tutti prendono la forchetta sinistra contemporaneamente: si forma un'attesa circolare. La soluzione **filosofo mancino** (un filosofo prende le forchette in ordine inverso) spezza la simmetria e previene il deadlock.
+
+### Soluzione
+
+```c
+semaforo f[N] = {1, 1, ..., 1};   /* N semafori, uno per forchetta, init 1 */
+
+void Filosofo(int i) {
+    while (1) {
+        <pensa>
+        if (i == X) {               /* X: filosofo speciale (es. i == N-1) */
+            P(f[(i+1) % N]);        /* prende prima la forchetta "destra" */
+            P(f[i]);
+        } else {
+            P(f[i]);                /* prende prima la forchetta "sinistra" */
+            P(f[(i+1) % N]);
+        }
+        <mangia>
+        V(f[i]);
+        V(f[(i+1) % N]);
+    }
+}
+```
+
+**Perché non c'è deadlock:** il filosofo X acquisisce le forchette in ordine inverso, spezzando qualsiasi possibile ciclo di attesa circolare.
+
+**Perché non c'è starvation:** ogni processo che aspetta una forchetta verrà servito entro tempo finito (code FIFO sui semafori).
