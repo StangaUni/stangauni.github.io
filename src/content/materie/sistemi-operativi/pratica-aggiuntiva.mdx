@@ -1,0 +1,767 @@
+---
+title: "PRATICA AGGIUNTIVA"
+type: "extra"
+tags: ["esercizi", "scheduling", "semafori", "deadlock", "banchiere", "fork", "monitor", "real-time", "filosofi", "produttore-consumatore", "inversione priorità"]
+excerpt: "Raccolta di 10 esercizi pratici con soluzione completa, basata sugli esami 2015–2024. Scheduling (FCFS/SJF/SRTN/RR/RM), semafori, deadlock, banchiere, fork, monitor, filosofi."
+readingTime: 30
+---
+
+# Esercizi da Primo Parziale
+
+> Raccolta di esercizi pratici basata sugli esami 2015–2024.
+> Argomenti: scheduling, sincronizzazione, deadlock, fork, semafori, monitor, algoritmo del banchiere.
+
+---
+
+## Esercizio 1 — Scheduling: Diagramma di Gantt e Metriche
+
+Considerare i seguenti processi su sistema monoprocessore:
+
+| Processo | Tempo di arrivo | Durata (burst CPU) |
+|---|---|---|
+| P1 | 0 | 8 |
+| P2 | 1 | 4 |
+| P3 | 2 | 2 |
+| P4 | 3 | 6 |
+
+Per ciascuna delle seguenti politiche:
+1. **FCFS** (First Come First Served)
+2. **SJF** (Shortest Job First, senza prerilascio)
+3. **SRTN** (Shortest Remaining Time Next, con prerilascio)
+4. **Round Robin** con quanto `q = 3`
+
+Tracciare il diagramma di Gantt e calcolare per ogni processo il **tempo di attesa** e il **tempo di turn-around**. Calcolare poi la media di entrambe le metriche.
+
+### Teoria
+
+> Riferimento: `Riassunti/03. Ordinamento dei processi.md` — §Classificazione dei sistemi e politiche
+
+**Formule:**
+- `Turn-around = Fine − Arrivo`
+- `Attesa = Turn-around − Durata`.
+---
+- **FCFS:** ordine di arrivo, nessun prerilascio. Tempo di attesa = inizio − arrivo.
+- **SJF:** al momento di scegliere il prossimo processo (quando la CPU è libera), si seleziona quello con burst residuo minore tra i processi già arrivati. Nessun prerilascio.
+- **SRTN:** versione preemptive di SJF. Ogni volta che arriva un nuovo processo si confronta il suo burst con il tempo residuo del processo in esecuzione; se il nuovo è più breve scatta il prerilascio. Tempo di attesa = somma di tutti i periodi trascorsi in stato Pronto.
+- **Round Robin:** ogni processo esegue al più `q` unità di tempo, poi torna in fondo alla coda. Se un processo termina prima di `q`, la CPU viene rilasciata subito.
+
+### Soluzione
+
+#### FCFS
+
+| Processo | Arrivo | Fine | Turn-around | Attesa |
+|---|---|---|---|---|
+| P1 | 0 | 8 | 8 | 0 |
+| P2 | 1 | 12 | 11 | 7 |
+| P3 | 2 | 14 | 12 | 10 |
+| P4 | 3 | 20 | 17 | 11 |
+
+**Attesa media** = $(0+7+10+11)/4 = 7{,}0$
+**Turn-around medio** = $(8+11+12+17)/4 = 12{,}0$
+
+#### SJF
+
+Al t=0 solo P1 è arrivato → esegue P1 (burst 8). Al t=8 sono presenti P2(4), P3(2), P4(6) → si sceglie P3 (burst 2), poi P2 (4), poi P4 (6).
+
+| Processo | Arrivo | Fine | Turn-around | Attesa |
+|---|---|---|---|---|
+| P1 | 0 | 8 | 8 | 0 |
+| P2 | 1 | 14 | 13 | 9 |
+| P3 | 2 | 10 | 8 | 6 |
+| P4 | 3 | 20 | 17 | 11 |
+
+**Attesa media** = $(0+9+6+11)/4 = 6{,}5$
+**Turn-around medio** = $(8+13+8+17)/4 = 11{,}5$
+
+#### SRTN
+
+t=0: P1 in esecuzione (residuo 8).
+t=1: arriva P2 (residuo 4) < P1 (residuo 7) → **prerilascio P1**, esegue P2.
+t=2: arriva P3 (residuo 2) < P2 (residuo 3) → **prerilascio P2**, esegue P3.
+t=3: arriva P4 (residuo 6) > P3 (residuo 1) → nessun prerilascio.
+t=4: P3 termina. In coda: P1(7), P2(3), P4(6). Esegue P2 (3 < 6 < 7).
+t=7: P2 termina. In coda: P1(7), P4(6). Esegue P4 (6 < 7).
+t=13: P4 termina. Esegue P1 (7 residui).
+t=20: P1 termina.
+
+| Processo | Arrivo | Fine | Turn-around | Attesa |
+|---|---|---|---|---|
+| P1 | 0 | 20 | 20 | 12 |
+| P2 | 1 | 7 | 6 | 2 |
+| P3 | 2 | 4 | 2 | 0 |
+| P4 | 3 | 13 | 10 | 4 |
+
+**Attesa media** = $(12+2+0+4)/4 = 4{,}5$
+**Turn-around medio** = $(20+6+2+10)/4 = 9{,}5$
+
+#### Round Robin (q = 3)
+
+Coda iniziale al t=0: [P1]. Arrivi processati prima di eseguire il prossimo quanto.
+
+```
+t=0:  esegue P1 (3u). Arrivano P2(t=1), P3(t=2) durante il quanto.
+t=3:  P1 residuo=5. Coda: [P2, P3, P4(arr=3), P1]
+t=3:  esegue P2 (3u).
+t=6:  P2 residuo=1. Coda: [P3, P4, P1, P2]
+t=6:  esegue P3 (2u, termina a t=8).
+t=8:  Coda: [P4, P1, P2]
+t=8:  esegue P4 (3u).
+t=11: P4 residuo=3. Coda: [P1, P2, P4]
+t=11: esegue P1 (3u).
+t=14: P1 residuo=2. Coda: [P2, P4, P1]
+t=14: esegue P2 (1u, termina a t=15).
+t=15: Coda: [P4, P1]
+t=15: esegue P4 (3u, termina a t=18).
+t=18: Coda: [P1]
+t=18: esegue P1 (2u, termina a t=20).
+```
+
+| Processo | Arrivo | Fine | Turn-around | Attesa |
+|---|---|---|---|---|
+| P1 | 0 | 20 | 20 | 12 |
+| P2 | 1 | 15 | 14 | 10 |
+| P3 | 2 | 8 | 6 | 4 |
+| P4 | 3 | 18 | 15 | 9 |
+
+**Attesa media** = $(12+10+4+9)/4 = 8{,}75$
+**Turn-around medio** = $(20+14+6+15)/4 = 13{,}75$
+
+---
+
+## Esercizio 2 — Traccia Esecuzione con Semafori
+
+Si considerino i processi A, B e C con variabili condivise `x = 3`, `y = 2` e semafori `S1 = 0`, `S2 = 0`, `S3 = 1`.
+
+```
+Process A {          Process B {          Process C {
+  P(S3);               P(S1);               V(S1);
+  x = x * 2;           y = y + x;           P(S2);
+  V(S1);               V(S2);               x = x - y;
+  y = x - y;           P(S3);               V(S3);
+  V(S2);               x = x + y;           Print(x);
+  Print(y);            Print(x);          }
+}                    }
+```
+
+a) Determinare l'ordine in cui i processi stampano i valori.
+b) Calcolare i valori stampati da ciascun processo.
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Semafori
+
+`P(s)` decrementa il semaforo: se il risultato è `< 0`, il processo si sospende in coda. `V(s)` incrementa il semaforo: se il valore era `≤ 0`, sveglia il primo processo in coda. I semafori inizializzati a 0 sono punti di sincronizzazione (barriere): il primo processo che fa `P` su un semaforo a 0 si blocca finché un altro non fa `V`. Un semaforo a 1 (come S3) funge da mutex: il primo processo che fa `P` lo "possiede", gli altri si bloccano.
+
+**Metodo di traccia:** costruire una tabella con colonne per ogni processo e una riga per ogni passo; marcare i blocchi/sbloccamenti; seguire il valore dei semafori e delle variabili.
+
+### Soluzione
+
+Stato iniziale: `x=3, y=2, S1=0, S2=0, S3=1`. Tutti e tre i processi partono.
+
+**Analisi delle prime istruzioni:**
+- A → `P(S3)`: S3=1→0, A entra (non si blocca).
+- B → `P(S1)`: S1=0→-1, **B si blocca**.
+- C → `V(S1)`: S1=-1→0, **B si sblocca**; C prosegue.
+
+**A esegue** (x=3, y=2):
+- `x = x * 2 = 6`
+- `V(S1)` — S1 già a 0, nessuno in coda su S1, diventa 1 (segnale non consumato).
+- `y = x - y = 6 - 2 = 4`
+- `V(S2)`: S2=0→1 (nessuno in coda su S2 ancora).
+- **A stampa `y = 4`** ← A stampa per primo.
+
+**B esegue** (x=6, y=4, S1=1):
+- `y = y + x = 4 + 6 = 10`
+- `V(S2)`: S2=1→2 (già a 1).
+- `P(S3)`: S3=0→-1, **B si blocca** (A ha "consumato" S3 con P ma non ha fatto V(S3)).
+
+**C prosegue** dopo `V(S1)`:
+- `P(S2)`: S2=2→1, C non si blocca.
+- `x = x - y = 6 - 10 = -4`
+- `V(S3)`: S3=-1→0, **B si sblocca**.
+- **C stampa `x = -4`** ← C stampa per secondo.
+
+**B riprende** (x=-4, y=10):
+- `x = x + y = -4 + 10 = 6`
+- **B stampa `x = 6`** ← B stampa per terzo.
+
+**Riepilogo:**
+- A stampa per primo: `y = 4`
+- C stampa per secondo: `x = -4`
+- B stampa per terzo: `x = 6`
+
+---
+
+## Esercizio 3 — Algoritmo del Banchiere
+
+Un sistema ha **3 processi** (P1, P2, P3) e **3 tipi di risorse** (R1, R2, R3) con istanze totali `[9, 3, 6]`.
+
+Stato corrente:
+
+| Processo | Assegnate (R1,R2,R3) | Massimo (R1,R2,R3) |
+|---|---|---|
+| P1 | 2 1 2 | 4 2 3 |
+| P2 | 3 0 2 | 9 0 2 |
+| P3 | 2 1 1 | 5 2 4 |
+
+a) Calcolare la matrice **Necessità** e il vettore **Disponibili**.
+b) Determinare se il sistema è in uno **stato sicuro**. Se sì, indicare una sequenza sicura.
+c) P1 richiede `[1, 0, 1]` risorse aggiuntive. Verificare se la richiesta può essere soddisfatta immediatamente.
+
+### Teoria
+
+> Riferimento: `Riassunti/05. Deadlock.md` — §Algoritmo del Banchiere
+
+**Strutture dati:** `Necessità[i] = Massimo[i] − Assegnate[i]`; `Disponibili = Totali − Σ Assegnate[i]`.
+
+**Algoritmo di sicurezza:** inizializzare `Lavoro = Disponibili` e `Fine[i] = false` per ogni i. Trovare iterativamente un processo i con `Fine[i] = false` e `Necessità[i] ≤ Lavoro`; aggiornare `Lavoro += Assegnate[i]` e `Fine[i] = true`. Se alla fine tutti i `Fine[i]` sono true → stato sicuro.
+
+**Algoritmo di richiesta:** prima verificare `Richieste[i] ≤ Necessità[i]` e `Richieste[i] ≤ Disponibili`; poi simulare l'assegnazione e verificare se lo stato rimane sicuro; se non sicuro, annullare.
+
+### Soluzione
+
+#### a) Necessità e Disponibili
+
+`Disponibili = [9,3,6] − ([2,1,2] + [3,0,2] + [2,1,1]) = [9,3,6] − [7,2,5] = [2, 1, 1]`
+
+| Processo | Assegnate | Massimo | Necessità |
+|---|---|---|---|
+| P1 | 2 1 2 | 4 2 3 | **2 1 1** |
+| P2 | 3 0 2 | 9 0 2 | **6 0 0** |
+| P3 | 2 1 1 | 5 2 4 | **3 1 3** |
+
+#### b) Verifica di sicurezza
+
+`Lavoro = [2, 1, 1]`, tutti `Fine = false`.
+
+| Passo | Processo | Necessità ≤ Lavoro? | Nuovo Lavoro |
+|---|---|---|---|
+| 1 | P1 | `[2,1,1] ≤ [2,1,1]` ✓ | `[2+2, 1+1, 1+2] = [4, 2, 3]` |
+| 2 | P2 | `[6,0,0] ≤ [4,2,3]`? No (6 > 4) | — |
+| 2 | P3 | `[3,1,3] ≤ [4,2,3]` ✓ | `[4+2, 2+1, 3+1] = [6, 3, 4]` |
+| 3 | P2 | `[6,0,0] ≤ [6,3,4]` ✓ | — |
+
+Tutti `Fine[i] = true` → **Stato sicuro**. Sequenza: **P1 → P3 → P2**.
+
+#### c) Richiesta di P1: `[1, 0, 1]`
+
+**Passo I:** `[1,0,1] ≤ Necessità[P1] = [2,1,1]` ✓
+
+**Passo II:** `[1,0,1] ≤ Disponibili = [2,1,1]` ✓
+
+**Passo III — Simulazione:**
+- `Disponibili  = [2,1,1] − [1,0,1] = [1, 1, 0]`
+- `Assegnate[P1] = [2,1,2] + [1,0,1] = [3, 1, 3]`
+- `Necessità[P1] = [2,1,1] − [1,0,1] = [1, 1, 0]`
+
+**Passo IV — Verifica sicurezza** (Lavoro = `[1,1,0]`):
+
+| Passo | Processo | Necessità ≤ Lavoro? | Nuovo Lavoro |
+|---|---|---|---|
+| 1 | P1 | `[1,1,0] ≤ [1,1,0]` ✓ | `[1+3,1+1,0+3] = [4,2,3]` |
+| 2 | P3 | `[3,1,3] ≤ [4,2,3]` ✓ | `[4+2,2+1,3+1] = [6,3,4]` |
+| 3 | P2 | `[6,0,0] ≤ [6,3,4]` ✓ | — |
+
+Stato sicuro → **la richiesta viene soddisfatta**.
+
+---
+
+## Esercizio 4 — Grafo di Assegnazione delle Risorse e Deadlock
+
+Si considerino 4 processi (P1, P2, P3, P4) e 4 risorse (R1, R2, R3, R4), ognuna con **una sola istanza**.
+
+Stato corrente del sistema:
+- R1 assegnata a P2; R2 assegnata a P1; R3 assegnata a P3; R4 assegnata a P4
+- P1 richiede R1; P2 richiede R3; P3 richiede R4; P4 richiede R2
+
+a) Disegnare (o descrivere) il grafo di assegnazione delle risorse.
+b) Determinare se è presente un deadlock. Motivare la risposta.
+c) Quale risorsa bisognerebbe aggiungere (portando la molteplicità di una risorsa a 2 istanze) per uscire dallo stallo? Giustificare.
+
+### Teoria
+
+> Riferimento: `Riassunti/05. Deadlock.md` — §Grafo di assegnazione delle risorse
+
+Nel grafo di assegnazione: un arco `R→P` indica che la risorsa è assegnata al processo; un arco `P→R` indica che il processo sta richiedendo la risorsa. Se il grafo contiene un **ciclo** e tutte le risorse nel ciclo hanno **molteplicità 1** → deadlock certo. Se alcune risorse hanno molteplicità > 1, la presenza di un ciclo non implica necessariamente deadlock: un'istanza libera della risorsa nel ciclo permette a un processo di completare e sbloccare gli altri.
+
+### Soluzione
+
+#### a) Grafo
+
+Archi di assegnazione (R→P): `R1→P2`, `R2→P1`, `R3→P3`, `R4→P4`
+Archi di richiesta (P→R): `P1→R1`, `P2→R3`, `P3→R4`, `P4→R2`
+
+#### b) Rilevazione deadlock
+
+Il grafo contiene il ciclo:
+
+`P1 → R1 → P2 → R3 → P3 → R4 → P4 → R2 → P1`
+
+Tutte le risorse (R1, R2, R3, R4) hanno molteplicità 1 → **deadlock certo**.
+
+Tutti e 4 i processi sono in stallo: nessuno può procedere.
+
+#### c) Risoluzione
+
+Aggiungere una seconda istanza di qualsiasi risorsa nel ciclo è sufficiente. Ad esempio, con **R1 a 2 istanze**: la seconda istanza è libera e può essere assegnata a P1, che completa la sua esecuzione e rilascia R2; P4 ottiene R2, termina e rilascia R4; P3 ottiene R4, termina e rilascia R3; P2 ottiene R3, termina.
+
+---
+
+## Esercizio 5 — Produttore-Consumatore: Correggere il Codice
+
+Il seguente codice tenta di risolvere il problema produttore-consumatore con buffer di dimensione `N`, ma **contiene un errore grave**.
+
+```c
+semaforo mutex     = 1;
+semaforo non_pieno = N;
+semaforo non_vuoto = 0;
+
+void produttore() {
+    while (1) {
+        prod = produci();
+        P(&mutex);         // RIGA A
+        P(&non_pieno);     // RIGA B
+        inserisci(prod);
+        V(&mutex);
+        V(&non_vuoto);
+    }
+}
+void consumatore() {
+    while (1) {
+        P(&non_vuoto);
+        P(&mutex);
+        prod = preleva();
+        V(&mutex);
+        V(&non_pieno);
+        consuma(prod);
+    }
+}
+```
+
+a) Identificare l'errore e spiegarne la causa.
+b) Fornire la versione corretta del codice.
+c) L'ordine delle P nel consumatore è invece corretto? Motivare.
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Produttore-Consumatore con semafori
+
+Nel problema produttore-consumatore con semafori, i tre semafori hanno ruoli distinti: `mutex` garantisce la mutua esclusione sull'accesso al buffer; `non_pieno` conta gli slot liberi; `non_vuoto` conta gli elementi presenti. L'**ordine delle P è critico**: la P sul semaforo di condizione (`non_pieno` o `non_vuoto`) deve precedere la P sul mutex. Se un processo acquisisce il mutex prima di verificare la condizione (slot libero / elemento disponibile) e quella condizione non è soddisfatta, il processo si blocca **tenendo il mutex**, impedendo all'altro processo di completare l'operazione che sbloccherebbe la condizione → **deadlock**.
+
+### Soluzione
+
+#### a) Errore
+
+Nelle RIGA A e RIGA B il produttore acquisisce prima il `mutex` (RIGA A) e poi verifica se c'è spazio nel buffer (RIGA B). Se il buffer è pieno (`non_pieno = 0`), il produttore si blocca su `P(&non_pieno)` **tenendo il mutex acquisito**. Il consumatore, nel tentativo di prelevare un elemento, esegue `P(&mutex)` e si blocca perché il mutex è già occupato. Nessuno dei due può procedere → **deadlock**.
+
+#### b) Codice corretto
+
+```c
+semaforo mutex     = 1;
+semaforo non_pieno = N;
+semaforo non_vuoto = 0;
+
+void produttore() {
+    while (1) {
+        prod = produci();
+        P(&non_pieno);   // prima verifica spazio (può bloccarsi senza mutex)
+        P(&mutex);
+        inserisci(prod);
+        V(&mutex);
+        V(&non_vuoto);
+    }
+}
+void consumatore() {
+    while (1) {
+        P(&non_vuoto);   // prima verifica elemento (può bloccarsi senza mutex)
+        P(&mutex);
+        prod = preleva();
+        V(&mutex);
+        V(&non_pieno);
+        consuma(prod);
+    }
+}
+```
+
+#### c) Ordine nel consumatore
+
+Sì, il codice originale del consumatore è corretto per lo stesso motivo: fa `P(&non_vuoto)` prima di `P(&mutex)`. Se il buffer è vuoto, si blocca **senza tenere il mutex**, lasciando il produttore libero di inserire elementi.
+
+---
+
+## Esercizio 6 — fork() e Conteggio dei Processi
+
+Determinare quanti processi vengono creati (incluso il processo originale) dall'esecuzione dei seguenti frammenti di codice, e descrivere la struttura dell'albero dei processi.
+
+**Frammento A:**
+```c
+int main() {
+    fork();
+    fork();
+    fork();
+    return 0;
+}
+```
+
+**Frammento B:**
+```c
+int main() {
+    int pid1, pid2;
+    pid1 = fork();
+    if (pid1 != 0) {
+        pid2 = fork();
+    }
+    return 0;
+}
+```
+
+**Frammento C:**
+```c
+int main() {
+    if (fork() == 0) {
+        fork();
+        fork();
+    }
+    return 0;
+}
+```
+
+### Teoria
+
+> Riferimento: `Riassunti/02. Processi e thread.md` — §fork()
+
+`fork()` crea un clone del processo chiamante. Il **padre** riceve come valore di ritorno il PID del figlio (> 0); il **figlio** riceve 0. Entrambi continuano l'esecuzione dal punto successivo alla `fork()`. Per N chiamate `fork()` in sequenza (senza rami condizionali), il numero totale di processi è `2^N`. Con rami condizionali, bisogna tracciare separatamente quali `fork()` vengono eseguite da ogni processo.
+
+### Soluzione
+
+#### Frammento A
+
+Ogni `fork()` raddoppia il numero di processi esistenti.
+- Dopo fork 1: 2 processi
+- Dopo fork 2: 4 processi
+- Dopo fork 3: **8 processi** totali
+
+Struttura: un albero binario completo di profondità 3.
+
+#### Frammento B
+
+- P0 chiama `fork()` → crea P1. P0 riceve pid1 > 0 (padre); P1 riceve pid1 = 0 (figlio).
+- Il ramo `if (pid1 != 0)` è eseguito **solo dal padre** P0 → P0 chiama la seconda `fork()` e crea P2.
+- P1 salta il `fork()` interno e termina direttamente.
+
+**Totale: 3 processi** (P0, P1, P2).
+
+```
+P0 ─fork1─► P1 (termina)
+ └─fork2─► P2
+```
+
+#### Frammento C
+
+- P0 chiama `fork()`. P0: ritorno > 0, salta l'`if`. P1: ritorno = 0, entra nell'`if`.
+- **P0** non esegue altre `fork()` → termina.
+- **P1** (dentro l'`if`) chiama `fork()` → crea P2; poi chiama ancora `fork()` → crea P3.
+- **P2** (da seconda fork di P1) chiama la terza `fork()` → crea P4.
+
+Traccia:
+- P0: salta l'if → 1 processo solo.
+- P1: esegue fork → P2; poi fork → P3. **P1 crea 2 figli**.
+- P2: esegue la terza fork → P4. **P2 crea 1 figlio**.
+- P3, P4: non eseguono altre fork.
+
+**Totale: 5 processi** (P0, P1, P2, P3, P4).
+
+```
+P0 ─fork─► P1 ─fork─► P2 ─fork─► P4
+            └─fork─► P3
+```
+
+---
+
+## Esercizio 7 — Inversione di Priorità: BPI e ICP
+
+Si considerino 4 processi con priorità decrescente (H > M1 > M2 > L) e 2 risorse (RA, RB). Ciascun processo usa le risorse nel seguente ordine:
+
+| Processo | Priorità | Risorse usate |
+|---|---|---|
+| L | 4 (bassa) | RA, poi RB |
+| M1 | 3 | RB |
+| M2 | 2 | — |
+| H | 1 (alta) | RA |
+
+Sequenza temporale:
+1. t=0: L acquisisce RA
+2. t=1: L acquisisce RB
+3. t=2: H diventa pronto e richiede RA → si blocca
+4. t=3: M1 diventa pronto e richiede RB → si blocca
+5. t=4: M2 diventa pronto (nessuna risorsa richiesta)
+
+a) Senza meccanismi di ereditarietà, quale processo esegue a t=4? Cos'è l'inversione di priorità?
+b) Con **BPI** (Basic Priority Inheritance): descrivere come evolve l'esecuzione. H viene bloccato da M2?
+c) Con **ICP** (Immediate Ceiling Priority): calcolare il ceiling di RA e RB. Descrivere l'evoluzione.
+
+### Teoria
+
+> Riferimento: `Riassunti/03. Ordinamento dei processi.md` — §Inversione di priorità
+
+L'**inversione di priorità** si verifica quando un processo ad alta priorità (H) deve aspettare un processo a bassa priorità (L) che detiene una risorsa condivisa, e nel frattempo un processo a priorità intermedia (M) preleva la CPU a L, ritardando indefinitamente H.
+
+**BPI:** quando H si blocca su una risorsa di L, L eredita temporaneamente la priorità di H per la durata della sezione critica. Questo impedisce ai processi M di bloccare L mentre tiene la risorsa voluta da H. Non previene il deadlock.
+
+**ICP:** ogni risorsa ha un ceiling = massima priorità tra tutti i processi che possono usarla. Un processo può acquisire una risorsa solo se la sua priorità è strettamente superiore al ceiling di tutte le risorse già detenute da altri processi. Un processo H può essere bloccato **al più una volta** da un processo a bassa priorità. Previene il deadlock.
+
+### Soluzione
+
+#### a) Senza meccanismi
+
+A t=4 sono pronti: L (priorità 4), M2 (priorità 2). H è bloccato su RA; M1 è bloccato su RB. Lo scheduler esegue **M2** (priorità 2 > 4). M2 non usa risorse → esegue fino alla fine. Poi tocca a M1 (bloccato su RB di L) → ma L non è ancora in esecuzione! Solo dopo che M2 termina L può eseguire e rilasciare RB (che sblocca M1) e poi RA (che sblocca H).
+
+**Inversione di priorità:** H (priorità 1, la più alta) non può eseguire a causa di M2 (priorità 2) che non ha alcuna relazione con le risorse di H. H subisce un'attesa proporzionale all'intera esecuzione di M2.
+
+#### b) Con BPI
+
+A t=2, H si blocca su RA detenuta da L → L **eredita la priorità di H (1)**. A t=3, M1 richiede RB detenuta da L (con priorità 1): non può prerilasciare L. A t=4, M2 (priorità 2) non può eseguire perché L (con priorità ereditata 1) è più prioritario.
+
+**L esegue con priorità 1**, completa la sezione critica, rilascia RB (sblocca M1) e RA (sblocca H). H riprende la priorità più alta e viene eseguito per primo. **M2 non blocca H**.
+
+#### c) Con ICP
+
+- **Ceiling(RA)** = priorità massima tra processi che usano RA = max(H=1, L=4) = **1**
+- **Ceiling(RB)** = priorità massima tra processi che usano RB = max(M1=3, L=4) = **3**
+
+A t=0: L (priorità 4) richiede RA. Nessun altro processo detiene risorse → L acquisisce RA; la sua priorità dinamica diventa max(4, ceiling(RA)=1) = **1**.
+
+A t=1: L (priorità 1 dinamica) richiede RB. Nessun altro detiene risorse → L acquisisce RB; priorità dinamica = max(1, ceiling(RB)=3) = **1** (già 1).
+
+A t=2: H (priorità 1) richiede RA. RA è detenuta da L (priorità dinamica 1). La priorità di H (1) non è **strettamente superiore** al ceiling di RA (1) → **H si blocca**. L eredita la priorità 1 (già la ha).
+
+A t=3: M1 (priorità 3) richiede RB. RB è detenuta da L (priorità dinamica 1). La priorità di M1 (3) non è strettamente superiore al ceiling di RB (3) → **M1 si blocca**.
+
+A t=4: M2 (priorità 2) non richiede risorse. L ha priorità dinamica 1 > 2 di M2 → L esegue prima di M2. L completa, rilascia RB → M1 sbloccato; poi rilascia RA → H sbloccato. H (priorità 1) esegue prima di tutti.
+
+**H è bloccato al più una volta** (da L durante la detenzione di RA) → proprietà garantita da ICP.
+
+---
+
+## Esercizio 8 — Monitor: Barbiere che Dorme
+
+Un barbiere ha un salone con **1 poltrona** e **N sedie d'attesa**. Il barbiere dorme quando non ci sono clienti. Quando un cliente arriva:
+- Se il barbiere dorme: lo sveglia e si siede sulla poltrona.
+- Se il barbiere è occupato ma ci sono sedie libere: il cliente si siede e aspetta.
+- Se tutte le sedie sono occupate: il cliente se ne va.
+
+Implementare la soluzione al **Barbiere che Dorme** usando i costrutti del **monitor**.
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Monitor e §Barbiere che dorme
+
+Il monitor garantisce la mutua esclusione automatica tra tutte le procedure al suo interno. Le **variabili di condizione** permettono di sospendere un processo (`wait`) o risvegliarlo (`signal`). A differenza dei semafori, `signal` non ha memoria: se nessuno aspetta sulla condizione, il segnale viene perso. Per questo, le condizioni devono sempre essere verificate con `if` (o `while`) prima di fare `wait`.
+
+Il monitor è particolarmente adatto a questo problema perché l'accesso al contatore delle sedie libere e allo stato del barbiere deve avvenire in mutua esclusione, mentre le attese (barbiere che dorme, cliente che aspetta) si esprimono naturalmente con variabili di condizione.
+
+### Soluzione
+
+```pascal
+monitor Salone
+    condition cliente_in_attesa;  { barbiere aspetta clienti }
+    condition poltrona_libera;    { clienti aspettano il barbiere }
+    integer sedie_libere := N;    { sedie d'attesa disponibili }
+    boolean barbiere_libero := true;
+
+    { Invocata dal barbiere in loop }
+    procedure barbiere_lavora();
+    begin
+        if barbiere_libero then begin
+            { nessun cliente: il barbiere dorme }
+            cliente_in_attesa.wait();
+        end;
+        barbiere_libero := false;
+        { taglia capelli — fuori dal monitor non è necessario }
+        barbiere_libero := true;
+        poltrona_libera.signal();  { avvisa il prossimo cliente }
+    end;
+
+    { Invocata da ogni cliente }
+    procedure cliente_arriva() : boolean;
+    begin
+        if barbiere_libero then begin
+            { barbiere libero: sveglialo o siediti direttamente }
+            barbiere_libero := false;
+            cliente_in_attesa.signal();
+            cliente_arriva := true;
+        end else if sedie_libere > 0 then begin
+            sedie_libere := sedie_libere - 1;
+            poltrona_libera.wait();   { aspetta il suo turno }
+            sedie_libere := sedie_libere + 1;
+            cliente_arriva := true;
+        end else begin
+            { nessuna sedia: il cliente se ne va }
+            cliente_arriva := false;
+        end;
+    end;
+end monitor;
+```
+
+**Come funziona:**
+- Il barbiere entra nel monitor, verifica se ci sono clienti; se non ce ne sono, si sospende su `cliente_in_attesa.wait()`.
+- Il primo cliente che arriva trova il barbiere libero, aggiorna lo stato, fa `signal` sul barbiere (o si mette direttamente in poltrona) e restituisce `true`.
+- I clienti successivi trovano il barbiere occupato; se ci sono sedie si siedono su `poltrona_libera.wait()`; quando il barbiere finisce fa `signal` su `poltrona_libera`.
+- Se le sedie sono esaurite il cliente esce con `false`.
+
+---
+
+## Esercizio 9 — Scheduling Real-Time: Rate Monotonic
+
+Si consideri un sistema real-time con 3 task periodici:
+
+| Task | Periodo T (ms) | Durata C (ms) |
+|---|---|---|
+| τ1 | 10 | 3 |
+| τ2 | 20 | 5 |
+| τ3 | 40 | 8 |
+
+a) Calcolare il **fattore di utilizzo** U. Il sistema supera il test di ammissibilità di Liu & Layland?
+b) Assegnare le priorità secondo **Rate Monotonic** (RM).
+c) Costruire il diagramma di Gantt nell'intervallo [0, 40] ms e verificare che tutte le deadline siano rispettate (ogni task deve completare entro la fine del suo periodo).
+
+### Teoria
+
+> Riferimento: `Riassunti/03. Ordinamento dei processi.md` — §Rate Monotonic
+
+In **Rate Monotonic**, la priorità è inversamente proporzionale al periodo: il task con periodo più breve ha la priorità più alta. È un algoritmo con prerilascio: un task a priorità più alta interrompe uno a priorità più bassa.
+
+Il **test di Liu & Layland** è una condizione *sufficiente* (non necessaria):
+
+$$U = \sum_{i} \frac{C_i}{T_i} \leq n(2^{1/n} - 1)$$
+
+Per n=3 il limite è $3(2^{1/3} - 1) \approx 0{,}780$. Se il test passa il sistema è certamente ammissibile; se fallisce il sistema potrebbe comunque essere ammissibile (il test è conservativo).
+
+Per costruire il Gantt: ad ogni istante esegue il task pronto con priorità più alta (periodo più breve). Un task diventa "pronto" all'inizio di ogni periodo.
+
+### Soluzione
+
+#### a) Fattore di utilizzo
+
+$$U = \frac{3}{10} + \frac{5}{20} + \frac{8}{40} = 0{,}30 + 0{,}25 + 0{,}20 = 0{,}75$$
+
+Limite per n=3: $3(2^{1/3} - 1) \approx 0{,}780$.
+
+$U = 0{,}75 < 0{,}780$ → **il test è superato**: il sistema è certamente ammissibile con RM.
+
+#### b) Priorità RM
+
+τ1 (T=10) > τ2 (T=20) > τ3 (T=40): **τ1 ha priorità massima**, τ3 ha priorità minima.
+
+#### c) Diagramma di Gantt [0, 40]
+
+Attivazioni:
+- t=0: τ1, τ2, τ3 tutti attivi.
+- t=10: τ1 si riattiva; t=20: τ1, τ2 si riattivano; t=30: τ1 si riattiva; t=40: τ1, τ2, τ3 si riattivano.
+
+```
+t=0:  τ1 pronto (pr.alta), τ2 pronto, τ3 pronto → esegue τ1
+t=3:  τ1 termina. τ2 e τ3 pronti → esegue τ2
+t=8:  τ2 termina (2u residue, ma τ1 si riattiva a t=10). τ3 pronto → esegue τ3
+t=10: τ1 si riattiva (pr.alta) → prerilascio τ3 → esegue τ1
+t=13: τ1 termina → riprende τ3 (residuo 5u)
+t=18: τ3 ha eseguito 5u (totale 7u, mancano 1u). τ2 si riattiva a t=20 → esegue τ3
+t=19: τ3 termina (8u completate). Deadline τ3 = t=40 ✓
+t=20: τ1 e τ2 si riattivano → esegue τ1
+t=23: τ1 termina → esegue τ2
+t=28: τ2 termina. Deadline τ2 = t=40 ✓
+t=28: τ3 non ancora riattivato. Idle.
+t=30: τ1 si riattiva → esegue τ1
+t=33: τ1 termina. Idle fino a t=40.
+```
+
+Gantt sintetico:
+```
+[τ1:0-3][τ2:3-8][τ3:8-10][τ1:10-13][τ3:13-19][τ1:20-23][τ2:23-28][τ1:30-33]
+```
+
+Tutte le deadline rispettate: τ1 completa ogni 10ms; τ2 completa entro t=28 (deadline t=40); τ3 completa a t=19 (deadline t=40). ✓
+
+---
+
+## Esercizio 10 — Completare Codice con Semafori (Filosofi a Cena)
+
+Si considerino 5 filosofi seduti attorno a un tavolo circolare. Tra ogni coppia di filosofi adiacenti c'è 1 forchetta (5 forchette totali). Per mangiare ogni filosofo deve prendere entrambe le forchette adiacenti.
+
+Il codice seguente usa semafori ma **porta a deadlock**:
+
+```c
+semaforo forchetta[5] = {1, 1, 1, 1, 1};
+
+void filosofo(int i) {
+    while (1) {
+        pensa();
+        P(&forchetta[i]);               // prende forchetta destra
+        P(&forchetta[(i+1) % 5]);       // prende forchetta sinistra
+        mangia();
+        V(&forchetta[i]);
+        V(&forchetta[(i+1) % 5]);
+    }
+}
+```
+
+a) Spiegare come si genera il deadlock.
+b) Proporre due soluzioni diverse che eliminano il deadlock, motivando perché funzionano.
+
+### Teoria
+
+> Riferimento: `Riassunti/04. Sincronizzazione tra processi.md` — §Filosofi a cena
+
+Il deadlock nel problema dei filosofi soddisfa tutte e 4 le condizioni di Coffman: accesso esclusivo alle forchette, accumulo (ogni filosofo tiene la destra mentre aspetta la sinistra), impossibilità di prerilascio, attesa circolare (ogni filosofo aspetta la forchetta del vicino). Le soluzioni tipiche negano una di queste condizioni.
+
+### Soluzione
+
+#### a) Causa del deadlock
+
+Se tutti e 5 i filosofi eseguono `P(&forchetta[i])` contemporaneamente (prendono la forchetta destra), ciascuno detiene 1 forchetta e aspetta quella del vicino. Si forma un ciclo di attesa circolare `F0→F1→F2→F3→F4→F0` → **deadlock certo**.
+
+#### b) Soluzione 1 — Mutex globale sull'acquisizione
+
+```c
+semaforo forchetta[5] = {1, 1, 1, 1, 1};
+semaforo mutex = 1;
+
+void filosofo(int i) {
+    while (1) {
+        pensa();
+        P(&mutex);                       // solo un filosofo alla volta prende
+        P(&forchetta[i]);
+        P(&forchetta[(i+1) % 5]);
+        V(&mutex);
+        mangia();
+        V(&forchetta[i]);
+        V(&forchetta[(i+1) % 5]);
+    }
+}
+```
+
+**Perché funziona:** il mutex garantisce che un solo filosofo alla volta tenti di prendere entrambe le forchette. Non si forma mai attesa circolare perché nessun filosofo può detenere una forchetta mentre ne aspetta un'altra senza avere il mutex. **Svantaggio:** riduce il parallelismo (al più 2 filosofi potrebbero mangiare contemporaneamente, ma con il mutex solo 1 tenta di acquisire le forchette alla volta).
+
+#### b) Soluzione 2 — Filosofo mancino (rompe la simmetria)
+
+```c
+semaforo forchetta[5] = {1, 1, 1, 1, 1};
+
+void filosofo(int i) {
+    while (1) {
+        pensa();
+        if (i == 4) {                   // filosofo 4 è "mancino"
+            P(&forchetta[(i+1) % 5]);   // prende prima la sinistra
+            P(&forchetta[i]);           // poi la destra
+        } else {
+            P(&forchetta[i]);           // gli altri prendono prima la destra
+            P(&forchetta[(i+1) % 5]);
+        }
+        mangia();
+        V(&forchetta[i]);
+        V(&forchetta[(i+1) % 5]);
+    }
+}
+```
+
+**Perché funziona:** rompere la simmetria impedisce la formazione del ciclo di attesa circolare. Con tutti i filosofi che prendono prima la forchetta con indice minore, almeno uno dei 5 non può soddisfare immediatamente la propria prima richiesta (la forchetta 0 è "contesa" tra il filosofo 4 che la vuole come "sinistra" e il filosofo 0 che la vuole come "destra"), spezzando il ciclo. **Vantaggio:** mantiene più parallelismo rispetto alla soluzione con mutex globale.
