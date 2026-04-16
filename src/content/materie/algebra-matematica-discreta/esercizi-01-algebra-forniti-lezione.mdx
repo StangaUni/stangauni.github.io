@@ -1,0 +1,250 @@
+---
+title: "ALGEBRA — FORNITI A LEZIONE"
+type: "esercitazione"
+section: "Algebra"
+tags: ["congruenze", "sistemi di congruenze", "sistemi lineari", "Gauss", "Bézout"]
+excerpt: "Esercizi di algebra forniti a lezione: congruenze lineari, sistemi di congruenze e sistemi lineari con parametro."
+---
+
+# ALGEBRA — FORNITI A LEZIONE
+
+---
+
+## Esercizio 1 — Congruenza lineare
+
+Si risolva la seguente congruenza:
+
+$$12x \equiv 18 \pmod{30}$$
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Algebra/Riassunti/04. Congruenze.md` — **Congruenze con Incognite**, **Teorema 1**, **Teorema 2**, **Semplificazione di una congruenza**
+
+#### Cos'è una congruenza con incognita
+
+Una **congruenza lineare** è un'espressione della forma:
+$$a \cdot x \equiv b \pmod{n}$$
+dove $a, b, n \in \mathbb{Z}$, $n \neq 0$, e $x$ è l'incognita intera che vogliamo trovare.
+
+$x_0$ è **soluzione** se, sostituendolo, il membro sinistro e il membro destro hanno lo stesso resto nella divisione per $n$, ovvero se $n \mid (ax_0 - b)$.
+
+> **Attenzione:** non tutte le congruenze hanno soluzioni. A differenza delle equazioni in $\mathbb{R}$, qui $ax = b$ può non avere soluzione.
+
+Se $x_0$ è una soluzione, allora **tutti gli interi della classe $[x_0]_n$** sono soluzioni. Risolvere significa quindi trovare **tutte le classi di congruenza** che sono soluzioni.
+
+#### Quando esistono soluzioni? (Teorema 1)
+
+Calcolo prima di tutto $d = \text{MCD}(a, n)$ con l'algoritmo di Euclide.
+
+$$a \cdot x \equiv b \pmod{n} \text{ ha soluzioni} \iff d \mid b$$
+
+Cioè: la congruenza ha soluzioni **se e solo se** il MCD di $a$ e $n$ divide anche $b$. Se $d \nmid b$, il procedimento si ferma qui: non esistono soluzioni.
+
+#### Quante sono e come si trovano? (Semplificazione + Teorema 2)
+
+Se $d \mid b$, si **semplifica** l'intera congruenza dividendo $a$, $b$ e $n$ per $d$:
+
+$$\frac{a}{d} \cdot x \equiv \frac{b}{d} \pmod{\frac{n}{d}}$$
+
+Questa congruenza ridotta ha il vantaggio che $\text{MCD}\!\left(\tfrac{a}{d}, \tfrac{n}{d}\right) = 1$, cioè il coefficiente e il modulo sono **coprimi**. In questo caso il coefficiente $\tfrac{a}{d}$ è invertibile modulo $\tfrac{n}{d}$, quindi la congruenza ridotta ammette **un'unica soluzione** $x_0$ modulo $\tfrac{n}{d}$, trovabile come:
+$$x_0 \equiv \left(\frac{a}{d}\right)^{-1} \cdot \frac{b}{d} \pmod{\frac{n}{d}}$$
+
+dove l'inverso si trova cercando un intero $\alpha$ tale che $\tfrac{a}{d} \cdot \alpha \equiv 1 \pmod{\tfrac{n}{d}}$ (spesso per tentativi su numeri piccoli, o tramite Bézout).
+
+Per il **Teorema 2**, le soluzioni della congruenza originale $ax \equiv b \pmod{n}$ sono esattamente $d$ classi di congruenza modulo $n$, ottenute come:
+
+$$x_0,\quad x_0 + \frac{n}{d},\quad x_0 + 2\cdot\frac{n}{d},\quad \ldots,\quad x_0 + (d-1)\cdot\frac{n}{d}$$
+
+**In sintesi, il metodo è:**
+1. Calcolare $d = \text{MCD}(a, n)$; se $d \nmid b$ → nessuna soluzione.
+2. Semplificare: $\tfrac{a}{d} x \equiv \tfrac{b}{d} \pmod{\tfrac{n}{d}}$.
+3. Trovare $x_0$ invertendo $\tfrac{a}{d}$ modulo $\tfrac{n}{d}$.
+4. Le $d$ soluzioni modulo $n$ sono $x_0,\ x_0+\tfrac{n}{d},\ \ldots$
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$d = \gcd(12, 30) = 6$. Poiché $6 \mid 18$, ha soluzioni. Si semplifica:
+$$2x \equiv 3 \pmod{5}$$
+
+Inverso di $2$ modulo $5$: $2 \cdot 3 = 6 \equiv 1 \pmod{5}$, quindi $2^{-1} \equiv 3$.
+
+$$x_0 \equiv 3 \cdot 3 = 9 \equiv 4 \pmod{5}$$
+
+$d = 6$ soluzioni modulo $30$:
+
+$$\boxed{x \equiv 4,\ 9,\ 14,\ 19,\ 24,\ 29 \pmod{30}}$$
+
+Verifica: $12 \cdot 4 = 48 = 30 + 18 \equiv 18 \pmod{30}$ ✓
+
+</Collapsible>
+
+---
+
+## Esercizio 2 — Sistema di congruenze
+
+Si risolva il seguente sistema di congruenze:
+
+$$\begin{cases} 3x \equiv 6 \pmod{9} \\ 5x \equiv 4 \pmod{7} \end{cases}$$
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Algebra/Riassunti/04. Congruenze.md` — **Semplificazione di una congruenza** | `Algebra/Riassunti/05. Sistemi di Congruenze.md` — **Definizione**, **Strategia per Sistemi Generici**, **Teorema Cinese dei Resti**, **Metodo di Newton**
+
+#### Cos'è un sistema di congruenze
+
+Un **sistema di congruenze** è un insieme di congruenze che devono essere soddisfatte **contemporaneamente** dallo stesso $x$:
+
+$$\begin{cases} a_1 x \equiv b_1 \pmod{n_1} \\ a_2 x \equiv b_2 \pmod{n_2} \\ \vdots \end{cases}$$
+
+Risolvere il sistema significa trovare tutte le classi di congruenza $[x]_m$ (per qualche modulo $m$) che soddisfano ogni congruenza simultaneamente.
+
+> **Attenzione:** anche se ogni singola congruenza ha soluzioni, il sistema potrebbe non averne — le soluzioni di ciascuna potrebbero non avere elementi in comune.
+
+#### Strategia generale (passo per passo)
+
+**Passo 1 — Ridurre ogni congruenza alla forma $x \equiv b_i \pmod{n_i}$.**
+
+Per ogni congruenza $a_i x \equiv c_i \pmod{m_i}$, calcolo $d_i = \text{MCD}(a_i, m_i)$:
+- Se $d_i \nmid c_i$ → quella congruenza non ha soluzioni → il **sistema non ha soluzioni** (stop).
+- Se $d_i \mid c_i$ → si semplifica a $\tfrac{a_i}{d_i} x \equiv \tfrac{c_i}{d_i} \pmod{\tfrac{m_i}{d_i}}$, che ha un'unica classe soluzione $x \equiv b_i \pmod{n_i}$ (con $n_i = \tfrac{m_i}{d_i}$).
+
+Dopo questo passo il sistema è nella forma standard: $x \equiv b_i \pmod{n_i}$.
+
+**Passo 2 — Verificare che i moduli siano coprimi a due a due.**
+
+Se $\text{MCD}(n_i, n_j) = 1$ per ogni coppia $i \neq j$, il **Teorema Cinese dei Resti (TCR)** garantisce che esiste un'unica soluzione modulo $n = n_1 \cdot n_2 \cdots n_t$.
+
+**Passo 3 — Applicare il Metodo di Newton.**
+
+Il metodo costruisce la soluzione per passi successivi. Con 2 congruenze:
+
+$$\begin{cases} x \equiv b_1 \pmod{n_1} \\ x \equiv b_2 \pmod{n_2} \end{cases} \qquad \text{MCD}(n_1, n_2) = 1$$
+
+1. Parto da $x_1 = b_1$ (soddisfa già la prima congruenza).
+2. Cerco $x_2 = x_1 + K_2 \cdot n_1$ tale che $x_2 \equiv b_2 \pmod{n_2}$. Poiché $x_2 = x_1 + K_2 n_1$, ottengo $K_2 \equiv (b_2 - x_1) \cdot n_1^{-1} \pmod{n_2}$. Scelgo un valore concreto di $K_2$ e calcolo $x_2$.
+3. La soluzione è $[x_2]_{n_1 \cdot n_2}$.
+
+La costruzione funziona perché $x_2 \equiv x_1 \equiv b_1 \pmod{n_1}$ (aggiungere un multiplo di $n_1$ non cambia il resto modulo $n_1$), quindi $x_2$ soddisfa ancora la prima congruenza, e per costruzione soddisfa anche la seconda.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Prima congruenza:** $d = \gcd(3, 9) = 3$. Poiché $3 \mid 6$, si semplifica: $x \equiv 2 \pmod{3}$.
+
+**Seconda congruenza:** $d = \gcd(5, 7) = 1$. Inverso di $5$ modulo $7$: $5 \cdot 3 = 15 \equiv 1$, quindi $5^{-1} \equiv 3$.
+$$x_0 \equiv 3 \cdot 4 = 12 \equiv 5 \pmod{7}$$
+
+**Sistema ridotto:**
+$$\begin{cases} x \equiv 2 \pmod{3} \\ x \equiv 5 \pmod{7} \end{cases}$$
+
+$\gcd(3, 7) = 1$ → TCR garantisce un'unica soluzione modulo $21$.
+
+**Metodo di Newton:**
+- $x_1 = 2$
+- $x_2 = 2 + 3K_2$, con $2 + 3K_2 \equiv 5 \pmod{7}$, cioè $3K_2 \equiv 3 \pmod{7}$
+
+Inverso di $3$ modulo $7$: $3 \cdot 5 = 15 \equiv 1$, quindi $3^{-1} \equiv 5$.
+$$K_2 \equiv 5 \cdot 3 = 15 \equiv 1 \pmod{7}$$
+$$x_2 = 2 + 3 \cdot 1 = 5$$
+
+Verifica: $3 \cdot 5 = 15 \equiv 6 \pmod{9}$ ✓; $5 \cdot 5 = 25 \equiv 4 \pmod{7}$ ✓
+
+$$\boxed{x \equiv 5 \pmod{21}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 3 — Sistema lineare con parametro
+
+Si risolva il sistema lineare $A(\alpha)\mathbf{x} = \mathbf{b}(\alpha)$ dipendente dal parametro $\alpha \in \mathbb{R}$, dove:
+
+$$A(\alpha) = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 1 & \alpha \\ 2 & \alpha & 5 \end{pmatrix} \qquad \mathbf{b}(\alpha) = \begin{pmatrix} 3 \\ 1 \\ \alpha+6 \end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Algebra/Riassunti/07. Matrici.md` — **§3.2 Matrici e Sistemi Lineari**, **§3.3 Algoritmo di Eliminazione di Gauss**, **Matrici a gradini**, **Lettura delle soluzioni dalla forma ridotta**
+
+#### Cos'è un sistema lineare e come si scrive in forma matriciale
+
+Un **sistema lineare** di $m$ equazioni in $n$ incognite è un insieme di $m$ equazioni di primo grado:
+
+$$\begin{cases} a_{11}x_1 + \cdots + a_{1n}x_n = b_1 \\ \quad\vdots \\ a_{m1}x_1 + \cdots + a_{mn}x_n = b_m \end{cases}$$
+
+Si può scrivere compattamente come $A \cdot \mathbf{x} = \mathbf{b}$, dove $A \in M_{m,n}$ è la **matrice dei coefficienti**, $\mathbf{x}$ il vettore delle incognite e $\mathbf{b}$ il vettore dei termini noti.
+
+Per risolverlo si lavora sulla **matrice aumentata** $(A \mid \mathbf{b})$, cioè la matrice $A$ con la colonna $\mathbf{b}$ affiancata a destra:
+
+$$\left(\begin{array}{ccc|c} a_{11} & \cdots & a_{1n} & b_1 \\ \vdots & & \vdots & \vdots \\ a_{m1} & \cdots & a_{mn} & b_m \end{array}\right)$$
+
+#### Operazioni elementari sulle righe
+
+Si possono applicare tre tipi di operazioni, che **non cambiano l'insieme delle soluzioni**:
+
+| Notazione | Operazione |
+|-----------|-----------|
+| $E_{ij}$ | Scambio delle righe $i$ e $j$ |
+| $E_i(\alpha)$, $\alpha \neq 0$ | Moltiplicazione della riga $i$ per lo scalare $\alpha$ |
+| $E_{ij}(\alpha)$, $\alpha \neq 0$ | Aggiunta alla riga $i$ del multiplo $\alpha$ della riga $j$ |
+
+#### Forma a gradini (ridotta di Gauss)
+
+L'obiettivo è trasformare $(A \mid \mathbf{b})$ in una **matrice a gradini** $(C \mid \mathbf{d})$, che soddisfa:
+1. Le righe nulle sono tutte in fondo.
+2. In ogni riga non nulla, il primo elemento non zero è $1$ e si chiama **pivot**.
+3. Ogni pivot si trova strettamente a destra del pivot della riga sopra.
+
+Le colonne che contengono un pivot si chiamano **dominanti**; le altre si chiamano **libere**.
+
+#### Come leggere le soluzioni dalla forma ridotta
+
+Una volta ottenuta $(C \mid \mathbf{d})$, si guarda la colonna dei termini noti $\mathbf{d}$:
+
+| Caso | Condizione | Soluzioni |
+|------|-----------|-----------|
+| **Impossibile** | $\mathbf{d}$ è colonna **dominante** (c'è una riga $0 = 1$) | **nessuna** |
+| **Unica** | $\mathbf{d}$ è libera e **tutte** le colonne di $C$ sono dominanti | **una** |
+| **Infinite** | $\mathbf{d}$ è libera e in $C$ ci sono $K \geq 1$ colonne libere | **infinite** ($\infty^K$ soluzioni, con $K$ parametri) |
+
+Nel caso infinito, le incognite corrispondenti alle colonne **libere** si pongono uguali a parametri $t_1, t_2, \ldots \in \mathbb{R}$; le incognite **dominanti** si ricavano per sostituzione a ritroso (dall'ultima riga alla prima).
+
+> **Nota sui sistemi con parametro:** se $A$ o $\mathbf{b}$ dipendono da $\alpha$, bisogna distinguere i casi in base ai valori di $\alpha$ che fanno annullare (o no) certi pivot.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Matrice aumentata:
+
+$$\begin{pmatrix} 1 & 0 & 2 & | & 3 \\ 0 & 1 & \alpha & | & 1 \\ 2 & \alpha & 5 & | & \alpha+6 \end{pmatrix}$$
+
+$R_3 \leftarrow R_3 - 2R_1$:
+
+$$\begin{pmatrix} 1 & 0 & 2 & | & 3 \\ 0 & 1 & \alpha & | & 1 \\ 0 & \alpha & 1 & | & \alpha \end{pmatrix}$$
+
+$R_3 \leftarrow R_3 - \alpha R_2$:
+
+$$\begin{pmatrix} 1 & 0 & 2 & | & 3 \\ 0 & 1 & \alpha & | & 1 \\ 0 & 0 & 1-\alpha^2 & | & 0 \end{pmatrix}$$
+
+Il pivot $1 - \alpha^2 = 0 \iff \alpha = \pm 1$.
+
+**Caso $\alpha = 1$:** $R_3 = (0,0,0\mid 0)$ → $x_3$ **libera** $(= t)$.
+
+Da $R_2$: $x_2 = 1 - t$. Da $R_1$: $x_1 = 3 - 2t$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}3\\1\\0\end{pmatrix} + t\begin{pmatrix}-2\\-1\\1\end{pmatrix}, \quad t \in \mathbb{R}} \qquad (\infty^1 \text{ soluzioni})$$
+
+**Caso $\alpha = -1$:** $R_3 = (0,0,0\mid 0)$ → $x_3$ **libera** $(= t)$.
+
+Da $R_2$: $x_2 = 1 + t$. Da $R_1$: $x_1 = 3 - 2t$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}3\\1\\0\end{pmatrix} + t\begin{pmatrix}-2\\1\\1\end{pmatrix}, \quad t \in \mathbb{R}} \qquad (\infty^1 \text{ soluzioni})$$
+
+**Caso $\alpha \neq \pm 1$:** $(1-\alpha^2) \neq 0$ → $x_3 = 0$. Da $R_2$: $x_2 = 1$. Da $R_1$: $x_1 = 3$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}3\\1\\0\end{pmatrix}} \qquad (\text{unica soluzione})$$
+
+</Collapsible>

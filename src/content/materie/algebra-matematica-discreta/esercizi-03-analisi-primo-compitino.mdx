@@ -1,0 +1,213 @@
+---
+title: "ANALISI PRIMO COMPITINO"
+type: "esercitazione"
+section: "Analisi"
+tags: ["compitino", "vero o falso", "congruenze", "sistemi lineari", "grafi planari"]
+excerpt: "Analisi degli esercizi del primo compitino: vero/falso su grafi, congruenza lineare e sistema lineare con parametro."
+---
+
+# ANALISI PRIMO COMPITINO
+
+> **Disclaimer:** data la scarsa reperibilità dei compitini passati, questa raccolta potrebbe essere incompleta o contenere imprecisioni. Non va considerata come fonte ufficiale o esaustiva — usala come punto di partenza, non come riferimento definitivo.
+
+---
+
+## Esercizio 8 — Vero o Falso
+
+> Salvo diverse diciture, per *grafo* si intende grafo semplice.
+
+| Affermazione | V | F |
+|---|:---:|:---:|
+| Un grafo connesso con $n$ vertici e $n-1$ archi è un albero | ☐ | ☐ |
+| Ogni grafo planare è bipartito | ☐ | ☐ |
+| Un grafo semplice con $\lvert E \rvert > 3\lvert V \rvert - 6$ non è planare | ☐ | ☐ |
+| Un grafo bipartito non può contenere triangoli | ☐ | ☐ |
+| Il grafo bipartito completo $K_{3,3}$ è hamiltoniano | ☐ | ☐ |
+| Ogni cammino in un grafo bipartito ha lunghezza pari | ☐ | ☐ |
+| Se $d(v) \geq \dfrac{\lvert V \rvert}{2}$ per ogni $v \in V$, allora $G$ è hamiltoniano | ☐ | ☐ |
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Matematica discreta/Riassunti/04. Alberi.md` — **Caratterizzazione degli Alberi** | `Matematica discreta/Riassunti/05. Grafi Planari.md` — **Formula di Eulero**, **Teorema: $e \leq 3v-6$** | `Matematica discreta/Riassunti/02. Grafi Bipartiti e Isomorfismi.md` — **Teorema 4 — Caratterizzazione dei Grafi Bipartiti** | `Matematica discreta/Riassunti/06. Grafi Hamiltoniani ed Euleriani.md` — **$K_{r,s}$ è Hamiltoniano $\iff$ $r = s \geq 2$**, **Teorema di Dirac**
+
+#### 1. Caratterizzazione degli alberi
+
+Un grafo $T$ è un **albero** se e solo se è connesso e aciclico. Il teorema di caratterizzazione stabilisce che le seguenti condizioni sono **tutte equivalenti**:
+
+- $T$ è connesso e aciclico (definizione).
+- $T$ è connesso e $|E| = |V| - 1$.
+- $T$ è aciclico e $|E| = |V| - 1$.
+- Tra ogni coppia di vertici esiste un **unico** cammino.
+
+In particolare: **connesso + $|E| = |V| - 1$ $\Rightarrow$ albero** (e viceversa).
+
+#### 2. Grafi planari e disuguaglianza $e \leq 3v - 6$
+
+Un grafo è **planare** se può essere disegnato nel piano senza che gli archi si intersechino.
+
+La **Formula di Eulero** per grafi connessi planari dice: $r = e - v + 2$ (dove $r$ = facce, $e$ = archi, $v$ = vertici).
+
+Da qui si dimostra che ogni grafo **semplice, connesso e planare** soddisfa:
+
+$$\boxed{e \leq 3v - 6}$$
+
+La **contrappostiva** è lo strumento pratico: se $e > 3v - 6$, allora il grafo **non può essere planare**. Attenzione: la disuguaglianza $e \leq 3v-6$ è condizione necessaria ma non sufficiente per la planarità.
+
+Grafo planare non implica bipartito: $K_4$ è planare ma contiene triangoli (cicli dispari) quindi non è bipartito.
+
+#### 3. Grafi bipartiti e cicli dispari
+
+Un grafo $G$ è **bipartito** se i vertici si possono colorare con due colori in modo che ogni arco colleghi un vertice del primo colore a uno del secondo. Equivalentemente:
+
+$$\boxed{G \text{ è bipartito} \iff G \text{ non contiene cicli di lunghezza dispari}}$$
+
+Un **triangolo** è un ciclo di lunghezza 3 (dispari), quindi è **impossibile** in un grafo bipartito.
+
+Attenzione alla distinzione: la proprietà riguarda i **cicli**, non i cammini. Un cammino (percorso senza ciclo) in un grafo bipartito può tranquillamente avere lunghezza dispari: basta prendere un singolo arco, che ha lunghezza 1.
+
+#### 4. Hamiltonicità di $K_{r,s}$
+
+$$K_{r,s} \text{ è hamiltoniano} \iff r = s \geq 2$$
+
+In particolare, $K_{3,3}$ ha $r = s = 3 \geq 2$, quindi è hamiltoniano.
+
+#### 5. Teorema di Dirac
+
+**Teorema (Dirac).** Se $G$ è un grafo semplice con $|V| = n \geq 3$ e ogni vertice ha grado almeno $\dfrac{n}{2}$:
+
+$$d(v) \geq \frac{n}{2} \quad \forall\, v \in V \implies G \text{ è hamiltoniano}$$
+
+Questa è una condizione **sufficiente** (non necessaria): un grafo può essere hamiltoniano anche senza soddisfarla. Ma se la soddisfa, la risposta è certamente sì.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+1. **Un grafo connesso con $n$ vertici e $n-1$ archi è un albero.** Caratterizzazione degli alberi: connesso + $|E|=|V|-1$ equivale ad essere un albero. **VERO**
+
+2. **Ogni grafo planare è bipartito.** Controesempio: $K_4$ è planare (verifica: $e=6 = 3\cdot4-6$) ma contiene triangoli → non è bipartito. **FALSO**
+
+3. **$|E| > 3|V|-6 \Rightarrow$ non planare.** È la contrappostiva della disuguaglianza necessaria per la planarità. **VERO**
+
+4. **Un grafo bipartito non può contenere triangoli.** Il triangolo è un ciclo di lunghezza 3 (dispari), e i grafi bipartiti non contengono cicli di lunghezza dispari. **VERO**
+
+5. **$K_{3,3}$ è hamiltoniano.** $r = s = 3 \geq 2$, soddisfa la condizione. **VERO**
+
+6. **Ogni cammino in un grafo bipartito ha lunghezza pari.** Falso: un singolo arco è un cammino di lunghezza 1 (dispari) e appartiene a qualsiasi grafo bipartito. La proprietà "lunghezza pari" vale per i *cicli*, non per i cammini aperti. **FALSO**
+
+7. **$d(v) \geq |V|/2\ \forall v \Rightarrow G$ hamiltoniano.** È esattamente l'ipotesi del Teorema di Dirac (con $|V| \geq 3$). **VERO**
+
+</Collapsible>
+
+---
+
+## Esercizio 9 — Congruenza
+
+Si risolva la seguente congruenza:
+
+$$15x \equiv 25 \pmod{35}$$
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Algebra/Riassunti/04. Congruenze.md` — **Congruenze con Incognite**, **Teorema 1**, **Teorema 2**, **Semplificazione di una congruenza**
+
+La teoria è la stessa dell'Esercizio 1. Si riassume il metodo completo:
+
+#### Metodo risolutivo per $ax \equiv b \pmod{n}$
+
+**Passo 1 — Calcolare $d = \text{MCD}(a, n)$** tramite l'algoritmo di Euclide.
+
+**Passo 2 — Verificare l'esistenza:** la congruenza ha soluzioni $\iff d \mid b$. Se $d \nmid b$, non esistono soluzioni.
+
+**Passo 3 — Semplificare:** dividere $a$, $b$ e $n$ per $d$:
+$$\frac{a}{d} \cdot x \equiv \frac{b}{d} \pmod{\frac{n}{d}}$$
+Il nuovo coefficiente $\tfrac{a}{d}$ e il nuovo modulo $\tfrac{n}{d}$ sono coprimi, quindi $\tfrac{a}{d}$ è **invertibile** modulo $\tfrac{n}{d}$.
+
+**Passo 4 — Trovare l'inverso di $\tfrac{a}{d}$ modulo $\tfrac{n}{d}$:** cercare $\alpha$ tale che $\tfrac{a}{d} \cdot \alpha \equiv 1 \pmod{\tfrac{n}{d}}$. La soluzione particolare è $x_0 \equiv \alpha \cdot \tfrac{b}{d} \pmod{\tfrac{n}{d}}$.
+
+**Passo 5 — Elencare le $d$ soluzioni modulo $n$:** le soluzioni sono le $d$ classi
+$$x_0,\quad x_0 + \frac{n}{d},\quad x_0 + 2\cdot\frac{n}{d},\quad \ldots,\quad x_0 + (d-1)\cdot\frac{n}{d} \pmod{n}$$
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$d = \gcd(15, 35) = 5$. Poiché $5 \mid 25$, ha soluzioni. Si semplifica:
+$$3x \equiv 5 \pmod{7}$$
+
+Inverso di $3$ modulo $7$: $3 \cdot 5 = 15 \equiv 1 \pmod{7}$, quindi $3^{-1} \equiv 5$.
+
+$$x_0 \equiv 5 \cdot 5 = 25 \equiv 4 \pmod{7}$$
+
+$d = 5$ soluzioni modulo $35$:
+
+$$\boxed{x \equiv 4,\ 11,\ 18,\ 25,\ 32 \pmod{35}}$$
+
+Verifica: $15 \cdot 4 = 60 = 35 + 25 \equiv 25 \pmod{35}$ ✓
+
+</Collapsible>
+
+---
+
+## Esercizio 10 — Sistema lineare con parametro
+
+Si risolva il sistema lineare $A(\alpha)\mathbf{x} = \mathbf{b}(\alpha)$ dipendente dal parametro $\alpha \in \mathbb{R}$, dove:
+
+$$A(\alpha) = \begin{pmatrix} 1 & 2 & 1 \\ 1 & 2 & -1 \\ 0 & \alpha & 1 \end{pmatrix} \qquad \mathbf{b}(\alpha) = \begin{pmatrix} 3 \\ 1 \\ \alpha+1 \end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Algebra/Riassunti/07. Matrici.md` — **§3.2 Matrici e Sistemi Lineari**, **§3.3 Algoritmo di Eliminazione di Gauss**, **Matrici a gradini**, **Lettura delle soluzioni dalla forma ridotta**
+
+La teoria è la stessa dell'Esercizio 3. Si riassume il procedimento:
+
+#### Procedura completa per un sistema $A\mathbf{x} = \mathbf{b}$ con parametro
+
+1. **Scrivere la matrice aumentata** $(A \mid \mathbf{b})$.
+
+2. **Applicare le operazioni elementari sulle righe** per portarla in forma a gradini $(C \mid \mathbf{d})$:
+   - $E_{ij}$: scambio di due righe.
+   - $E_i(\alpha)$: moltiplicazione di una riga per uno scalare $\neq 0$.
+   - $E_{ij}(\alpha)$: somma alla riga $i$ del multiplo $\alpha$ della riga $j$.
+
+3. **Identificare i casi parametrici:** un'espressione che dipende dal parametro $\alpha$ compare in un possibile pivot. Bisogna distinguere il caso in cui quella espressione è zero da quello in cui non lo è, perché questo cambia il numero di pivot (e quindi il numero di soluzioni).
+
+4. **Leggere le soluzioni** per ogni caso:
+
+| Caso | Condizione | Soluzioni |
+|------|-----------|-----------|
+| **Impossibile** | Compare una riga $(0\ 0\ \cdots\ 0 \mid c)$ con $c \neq 0$ | **nessuna** |
+| **Unica** | Nessuna colonna libera in $C$, $\mathbf{d}$ libera | **una** |
+| **Infinite** | $K \geq 1$ colonne libere in $C$, $\mathbf{d}$ libera | **infinite** ($\infty^K$) |
+
+Nel caso infinito: le incognite delle colonne libere diventano parametri $t_1, \ldots, t_K \in \mathbb{R}$; le incognite dominanti si ricavano per sostituzione a ritroso dall'ultima riga alla prima.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Matrice aumentata:
+
+$$\begin{pmatrix} 1 & 2 & 1 & | & 3 \\ 1 & 2 & -1 & | & 1 \\ 0 & \alpha & 1 & | & \alpha+1 \end{pmatrix}$$
+
+$R_2 \leftarrow R_2 - R_1$, poi scambio $R_2 \leftrightarrow R_3$:
+
+$$\begin{pmatrix} 1 & 2 & 1 & | & 3 \\ 0 & \alpha & 1 & | & \alpha+1 \\ 0 & 0 & -2 & | & -2 \end{pmatrix}$$
+
+Da $R_3$: $x_3 = 1$ (per ogni $\alpha$).
+
+**Caso $\alpha = 0$:** $R_2$ diventa $(0, 0, 1 \mid 1)$ — ridondante. La colonna $x_2$ è **libera**.
+
+Da $R_1$: $x_1 + 2x_2 + 1 = 3 \implies x_1 = 2 - 2x_2$.
+
+Posto $x_2 = t$:
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}2\\0\\1\end{pmatrix} + t\begin{pmatrix}-2\\1\\0\end{pmatrix}, \quad t \in \mathbb{R}} \qquad (\infty^1 \text{ soluzioni})$$
+
+**Caso $\alpha \neq 0$:** da $R_2$: $\alpha x_2 + 1 = \alpha + 1 \implies x_2 = 1$.
+
+Da $R_1$: $x_1 + 2 + 1 = 3 \implies x_1 = 0$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}0\\1\\1\end{pmatrix}} \qquad (\text{unica soluzione})$$
+
+</Collapsible>

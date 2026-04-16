@@ -1,0 +1,244 @@
+---
+title: "MATEMATICA DISCRETA — FORNITI A LEZIONE"
+type: "esercitazione"
+section: "Matematica Discreta"
+tags: ["grafi", "handshaking", "connettività", "Kruskal", "hamiltonicità", "eulerianità"]
+excerpt: "Esercizi di matematica discreta forniti a lezione: handshaking lemma, connettività, albero di copertura minimo e grafi K_{m,n}."
+---
+
+# MATEMATICA DISCRETA — FORNITI A LEZIONE
+
+---
+
+## Esercizio 4 — Handshaking e sequenza di gradi
+
+Un grafo semplice ha 3 vertici di grado 4 e $n - 3$ vertici di grado 2, con un totale di 12 archi. Trovare $n$.
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Matematica discreta/Riassunti/01. Definizioni Base dei Grafi.md` — **Gradi dei Vertici**, **Teorema 1 — Handshaking Lemma**
+
+#### Cos'è il grado di un vertice
+
+In un grafo $G(V, E)$, il **grado** $d(v)$ di un vertice $v$ è il numero di archi che hanno $v$ come estremo (cioè il numero di archi "attaccati" a $v$).
+
+#### Handshaking Lemma (Lemma delle Strette di Mano)
+
+$$\boxed{\sum_{v \in V} d(v) = 2 \cdot |E|}$$
+
+**Perché vale:** ogni arco ha esattamente **due** estremi. Quando sommiamo i gradi di tutti i vertici, contiamo ogni arco due volte (una per ciascun estremo). Quindi la somma dei gradi è sempre il doppio del numero di archi.
+
+**Conseguenza pratica:** la somma di tutti i gradi è sempre un numero **pari**. In particolare, il numero di vertici di grado dispari è sempre pari (se la somma di certi numeri dispari è pari, ce ne devono essere un numero pari).
+
+**Come si usa in questo esercizio:** conosciamo la distribuzione dei gradi (quanti vertici hanno grado 4, quanti hanno grado 2) e il numero di archi. Il Lemma fornisce l'equazione per trovare $n$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$$12 + 2(n-3) = 2 \cdot 12 = 24 \implies 2n + 6 = 24 \implies n = 9$$
+
+Il grafo ha $\boxed{n = 9}$ **vertici** (3 di grado 4 e 6 di grado 2). La somma $\sum d = 24$ è pari ✓, quindi tale grafo può esistere.
+
+</Collapsible>
+
+---
+
+## Esercizio 5 — Connettività
+
+<ThemedImage
+  lightSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio5.svg"
+  darkSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio5_scuro.svg"
+  alt="Grafo G dell'esercizio 5"
+/>
+
+Dato grafo G in figura, determinare $\kappa(G)$, $\lambda(G)$ e $\delta(G)$. Individuare un separatore minimo e un taglio minimo.
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Matematica discreta/Riassunti/03. Connettività.md` — **Taglio Associato a $S$**, **Arcoconnettività tra $u$ e $v$**, **Arcoconnettività di un Grafo**, **Connettività sui Vertici — Separatori**, **Teorema Fondamentale**
+
+#### Grado minimo $\delta(G)$
+
+Il **grado minimo** è semplicemente il più piccolo tra tutti i gradi dei vertici del grafo:
+
+$$\delta(G) = \min\{d(v) : v \in V\}$$
+
+È la "misura" meno sofisticata: indica qual è il vertice meno connesso del grafo.
+
+#### Arcoconnettività $\lambda(G)$ (connettività sugli archi)
+
+Un **taglio** associato a un sottoinsieme $S \subseteq V$ è l'insieme degli archi che hanno un estremo dentro $S$ e l'altro fuori da $S$:
+
+$$\delta(S) = \{uv \in E : |S \cap \{u, v\}| = 1\}$$
+
+Rimuovendo tutti gli archi del taglio $\delta(S)$, i vertici di $S$ vengono separati da quelli di $V \setminus S$.
+
+La **arcoconnettività** $\lambda(G)$ è il minimo numero di archi che bisogna rimuovere per **disconnettere** il grafo (cioè per isolare almeno un vertice dal resto):
+
+$$\lambda(G) = \min_{u \neq v} K^E_{u,v}(G)$$
+
+Un arco la cui rimozione da sola disconnette il grafo si chiama **ponte**. Se esiste un ponte, allora $\lambda(G) = 1$.
+
+#### Connettività $\kappa(G)$ (connettività sui vertici)
+
+Un **separatore** è un sottoinsieme $S \subseteq V$ tale che rimuovendo tutti i vertici di $S$ (e gli archi ad essi incidenti) il grafo $G \setminus S$ diventa **disconnesso**.
+
+La **connettività** $\kappa(G)$ è il minimo numero di vertici da rimuovere per disconnettere il grafo:
+
+$$\kappa(G) = \min\{|S| : S \text{ è un separatore di } G\}$$
+
+> **Convenzione:** per il grafo completo $K_n$ (in cui non esiste nessun separatore) si pone $\kappa(K_n) = n - 1$.
+
+#### Teorema Fondamentale
+
+Per ogni grafo semplice e connesso con almeno due vertici:
+
+$$\boxed{\kappa(G) \leq \lambda(G) \leq \delta(G)}$$
+
+**Interpretazione:** è più facile (o ugualmente difficile) disconnettere un grafo rimuovendo archi piuttosto che vertici; e nessuno dei due può superare il grado minimo (rimuovere tutti gli archi di un vertice di grado minimo disconnette quel vertice dal resto).
+
+Questo teorema è utile come **verifica**: i valori trovati devono rispettare questa catena di disuguaglianze.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Gradi:** $d(1)=2$, $d(2)=2$, $d(3)=3$, $d(4)=3$, $d(5)=2$, $d(6)=2$ → $\delta(G) = 2$.
+
+**Arcoconnettività:** $3\text{-}4$ è un ponte: rimuovendolo il grafo si disconnette in $\{1,2,3\}$ e $\{4,5,6\}$. Quindi $\lambda(G) = 1$.
+
+**Taglio minimo:** $\{3\text{-}4\}$.
+
+**Connettività:** rimuovendo il vertice $3$ rimangono i componenti $\{1,2\}$ e $\{4,5,6\}$, disconnessi. Quindi $\kappa(G) = 1$.
+
+**Separatore minimo:** $\{3\}$ (o simmetricamente $\{4\}$).
+
+Verifica: $\kappa(G) \leq \lambda(G) \leq \delta(G)$ → $1 \leq 1 \leq 2$ ✓
+
+</Collapsible>
+
+---
+
+## Esercizio 6 — Albero di copertura minimo (Kruskal)
+
+<ThemedImage
+  lightSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio6.svg"
+  darkSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio6_scuro.svg"
+  alt="Grafo G dell'esercizio 6"
+/>
+
+> Nell'immagine dovrebbero esserci anche gli archi AC, BC, CD, CE, che non so per quale motivo il programma non mi ha esportato correttamente. Fate finta che ci siano e utilizzate i relativi pesi mostrati 2, 1, 8, 10
+
+In riferimento al grafo G in figura, trovare un albero di copertura di peso minimo con l'algoritmo di Kruskal.
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Matematica discreta/Riassunti/04. Alberi.md` — **Definizioni**, **Proprietà 2 — $|E| = |V| - 1$**, **Albero di Peso Minimo**, **Algoritmo di Kruskal**
+
+#### Cos'è un albero
+
+Un **albero** è un grafo che è contemporaneamente:
+- **connesso**: esiste un cammino tra ogni coppia di vertici,
+- **aciclico**: non contiene cicli (non esiste nessun percorso chiuso).
+
+La proprietà fondamentale degli alberi (dimostrata per induzione) è:
+
+$$\boxed{|E| = |V| - 1}$$
+
+Un albero su $n$ vertici ha sempre esattamente $n-1$ archi. Questa è la "struttura minima" per tenere connesso un grafo: un arco in meno e si disconnette, un arco in più e si crea un ciclo.
+
+#### Cos'è un albero di copertura (spanning tree)
+
+Dato un grafo connesso $G(V, E)$, un **albero di copertura** (o albero ricoprente) è un sottografo $T(V, E')$ con $E' \subseteq E$ che:
+- usa **tutti** i vertici di $G$,
+- è un albero, quindi ha $|V| - 1$ archi e nessun ciclo.
+
+In un grafo con $n$ vertici e $m$ archi, un albero di copertura usa sempre esattamente $n-1$ archi (scelti tra gli $m$ disponibili).
+
+#### Albero di copertura di peso minimo (MST)
+
+Se ogni arco ha un **peso** (un costo, una distanza, ...), il **Minimum Spanning Tree (MST)** è l'albero di copertura con somma dei pesi minima tra tutti quelli possibili.
+
+#### Algoritmo di Kruskal
+
+L'algoritmo di Kruskal costruisce l'MST in modo **greedy** (goloso): sceglie sempre l'arco di peso minore che non crea cicli.
+
+**Passi:**
+1. Ordina tutti gli archi per peso **crescente**.
+2. Parti con un "foresta" di $n$ componenti isolate (un vertice ciascuna).
+3. Esamina gli archi nell'ordine:
+   - Se i due estremi dell'arco si trovano in **componenti diverse** → **aggiungi** l'arco (unisce due componenti senza creare cicli).
+   - Se i due estremi si trovano nella **stessa componente** → **scarta** l'arco (aggiungerlo creerebbe un ciclo).
+4. Fermati quando hai inserito $|V| - 1$ archi: l'albero è completo.
+
+**Perché funziona:** ad ogni passo, l'arco di peso minimo che collega due componenti diverse è **sempre** nell'MST (proprietà del taglio). Kruskal sfrutta questa proprietà sistematicamente.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Archi ordinati per peso crescente e applicazione dell'algoritmo ($n=5$, servono $n-1=4$ archi):
+
+| Peso | Arco | Componenti dopo | Aggiunto? |
+|------|------|-----------------|-----------|
+| 1 | $B$-$C$ | $\{A\},\{BC\},\{D\},\{E\}$ | ✓ |
+| 2 | $A$-$C$ | $\{ABC\},\{D\},\{E\}$ | ✓ |
+| 3 | $D$-$E$ | $\{ABC\},\{DE\}$ | ✓ |
+| 4 | $A$-$B$ | — | ✗ (ciclo $A$-$B$-$C$-$A$) |
+| 5 | $B$-$D$ | $\{ABCDE\}$ | ✓ — **stop** |
+
+**MST:** archi $B$-$C$ (1), $A$-$C$ (2), $D$-$E$ (3), $B$-$D$ (5).
+
+$$\boxed{\text{Peso totale MST} = 1 + 2 + 3 + 5 = 11}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 7 — Hamiltonicità ed Eulerianità di $K_{m,n}$
+
+Per quali $m, n \geq 1$ il grafo bipartito completo $K_{m,n}$ è: (a) euleriano? (b) hamiltoniano?
+
+<Collapsible title="Teoria">
+
+> Riferimento: `Matematica discreta/Riassunti/06. Grafi Hamiltoniani ed Euleriani.md` — **Percorsi Euleriani e Grafi Euleriani**, **Teorema di Eulero**, **Circuiti Hamiltoniani e Grafi Hamiltoniani**, **$K_{r,s}$ è Hamiltoniano $\iff$ $r = s \geq 2$**
+
+#### Grafi Euleriani
+
+Un **percorso euleriano** è un percorso **chiuso** che attraversa ogni arco del grafo **esattamente una volta** (e poi torna al vertice di partenza). Un grafo che lo possiede è detto **euleriano**.
+
+**Teorema di Eulero:**
+$$G \text{ è euleriano} \iff G \text{ è connesso e ogni vertice ha grado pari}$$
+
+**Perché:** in un percorso chiuso, ogni volta che si "entra" in un vertice si deve anche "uscire". Ogni passaggio usa un arco in ingresso e uno in uscita, quindi ogni vertice deve partecipare un numero pari di volte, cioè deve avere grado pari.
+
+**Gradi in $K_{m,n}$:** nel grafo bipartito completo $K_{m,n}$, i vertici della partizione $V_1$ (di cardinalità $m$) sono collegati a **tutti** i vertici di $V_2$, quindi hanno grado $n$. Simmetricamente, i vertici di $V_2$ hanno grado $m$. Il grafo è connesso per ogni $m, n \geq 1$.
+
+Quindi $K_{m,n}$ è euleriano $\iff$ $m$ è pari **e** $n$ è pari.
+
+#### Grafi Hamiltoniani
+
+Un **circuito hamiltoniano** è un ciclo che passa per ogni vertice del grafo **esattamente una volta**. Un grafo che lo possiede è detto **hamiltoniano**.
+
+A differenza dell'euleriano, non esiste una caratterizzazione completa (condizione necessaria e sufficiente semplice) per l'hamiltonicità — è un problema molto più difficile.
+
+**Hamiltonicità di $K_{r,s}$:**
+
+In $K_{r,s}$ ogni arco collega un vertice di $V_1$ a un vertice di $V_2$, quindi qualsiasi percorso **alterna obbligatoriamente** i due gruppi: $V_1, V_2, V_1, V_2, \ldots$ Un circuito hamiltoniano usa $r + s$ vertici in quest'alternanza e deve tornare al punto di partenza. Affinché l'alternanza sia perfetta in un ciclo chiuso, occorre $r = s$. Inoltre serve $r = s \geq 2$ perché $K_{1,1}$ non è hamiltoniano (il "circuito" $a \to b \to a$ usa lo stesso arco due volte).
+
+$$\boxed{K_{r,s} \text{ è hamiltoniano} \iff r = s \geq 2}$$
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a) Eulerianità:** $K_{m,n}$ è connesso per $m, n \geq 1$. È euleriano $\iff$ tutti i gradi sono pari $\iff$ $m$ pari **e** $n$ pari.
+
+$$\boxed{K_{m,n} \text{ è euleriano} \iff m \text{ e } n \text{ sono entrambi pari}}$$
+
+**(b) Hamiltonicità:**
+
+$$\boxed{K_{m,n} \text{ è hamiltoniano} \iff m = n \geq 2}$$
+
+</Collapsible>
