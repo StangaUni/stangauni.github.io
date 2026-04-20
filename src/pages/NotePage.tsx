@@ -49,7 +49,7 @@ function NoteNav({ prev, next, subjectSlug, variant }: NoteNavProps) {
 
   if (variant === 'top') {
     return (
-      <div className="flex items-center justify-between mb-6 text-xs text-muted-foreground/70">
+      <div className="flex items-center justify-between mb-5 text-xs text-muted-foreground/70">
         {prev ? (
           <Link
             to={`/materia/${subjectSlug}/${prev.slug}`}

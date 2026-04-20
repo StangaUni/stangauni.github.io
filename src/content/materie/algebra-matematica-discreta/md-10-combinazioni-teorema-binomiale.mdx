@@ -1,0 +1,85 @@
+---
+title: "Combinazioni, Teorema Binomiale e Ripetizioni"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["combinazioni", "coefficiente binomiale", "teorema binomiale", "triangolo di Pascal", "permutazioni con ripetizione", "combinazioni con ripetizione"]
+excerpt: "r-permutazioni, combinazioni, teorema binomiale, triangolo di Pascal e ripetizioni."
+---
+
+# Combinazioni, Teorema Binomiale e Ripetizioni
+
+## $r$-Permutazioni
+
+**Definizione.** Dati $n$ oggetti distinti e $r \leq n$, una **$r$-permutazione** è una disposizione ordinata di $r$ degli $n$ oggetti.
+
+$$\boxed{P(n, r) = \frac{n!}{(n-r)!} = n(n-1)\cdots(n-r+1)}$$
+
+> **NB.** $P(n,n) = n!$; per convenzione $0! = 1$.
+
+---
+
+## Combinazioni Semplici
+
+**Definizione.** Dati $n$ oggetti distinti, una **$r$-combinazione** è una selezione **non ordinata** di $r$ oggetti (un sottoinsieme di cardinalità $r$).
+
+$$\boxed{\binom{n}{r} = \frac{n!}{r!\,(n-r)!} = \frac{P(n,r)}{r!}}$$
+
+Il simbolo $\binom{n}{r}$ si chiama **coefficiente binomiale** ($n$ su $r$).
+
+> **Convenzione.** $\binom{n}{r} = 0$ se $r > n$.
+
+---
+
+## Proprietà del Coefficiente Binomiale
+
+**Simmetria:**
+$$\binom{n}{k} = \binom{n}{n-k}$$
+
+**Identità di Pascal:** per $k \geq 1$:
+$$\boxed{\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}}$$
+
+*Dim. combinatoria.* Si etichetta un oggetto (il "golden object"). Le scelte di $k$ oggetti si dividono in quelle che lo includono ($\binom{n-1}{k-1}$) e quelle che non lo includono ($\binom{n-1}{k}$). $\square$
+
+---
+
+## Triangolo di Pascal
+
+Ogni entrata $\binom{n}{k}$ è la somma delle due sovrastanti (Identità di Pascal):
+
+| $n$ | $k=0$ | $k=1$ | $k=2$ | $k=3$ | $k=4$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 0 | 1 | | | | |
+| 1 | 1 | 1 | | | |
+| 2 | 1 | 2 | 1 | | |
+| 3 | 1 | 3 | 3 | 1 | |
+| 4 | 1 | 4 | 6 | 4 | 1 |
+
+---
+
+## Teorema Binomiale
+
+**Teorema.** Per ogni $a, b$ e $n \in \mathbb{N}$:
+
+$$\boxed{(a+b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k}$$
+
+**Corollario.** $(1+x)^n = \displaystyle\sum_{k=0}^{n} \binom{n}{k} x^k$.
+
+---
+
+## Permutazioni con Ripetizione
+
+**Definizione.** Dati $n$ oggetti di cui $n_1$ identici di tipo 1, …, $n_m$ identici di tipo $m$ (con $\sum n_i = n$), il numero di permutazioni è:
+
+$$\boxed{P(n;\,n_1,\ldots,n_m) = \frac{n!}{n_1!\cdots n_m!}}$$
+
+**Esempio.** Anagrammi di BANANA ($n=6$, B×1, A×3, N×2): $\dfrac{6!}{1!\,3!\,2!} = 60$.
+
+---
+
+## Combinazioni con Ripetizione
+
+**Definizione.** Il numero di modi di scegliere $r$ oggetti tra $n$ tipi (con ripetizione ammessa, senza ordine) è:
+
+$$\boxed{C_R(n,r) = \binom{n+r-1}{r} = \binom{n+r-1}{n-1}}$$
+
+*Idea.* Una scelta corrisponde a una stringa di $r$ simboli $x$ e $n-1$ separatori $|$: scegliere le posizioni degli $x$ in $r + (n-1)$ simboli totali.

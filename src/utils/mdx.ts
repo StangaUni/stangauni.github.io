@@ -1,5 +1,6 @@
 import type { Subject } from '../types/subject'
 import type { Note } from '../types/note'
+import type { SubjectChangelog } from '../types/changelog'
 
 type MdxModule = {
   frontmatter: Record<string, unknown>
@@ -47,7 +48,7 @@ export async function loadAllNotes(
   subjectSlug?: string
 ): Promise<Note[]> {
   const entries = Object.entries(modules).filter(
-    ([path]) => !path.endsWith('_subject.mdx')
+    ([path]) => !path.endsWith('_subject.mdx') && !path.endsWith('_changelog.mdx')
   )
   const notes = await Promise.all(
     entries.map(async ([path, loader]) => {
@@ -61,4 +62,17 @@ export async function loadAllNotes(
     ? notes.filter((n) => n.subject === subjectSlug)
     : notes
   return filtered.sort((a, b) => a.slug.localeCompare(b.slug))
+}
+
+export async function loadSubjectChangelog(
+  modules: GlobModules,
+  subjectSlug: string
+): Promise<SubjectChangelog | null> {
+  const key = Object.keys(modules).find((p) =>
+    p.includes(`/materie/${subjectSlug}/_changelog.mdx`)
+  )
+  if (!key) return null
+  const mod = await modules[key]()
+  const entries = (mod.frontmatter.entries ?? []) as SubjectChangelog['entries']
+  return { subject: subjectSlug, entries }
 }

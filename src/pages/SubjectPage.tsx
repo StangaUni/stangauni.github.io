@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   Github, BookOpen, FlaskConical, Target, Paperclip,
-  CheckCircle, Circle, ChevronRight, User,
+  CheckCircle, Circle, ChevronRight, User, History, ChevronDown,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Breadcrumbs } from '../components/note/Breadcrumbs'
@@ -10,8 +10,10 @@ import { Badge } from '../components/ui/Badge'
 import { SEO } from '../components/ui/SEO'
 import { useSubjects } from '../hooks/useSubjects'
 import { useNotes } from '../hooks/useNotes'
+import { useChangelog } from '../hooks/useChangelog'
 import { NotFound } from './NotFound'
 import type { Note, NoteType } from '../types/note'
+import type { ChangelogEntry, ChangelogEntryType } from '../types/changelog'
 
 // ─── Tab config ──────────────────────────────────────────────────────────────
 
@@ -408,13 +410,61 @@ function EmptyState() {
   )
 }
 
+// ─── Changelog ───────────────────────────────────────────────────────────────
+
+const ENTRY_TYPE_CFG: Record<ChangelogEntryType, { label: string; className: string }> = {
+  nuovo:      { label: 'Nuovo',      className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
+  aggiunta:   { label: 'Aggiunta',   className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+  revisione:  { label: 'Revisione',  className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+  correzione: { label: 'Correzione', className: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+}
+
+function ChangelogDropdown({ entries, open }: { entries: ChangelogEntry[]; open: boolean }) {
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date))
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+          className="overflow-hidden"
+        >
+          <ol className="mt-4 mb-6 space-y-2.5 rounded-xl border border-border bg-secondary/40 px-4 py-3">
+            {sorted.map((entry, i) => {
+              const cfg = entry.type ? ENTRY_TYPE_CFG[entry.type] : null
+              return (
+                <li key={i} className="flex items-start gap-3 text-sm">
+                  <time className="shrink-0 w-24 tabular-nums text-xs text-muted-foreground pt-0.5">
+                    {entry.date}
+                  </time>
+                  {cfg && (
+                    <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium leading-none mt-0.5 ${cfg.className}`}>
+                      {cfg.label}
+                    </span>
+                  )}
+                  <span className="text-foreground/80 leading-snug">{entry.description}</span>
+                </li>
+              )
+            })}
+          </ol>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function SubjectPage() {
   const { subjectSlug } = useParams<{ subjectSlug: string }>()
   const { subjects, loading: loadingSubject } = useSubjects()
   const { notes, loading: loadingNotes } = useNotes(subjectSlug)
+  const { changelog } = useChangelog(subjectSlug)
   const [activeTab, setActiveTab] = useState<NoteType | null>(null)
+  const [changelogOpen, setChangelogOpen] = useState(false)
 
   // Default tab = first type that has notes
   useEffect(() => {
@@ -463,6 +513,21 @@ export function SubjectPage() {
               {subject.cfu} CFU
             </span>
           )}
+          {changelog && changelog.entries.length > 0 && (
+            <button
+              onClick={() => setChangelogOpen((v) => !v)}
+              title="Cronologia modifiche"
+              className={`flex items-center gap-1.5 rounded px-2 py-0.5 text-xs border transition-colors ${
+                changelogOpen
+                  ? 'bg-primary/10 border-primary/30 text-primary'
+                  : 'bg-secondary border-border/60 text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              <History size={11} />
+              Changelog
+              <ChevronDown size={10} className={`transition-transform duration-150 ${changelogOpen ? 'rotate-180' : ''}`} />
+            </button>
+          )}
         </div>
 
         {/* Title + GitHub icon */}
@@ -498,6 +563,11 @@ export function SubjectPage() {
           </p>
         )}
       </div>
+
+      {/* ── Changelog dropdown ── */}
+      {changelog && changelog.entries.length > 0 && (
+        <ChangelogDropdown entries={changelog.entries} open={changelogOpen} />
+      )}
 
       {/* ── Category Tab Bar (conditional) ── */}
       {!loadingNotes && showTabs && (

@@ -1,0 +1,41 @@
+---
+title: "Principi di Conteggio e Permutazioni Semplici"
+type: "riassunto"
+section: "Matematica Discreta"
+tags: ["principio di addizione", "principio di moltiplicazione", "permutazioni", "fattoriale"]
+excerpt: "Principio di addizione e moltiplicazione, permutazioni semplici e fattoriale."
+---
+
+# Principi di Conteggio e Permutazioni Semplici
+
+## Principio di Addizione
+
+**Principio.** Dati $m$ insiemi **a due a due disgiunti** con cardinalità $n_1, n_2, \ldots, n_m$, il numero di modi di selezionare un oggetto da uno degli insiemi è:
+
+$$\boxed{n_1 + n_2 + \cdots + n_m}$$
+
+---
+
+## Principio di Moltiplicazione
+
+**Principio.** Data una procedura in $m$ fasi sequenziali con $n_1, n_2, \ldots, n_m$ esiti possibili per ciascuna fase, tali che:
+- il numero di esiti di ogni fase è **indipendente** dalle fasi precedenti;
+- tutti gli esiti finali sono **distinti**,
+
+il numero totale di esiti finali è:
+
+$$\boxed{n_1 \cdot n_2 \cdot \ldots \cdot n_m}$$
+
+---
+
+## Permutazioni Semplici
+
+**Definizione.** Dati $n$ oggetti distinti, una **permutazione** è una disposizione ordinata di tutti gli $n$ oggetti.
+
+Il numero di permutazioni di $n$ oggetti è:
+
+$$\boxed{n! = n \cdot (n-1) \cdot (n-2) \cdots 2 \cdot 1}$$
+
+**Convenzione.** $0! = 1$.
+
+**Dimostrazione.** Si riempiono $n$ posti in sequenza: $n$ scelte per il primo, $n-1$ per il secondo, …, $1$ per l'ultimo. Per il Principio di Moltiplicazione: $n!$. $\square$
