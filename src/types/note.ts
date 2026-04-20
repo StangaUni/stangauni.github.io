@@ -1,5 +1,10 @@
 export type NoteType = 'riassunto' | 'esercitazione' | 'appunti' | 'extra'
 
+export interface Contributor {
+  name: string
+  github?: string
+}
+
 export interface Note {
   slug: string
   title: string
@@ -13,4 +18,5 @@ export interface Note {
   hasSolution?: boolean
   week?: number
   section?: string
+  contributors?: Contributor[]
 }

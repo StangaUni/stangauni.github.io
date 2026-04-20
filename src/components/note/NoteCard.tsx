@@ -8,6 +8,8 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, subjectSlug }: NoteCardProps) {
+  const contributors = note.contributors ?? []
+
   return (
     <Link
       to={`/materia/${subjectSlug}/${note.slug}`}
@@ -19,6 +21,34 @@ export function NoteCard({ note, subjectSlug }: NoteCardProps) {
         </p>
         {note.excerpt && (
           <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">{note.excerpt}</p>
+        )}
+        {contributors.length > 0 && (
+          <div className="mt-1.5 flex items-center gap-1">
+            <div className="flex -space-x-1">
+              {contributors.slice(0, 4).map((c, i) => (
+                c.github ? (
+                  <img
+                    key={i}
+                    src={`https://github.com/${c.github}.png?size=24`}
+                    alt={c.name}
+                    title={c.name}
+                    className="w-4 h-4 rounded-full border border-background object-cover"
+                  />
+                ) : (
+                  <span
+                    key={i}
+                    title={c.name}
+                    className="w-4 h-4 rounded-full border border-background bg-secondary flex items-center justify-center text-[8px] font-semibold text-muted-foreground"
+                  >
+                    {c.name[0].toUpperCase()}
+                  </span>
+                )
+              ))}
+            </div>
+            {contributors.length > 4 && (
+              <span className="text-[10px] text-muted-foreground">+{contributors.length - 4}</span>
+            )}
+          </div>
         )}
       </div>
       <ChevronRight

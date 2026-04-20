@@ -66,7 +66,7 @@ export function Home() {
   const { subjects, loading } = useSubjects()
   const { notes } = useNotes()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [drawerCollapsed, setDrawerCollapsed] = useState(false)
+  const [drawerCollapsed, setDrawerCollapsed] = useState(true)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
   const [query, setQuery] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
@@ -166,48 +166,10 @@ export function Home() {
     <>
       <SEO />
 
-      {/* ── Search bar ── */}
-      <div className="mb-8 -mx-6 sm:-mx-8 px-6 sm:px-8 pt-6 pb-5 border-b border-border">
-        <div className="relative max-w-md">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <input
-            ref={searchRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={loading ? '' : `Cerca tra ${subjects.length} materie…`}
-            className="w-full rounded-lg border border-border bg-background pl-9 pr-20 py-2 text-sm placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 transition-all"
-          />
-          {query ? (
-            <button
-              onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Cancella"
-            >
-              <X size={13} />
-            </button>
-          ) : (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 text-[10px] text-muted-foreground/40 pointer-events-none select-none">
-              {isMac ? <Command size={9} /> : 'Ctrl'}<span>K</span>
-            </span>
-          )}
-        </div>
-      </div>
+      {/* Page layout: sidebar on left, content block on right */}
+      <div className="flex flex-1 gap-0 -mx-6 sm:-mx-8">
 
-      {/* Mobile filter button */}
-      <div className="flex items-center justify-end mb-5 lg:hidden">
-        <button
-          onClick={() => setMobileDrawerOpen(true)}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <SlidersHorizontal size={13} />
-          Filtra
-          {urlYear !== null && <span className="rounded-full bg-primary w-1.5 h-1.5" />}
-        </button>
-      </div>
-
-      {/* Main layout: drawer + content */}
-      <div className="flex gap-0 -mx-6 sm:-mx-8">
+        {/* ── FilterDrawer: standalone, outside the content block ── */}
         {!loading && years.length > 0 && (
           <FilterDrawer
             years={years}
@@ -222,31 +184,84 @@ export function Home() {
           />
         )}
 
-        <div className="flex-1 min-w-0 px-6 sm:px-8 pt-6">
-          {loading ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="py-16 text-center text-muted-foreground">
-              <p className="font-medium text-foreground">Nessuna materia trovata</p>
-              <p className="mt-1 text-sm">
-                {query ? 'Prova con un termine diverso.' : 'Modifica i filtri attivi.'}
-              </p>
-            </div>
-          ) : (
-            bySemester.map(({ year, semester, subs }, idx) => (
-              <SemesterSection
-                key={`${year}-${semester}`}
-                year={year}
-                semester={semester}
-                showYear={urlYear === null}
-                subjects={subs}
-                noteCountsBySubject={noteCountsBySubject}
-                index={semesterOffsets[idx]}
+        {/* ── Content block: search + cards ── */}
+        <div className="flex-1 min-w-0 flex flex-col">
+
+          {/* Search bar */}
+          <div className="px-6 sm:px-8 py-6 border-b border-border/60">
+            <div className="relative group">
+              <Search
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-focus-within:text-primary/70 pointer-events-none transition-colors duration-200"
               />
-            ))
-          )}
+              <input
+                ref={searchRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={loading ? '' : `Cerca tra ${subjects.length} materie…`}
+                className="w-full rounded-2xl border border-border bg-background pl-11 pr-28 py-3.5 text-sm shadow-sm placeholder:text-muted-foreground/45 focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:shadow-md transition-all duration-200"
+              />
+              {query ? (
+                <button
+                  onClick={() => setQuery('')}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted-foreground/60 hover:text-foreground hover:bg-secondary transition-colors"
+                  aria-label="Cancella"
+                >
+                  <X size={13} />
+                </button>
+              ) : (
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none select-none">
+                  <kbd className="inline-flex items-center rounded border border-border/70 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground/35">
+                    {isMac ? <Command size={9} /> : 'Ctrl'}
+                  </kbd>
+                  <kbd className="inline-flex items-center rounded border border-border/70 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground/35">
+                    K
+                  </kbd>
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile filter button */}
+          <div className="flex items-center justify-end mb-5 px-6 sm:px-8 lg:hidden">
+            <button
+              onClick={() => setMobileDrawerOpen(true)}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <SlidersHorizontal size={13} />
+              Filtra
+              {urlYear !== null && <span className="rounded-full bg-primary w-1.5 h-1.5" />}
+            </button>
+          </div>
+
+          {/* Cards */}
+          <div className="px-6 sm:px-8 pt-8 pb-6">
+            {loading ? (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="py-16 text-center text-muted-foreground">
+                <p className="font-medium text-foreground">Nessuna materia trovata</p>
+                <p className="mt-1 text-sm">
+                  {query ? 'Prova con un termine diverso.' : 'Modifica i filtri attivi.'}
+                </p>
+              </div>
+            ) : (
+              bySemester.map(({ year, semester, subs }, idx) => (
+                <SemesterSection
+                  key={`${year}-${semester}`}
+                  year={year}
+                  semester={semester}
+                  showYear={urlYear === null}
+                  subjects={subs}
+                  noteCountsBySubject={noteCountsBySubject}
+                  index={semesterOffsets[idx]}
+                />
+              ))
+            )}
+          </div>
         </div>
       </div>
     </>

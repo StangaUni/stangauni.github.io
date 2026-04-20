@@ -11,9 +11,56 @@ import { ThemedImage } from '../components/mdx/ThemedImage'
 import { useSubjects } from '../hooks/useSubjects'
 import { useNotes } from '../hooks/useNotes'
 import { NotFound } from './NotFound'
-import type { Note } from '../types/note'
+import type { Contributor, Note } from '../types/note'
 
 const mdxModules = import.meta.glob('../content/materie/**/*.mdx')
+
+// ─── Contributors ─────────────────────────────────────────────────────────────
+
+function ContributorList({ contributors }: { contributors: Contributor[] }) {
+  return (
+    <div className="mt-3 flex items-center gap-2 flex-wrap">
+      <span className="text-xs text-muted-foreground">Contributi di</span>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {contributors.map((c, i) => {
+          const avatar = c.github
+            ? `https://github.com/${c.github}.png?size=32`
+            : null
+          const inner = (
+            <span className="flex items-center gap-1.5">
+              {avatar && (
+                <img
+                  src={avatar}
+                  alt={c.name}
+                  className="w-5 h-5 rounded-full border border-border object-cover"
+                />
+              )}
+              <span className="text-xs font-medium text-foreground">{c.name}</span>
+            </span>
+          )
+          return c.github ? (
+            <a
+              key={i}
+              href={`https://github.com/${c.github}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/40 pl-1 pr-2.5 py-0.5 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+            >
+              {inner}
+            </a>
+          ) : (
+            <span
+              key={i}
+              className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/40 pl-2 pr-2.5 py-0.5"
+            >
+              <span className="text-xs font-medium text-foreground">{c.name}</span>
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MDX_COMPONENTS: Record<string, React.ComponentType<any>> = {
@@ -189,6 +236,9 @@ export function NotePage() {
             {fm.date && fm.readingTime && ' · '}
             {fm.readingTime && `${fm.readingTime} min di lettura`}
           </p>
+        )}
+        {fm.contributors && fm.contributors.length > 0 && (
+          <ContributorList contributors={fm.contributors} />
         )}
       </div>
 
