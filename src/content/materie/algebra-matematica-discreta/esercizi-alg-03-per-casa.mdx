@@ -1,0 +1,518 @@
+---
+title: "Esercizi per Casa 3"
+type: "esercitazione"
+section: "Algebra"
+excerpt: "Operazioni tra matrici, Gauss e Gauss-Jordan, sistemi lineari, matrici invertibili, determinanti con Laplace."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Esercizi per Casa 3
+
+## Esercizio 1
+
+Siano
+
+$$A = \begin{pmatrix}6 & 0 \\ 1 & -3 \\ 2 & -2\end{pmatrix}, \quad B = \begin{pmatrix}2 & 1 & 0 \\ 4 & -2 & -3\end{pmatrix}, \quad C = \begin{pmatrix}2 & 1 \\ 0 & 1\end{pmatrix}, \quad D = \begin{pmatrix}4 & 2 \\ 1 & 0 \\ -1 & -2\end{pmatrix}$$
+
+Si calcoli $B(DC - 2A) + 4C$.
+
+<Collapsible title="Teoria">
+
+Il prodotto $P \cdot Q$ è definito solo se $\#\text{col}(P) = \#\text{righe}(Q)$:
+
+$$(PQ)_{ij} = \sum_k p_{ik} q_{kj}$$
+
+Somma e prodotto per scalare operano elemento per elemento tra matrici delle stesse dimensioni. Valutare prima le operazioni più interne verificando le dimensioni ad ogni passo.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$A\in M_{3,2}$, $B\in M_{2,3}$, $C\in M_{2,2}$, $D\in M_{3,2}$.
+
+**Passo 1 — $DC \in M_{3,2}$:**
+
+$$DC = \begin{pmatrix}4 & 2 \\ 1 & 0 \\ -1 & -2\end{pmatrix}\begin{pmatrix}2 & 1 \\ 0 & 1\end{pmatrix} = \begin{pmatrix}8 & 6 \\ 2 & 1 \\ -2 & -3\end{pmatrix}$$
+
+**Passo 2 — $2A$:**
+
+$$2A = \begin{pmatrix}12 & 0 \\ 2 & -6 \\ 4 & -4\end{pmatrix}$$
+
+**Passo 3 — $DC - 2A$:**
+
+$$DC - 2A = \begin{pmatrix}-4 & 6 \\ 0 & 7 \\ -6 & 1\end{pmatrix}$$
+
+**Passo 4 — $B(DC-2A) \in M_{2,2}$:**
+
+$$B(DC-2A) = \begin{pmatrix}2 & 1 & 0 \\ 4 & -2 & -3\end{pmatrix}\begin{pmatrix}-4 & 6 \\ 0 & 7 \\ -6 & 1\end{pmatrix} = \begin{pmatrix}-8 & 19 \\ 2 & 7\end{pmatrix}$$
+
+**Passo 5 — risultato:**
+
+$$B(DC-2A) + 4C = \begin{pmatrix}-8 & 19 \\ 2 & 7\end{pmatrix} + \begin{pmatrix}8 & 4 \\ 0 & 4\end{pmatrix} = \boxed{\begin{pmatrix}0 & 23 \\ 2 & 11\end{pmatrix}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 2
+
+Sia $A = \begin{pmatrix}1 & 1 \\ 1 & 1\end{pmatrix}$.
+
+(a) Si trovino tutte le matrici reali $B = \begin{pmatrix}x & y \\ z & t\end{pmatrix}$ tali che $AB = BA$.
+
+(b) Si trovino tutte le matrici reali $2 \times 2$ $C$ tali che $AC = \mathbb{O}$.
+
+<Collapsible title="Teoria">
+
+Il prodotto di matrici **non è commutativo** in generale: $AB \neq BA$.
+
+Per trovare le condizioni su $B$ affinché $AB = BA$, si calcola esplicitamente $AB$ e $BA$ e si impone l'uguaglianza elemento per elemento.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a)**
+
+$$AB = \begin{pmatrix}x+z & y+t \\ x+z & y+t\end{pmatrix}, \qquad BA = \begin{pmatrix}x+y & x+y \\ z+t & z+t\end{pmatrix}$$
+
+$AB = BA$ implica $z = y$ e $t = x$. Le matrici che commutano con $A$:
+
+$$\boxed{B = \begin{pmatrix}x & y \\ y & x\end{pmatrix}, \quad x, y \in \mathbb{R}}$$
+
+---
+
+**(b)**
+
+$$AC = \begin{pmatrix}x+z & y+t \\ x+z & y+t\end{pmatrix} = \mathbb{O} \implies z = -x,\; t = -y$$
+
+$$\boxed{C = \begin{pmatrix}x & y \\ -x & -y\end{pmatrix}, \quad x, y \in \mathbb{R}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 3
+
+Siano
+
+$$A = \begin{pmatrix}2-3i & 1+i \\ 0 & i \\ 1-i & 1\end{pmatrix}, \quad B = \begin{pmatrix}2 & 1+i\end{pmatrix}, \quad C = \begin{pmatrix}3+5i \\ 6 \\ 2-2i\end{pmatrix}, \quad D = \begin{pmatrix}7+i & 2+3i \\ 3-2i & 0\end{pmatrix}$$
+
+(a) Di ciascuna calcolare la trasposta, la coniugata e la H-trasposta.
+
+(b) Si calcoli $(A^H\overline{C} + iB^T)\overline{B} + (1+3i)D^H$.
+
+<Collapsible title="Teoria">
+
+Per $A = (a_{ij}) \in M_{m,n}(\mathbb{C})$:
+
+| Operazione | Definizione | Dim. |
+|:---|:---|:---:|
+| Trasposta $A^T$ | $(A^T)_{ij} = a_{ji}$ | $M_{n,m}$ |
+| Coniugata $\overline{A}$ | $(\overline{A})_{ij} = \overline{a_{ij}}$ | $M_{m,n}$ |
+| H-trasposta $A^H$ | $A^H = \overline{(A^T)}$ | $M_{n,m}$ |
+
+Proprietà: $(AB)^H = B^H A^H$, $(\alpha A)^H = \overline{\alpha}\,A^H$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a)**
+
+$$A^T = \begin{pmatrix}2-3i & 0 & 1-i \\ 1+i & i & 1\end{pmatrix}, \quad \overline{A} = \begin{pmatrix}2+3i & 1-i \\ 0 & -i \\ 1+i & 1\end{pmatrix}, \quad A^H = \begin{pmatrix}2+3i & 0 & 1+i \\ 1-i & -i & 1\end{pmatrix}$$
+
+$$B^T = \begin{pmatrix}2 \\ 1+i\end{pmatrix}, \quad \overline{B} = \begin{pmatrix}2 & 1-i\end{pmatrix}, \quad B^H = \begin{pmatrix}2 \\ 1-i\end{pmatrix}$$
+
+$$C^T = \begin{pmatrix}3+5i & 6 & 2-2i\end{pmatrix}, \quad \overline{C} = \begin{pmatrix}3-5i \\ 6 \\ 2+2i\end{pmatrix}, \quad C^H = \begin{pmatrix}3-5i & 6 & 2+2i\end{pmatrix}$$
+
+$$D^T = \begin{pmatrix}7+i & 3-2i \\ 2+3i & 0\end{pmatrix}, \quad \overline{D} = \begin{pmatrix}7-i & 2-3i \\ 3+2i & 0\end{pmatrix}, \quad D^H = \begin{pmatrix}7-i & 3+2i \\ 2-3i & 0\end{pmatrix}$$
+
+---
+
+**(b)** $A^H \in M_{2,3}$, $\overline{C} \in M_{3,1}$ → $A^H\overline{C} \in M_{2,1}$; $B^T \in M_{2,1}$; risultato finale $\in M_{2,2}$.
+
+**$A^H\overline{C}$:** riga 1: $(2+3i)(3-5i)+(1+i)(2+2i) = (21-i)+4i = 21+3i$; riga 2: $(1-i)(3-5i)+(-i)(6)+(2+2i) = -12i$.
+
+$$A^H\overline{C} = \begin{pmatrix}21+3i \\ -12i\end{pmatrix}, \qquad iB^T = \begin{pmatrix}2i \\ -1+i\end{pmatrix}$$
+
+$$A^H\overline{C} + iB^T = \begin{pmatrix}21+5i \\ -1-11i\end{pmatrix}$$
+
+**Prodotto per $\overline{B}$:**
+
+$$\begin{pmatrix}21+5i \\ -1-11i\end{pmatrix}\begin{pmatrix}2 & 1-i\end{pmatrix} = \begin{pmatrix}42+10i & 26-16i \\ -2-22i & -12-10i\end{pmatrix}$$
+
+**$(1+3i)D^H$:**
+
+$$\begin{pmatrix}10+20i & -3+11i \\ 11+3i & 0\end{pmatrix}$$
+
+**Risultato:**
+
+$$\boxed{\begin{pmatrix}52+30i & 23-5i \\ 9-19i & -12-10i\end{pmatrix}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 4
+
+Si trovino forme ridotte di Gauss per:
+
+$$A = \begin{pmatrix}2 & -2 & 4 & 0 \\ 3 & -3 & 9 & 6 \\ 3 & -3 & 3 & -6\end{pmatrix}, \quad b = \begin{pmatrix}3 & -9 \\ -2 & 6 \\ 4 & 8\end{pmatrix}, \quad \mathbf{w}^T = \begin{pmatrix}4 & 0 & 3\end{pmatrix}, \quad v = \begin{pmatrix}0 \\ 7 \\ 3\end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+**Matrice a gradini (forma di Gauss):** righe nulle in fondo; primo elemento non-zero di ogni riga non-nulla è $1$ (pivot); ogni pivot è strettamente a destra del pivot della riga precedente.
+
+**Metodo:** applicare operazioni elementari $E_{ij}$ (scambio), $E_i(\alpha)$ (scala), $E_{ij}(\alpha)$ (somma multiplo). Le colonne con pivot sono **dominanti (D)**, le altre **libere (L)**.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Matrice $A$:**
+
+$$A \xrightarrow{E_1(1/2)} \begin{pmatrix}1 & -1 & 2 & 0 \\ 3 & -3 & 9 & 6 \\ 3 & -3 & 3 & -6\end{pmatrix} \xrightarrow{E_{21}(-3),\,E_{31}(-3)} \begin{pmatrix}1 & -1 & 2 & 0 \\ 0 & 0 & 3 & 6 \\ 0 & 0 & -3 & -6\end{pmatrix}$$
+
+$$\xrightarrow{E_2(1/3),\,E_{32}(3)} \boxed{\begin{pmatrix}1 & -1 & 2 & 0 \\ 0 & 0 & 1 & 2 \\ 0 & 0 & 0 & 0\end{pmatrix}} \quad \text{D, L, D, L} \quad \mathrm{rk}=2$$
+
+---
+
+**Matrice $b$:**
+
+$$b \xrightarrow{E_1(1/3),\,E_{21}(2),\,E_{31}(-4),\,E_{23},\,E_2(1/20)} \boxed{\begin{pmatrix}1 & -3 \\ 0 & 1 \\ 0 & 0\end{pmatrix}} \quad \text{D, D} \quad \mathrm{rk}=2$$
+
+---
+
+**Vettore $\mathbf{w}^T$:**
+
+$$\mathbf{w}^T \xrightarrow{E_1(1/4)} \boxed{\begin{pmatrix}1 & 0 & \tfrac{3}{4}\end{pmatrix}} \quad \text{D, L, L} \quad \mathrm{rk}=1$$
+
+---
+
+**Vettore $v$:**
+
+$$v \xrightarrow{E_{12},\,E_1(1/7),\,E_{31}(-3)} \boxed{\begin{pmatrix}1 \\ 0 \\ 0\end{pmatrix}} \quad \text{D} \quad \mathrm{rk}=1$$
+
+</Collapsible>
+
+---
+
+## Esercizio 5
+
+Sia
+
+$$A(\alpha) = \begin{pmatrix}2i & 0 & -2i & 2i\alpha \\ 1 & \alpha^2+4 & 0 & \alpha \\ 2 & 2\alpha^2+8 & 0 & 4\alpha\end{pmatrix}, \quad \alpha \in \mathbb{C}$$
+
+Per ogni $\alpha$ trovare una forma ridotta di Gauss e indicare colonne dominanti e libere.
+
+<Collapsible title="Teoria">
+
+Applicare Gauss trattando $\alpha$ come parametro. Quando un'entrata in posizione pivot dipende da $\alpha$, distinguere i casi in cui è zero o non-zero: ciò cambia la struttura dei pivot e il rango.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Dopo $E_{12}$, $E_{21}(-2i)$, $E_{31}(-2)$, $E_2(i/2)$:
+
+$$\begin{pmatrix}1 & \alpha^2+4 & 0 & \alpha \\ 0 & \alpha^2+4 & 1 & 0 \\ 0 & 0 & 0 & 2\alpha\end{pmatrix}$$
+
+---
+
+**Caso $\alpha \neq 0, \pm 2i$** ($\alpha^2+4 \neq 0$, $\alpha \neq 0$):
+
+$$U(\alpha) = \begin{pmatrix}1 & \alpha^2+4 & 0 & \alpha \\ 0 & 1 & \frac{1}{\alpha^2+4} & 0 \\ 0 & 0 & 0 & 1\end{pmatrix} \qquad \text{D, D, L, D} \quad \mathrm{rk}=3$$
+
+---
+
+**Caso $\alpha = 0$** ($\alpha^2+4=4\neq0$):
+
+$$U(0) = \begin{pmatrix}1 & 4 & 0 & 0 \\ 0 & 1 & \tfrac{1}{4} & 0 \\ 0 & 0 & 0 & 0\end{pmatrix} \qquad \text{D, D, L, L} \quad \mathrm{rk}=2$$
+
+---
+
+**Caso $\alpha = \pm 2i$** ($\alpha^2+4=0$, $\alpha\neq0$):
+
+$$U(\pm2i) = \begin{pmatrix}1 & 0 & 0 & \pm2i \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1\end{pmatrix} \qquad \text{D, L, D, D} \quad \mathrm{rk}=3$$
+
+</Collapsible>
+
+---
+
+## Esercizio 6
+
+Si risolva $Ax = b$ nei seguenti casi:
+
+$$(a)\; A = \begin{pmatrix}3&-3&9&6\\1&-1&7&4\\1&-1&3&2\\-2&2&-6&-4\end{pmatrix},\; b = \begin{pmatrix}6\\4\\2\\-4\end{pmatrix} \qquad (b)\; \text{stessa } A,\; b = \begin{pmatrix}6\\4\\3\\-4\end{pmatrix}$$
+
+$$(c)\; A = \begin{pmatrix}3&-3&9&6\\1&0&7&4\\1&-1&5&2\\1&0&5&6\end{pmatrix},\; b = \begin{pmatrix}6\\4\\4\\8\end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+Portare $(A \mid b)$ a forma ridotta $(C \mid d)$. Poi:
+- $d$ è colonna **dominante** → **sistema impossibile**
+- $d$ libera, nessuna colonna libera in $C$ → **unica soluzione**
+- $d$ libera, $K \geq 1$ colonne libere in $C$ → **infinite soluzioni** (parametri liberi)
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Casi (a) e (b) — stessa matrice $A$**, forma ridotta di $(A\mid b^{(a)}\mid b^{(b)})$:
+
+$$\begin{pmatrix}1&-1&7&4&|&4&4\\0&0&1&\frac{1}{2}&|&\frac{1}{2}&\frac{1}{2}\\0&0&0&0&|&\mathbf{0}&\mathbf{1}\\0&0&0&0&|&0&0\end{pmatrix}$$
+
+$\mathrm{rk}(A)=2$, colonne: **D, L, D, L**.
+
+**(a)** Colonna $d$ libera → **infinite soluzioni** ($x_2=h$, $x_4=k$):
+
+$$\boxed{\begin{pmatrix}h + \tfrac{1}{2} - \tfrac{1}{2}k\\ h\\ \tfrac{1}{2} - \tfrac{1}{2}k\\ k\end{pmatrix}, \quad h,k\in\mathbb{C}}$$
+
+**(b)** Colonna $d$ dominante (riga 3: $0=1$) → **sistema impossibile**.
+
+---
+
+**(c)** Applicando Gauss a $(A\mid b)$:
+
+$$(C\mid d) = \begin{pmatrix}1&0&7&4&|&4\\0&1&2&2&|&0\\0&0&1&0&|&1\\0&0&0&1&|&3\end{pmatrix}$$
+
+Tutte le colonne dominanti, $d$ libera → **unica soluzione**. Sostituzione all'indietro:
+
+$$x_4=3,\quad x_3=1,\quad x_2=-8,\quad x_1=-15$$
+
+$$\boxed{\begin{pmatrix}-15\\-8\\1\\3\end{pmatrix}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 7
+
+Si risolva $A(\alpha)x = b(\alpha)$ con
+
+$$A(\alpha) = \begin{pmatrix}1 & \alpha-i & 0 \\ 0 & 1 & 0 \\ 1 & \alpha-i & \alpha+i \\ -\alpha-i & -\alpha^2-1 & 0\end{pmatrix}, \quad b(\alpha) = \begin{pmatrix}\alpha-i \\ \alpha^2+1 \\ 2\alpha \\ 0\end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+Con parametro: applicare Gauss a $(A(\alpha)\mid b(\alpha))$. Quando un'entrata del termine noto dipende da $\alpha$, distinguere i casi in cui diventa dominante (sistema impossibile) o rimane libera (sistema compatibile).
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Dopo $E_{31}(-1)$ e $E_{41}(\alpha+i)$ (notando $(\alpha+i)(\alpha-i)=\alpha^2+1$):
+
+$$\begin{pmatrix}1 & \alpha-i & 0 & | & \alpha-i \\ 0 & 1 & 0 & | & \alpha^2+1 \\ 0 & 0 & \alpha+i & | & \alpha+i \\ 0 & 0 & 0 & | & \alpha^2+1\end{pmatrix}$$
+
+Riga 4: $0 = \alpha^2+1 \iff \alpha = \pm i$.
+
+---
+
+**Caso $\alpha \neq \pm i$:** riga 4 impossibile → **sistema impossibile**.
+
+---
+
+**Caso $\alpha = i$** ($\alpha+i=2i\neq0$):
+
+$$\xrightarrow{} \begin{pmatrix}1&0&0\\0&1&0\\0&0&1\end{pmatrix} \mid \begin{pmatrix}0\\0\\1\end{pmatrix} \qquad \boxed{x = \begin{pmatrix}0\\0\\1\end{pmatrix}}$$
+
+---
+
+**Caso $\alpha = -i$** ($\alpha+i=0$):
+
+$$\begin{pmatrix}1 & -2i & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0\end{pmatrix} \mid \begin{pmatrix}-2i \\ 0 \\ 0 \\ 0\end{pmatrix}$$
+
+$x_3=h$ libero, $x_2=0$, $x_1=-2i$.
+
+$$\boxed{\left\{\begin{pmatrix}-2i \\ 0 \\ h\end{pmatrix} : h \in \mathbb{C}\right\}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 8
+
+Si trovi una forma ridotta di Gauss-Jordan per
+
+$$A = \begin{pmatrix}2 & -2 & 2 & 0 & 0 & 6 \\ 2 & -2 & 3 & -2 & -1 & 8 \\ -2 & 2 & -2 & 0 & 0 & 5 \\ 3 & -3 & 4 & -2 & -1 & 12\end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+**Gauss-Jordan:** forma di Gauss in cui ogni colonna dominante ha pivot $=1$ e **tutti** gli altri coefficienti della colonna $= 0$ (non solo quelli sotto, ma anche sopra).
+
+**Metodo:** eliminazione in avanti (Gauss), poi eliminazione all'indietro (azzerare sopra ogni pivot).
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Fase 1 — Gauss in avanti:** pivot in colonne 1, 3, 6.
+
+$$\begin{pmatrix}1 & -1 & 1 & 0 & 0 & 3 \\ 0 & 0 & 1 & -2 & -1 & 2 \\ 0 & 0 & 0 & 0 & 0 & 1 \\ 0 & 0 & 0 & 0 & 0 & 0\end{pmatrix}$$
+
+**Fase 2 — eliminazione all'indietro:**
+
+$$\boxed{\begin{pmatrix}1 & -1 & 0 & 2 & 1 & 0 \\ 0 & 0 & 1 & -2 & -1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 \\ 0 & 0 & 0 & 0 & 0 & 0\end{pmatrix}}$$
+
+Colonne: **D**(1), **L**(2), **D**(3), **L**(4), **L**(5), **D**(6) — $\mathrm{rk}=3$.
+
+</Collapsible>
+
+---
+
+## Esercizio 9
+
+Sia
+
+$$A(\alpha) = \begin{pmatrix}0 & 1 & 0 \\ \alpha & \alpha^2 & -\alpha \\ 2\alpha & 2\alpha^2 & 1\end{pmatrix}, \quad \alpha \in \mathbb{R}$$
+
+Per quegli $\alpha$ per cui $A(\alpha)$ è non singolare, calcolare $A(\alpha)^{-1}$.
+
+<Collapsible title="Teoria">
+
+$A$ è invertibile $\iff \det(A) \neq 0$. Per calcolare $A^{-1}$: formare $(A \mid \mathbb{1}_n)$, applicare Gauss-Jordan fino a $(\mathbb{1}_n \mid A^{-1})$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Determinante** (sviluppo lungo riga 1):
+
+$$\det(A(\alpha)) = -(\alpha + 2\alpha^2) = -\alpha(1+2\alpha)$$
+
+$A(\alpha)$ non singolare $\iff \alpha \neq 0$ e $\alpha \neq -\dfrac{1}{2}$.
+
+**Gauss-Jordan su $(A(\alpha)\mid\mathbb{1}_3)$** per $\alpha \neq 0$, $\alpha \neq -\frac{1}{2}$:
+
+$$\boxed{A(\alpha)^{-1} = \begin{pmatrix}-\alpha & \dfrac{1}{\alpha(1+2\alpha)} & \dfrac{1}{1+2\alpha} \\[6pt] 1 & 0 & 0 \\[6pt] 0 & \dfrac{-2}{1+2\alpha} & \dfrac{1}{1+2\alpha}\end{pmatrix}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 10
+
+Sia $A = \begin{pmatrix}6i & 1-i \\ 3 & -i\end{pmatrix}$. Si calcoli $A^{-1}$.
+
+<Collapsible title="Teoria">
+
+Per $A = \begin{pmatrix}a&b\\c&d\end{pmatrix}$ con $\det(A) = ad-bc \neq 0$:
+
+$$A^{-1} = \frac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$$
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$$\det(A) = 6i(-i) - (1-i)(3) = 6 - 3 + 3i = 3+3i = 3(1+i)$$
+
+Razionalizzando: $\dfrac{1}{3(1+i)} = \dfrac{1-i}{6}$.
+
+$$\boxed{A^{-1} = \begin{pmatrix}\dfrac{-1-i}{6} & \dfrac{i}{3} \\[8pt] \dfrac{-1+i}{2} & 1+i\end{pmatrix}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 11
+
+Per quali $\alpha \in \mathbb{C}$ la matrice
+
+$$A(\alpha) = \begin{pmatrix}\alpha+3i & \alpha \\ \alpha+3i & \alpha-i\end{pmatrix}$$
+
+è non singolare? Per tali $\alpha$, trovare $A(\alpha)^{-1}$.
+
+<Collapsible title="Teoria">
+
+$A(\alpha)$ è non singolare $\iff \det(A(\alpha)) \neq 0$. Fattorizzare il determinante per trovare i valori esclusi, poi applicare la formula $2\times2$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$$\det(A(\alpha)) = (\alpha+3i)(\alpha-i) - \alpha(\alpha+3i) = (\alpha+3i)(-i) = 3-i\alpha$$
+
+Non singolare $\iff \alpha \neq -3i$.
+
+$$\boxed{A(\alpha)^{-1} = \frac{1}{3-i\alpha}\begin{pmatrix}\alpha-i & -\alpha \\ -(\alpha+3i) & \alpha+3i\end{pmatrix}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 12
+
+Si calcoli il determinante di:
+
+$$A = \begin{pmatrix}2-i & 1 & 0 \\ 2 & 1+i & 3 \\ i & 1 & 1\end{pmatrix}, \quad B = \begin{pmatrix}i & 1 & 1+i \\ -1 & 1 & 2 \\ i & i & 1\end{pmatrix}, \quad C = \begin{pmatrix}0 & 1 & 1 & 1 \\ 2 & 1 & 2 & 1 \\ 1 & 1 & 1 & 0 \\ 1 & 1 & 0 & 1+i\end{pmatrix}$$
+
+<Collapsible title="Teoria">
+
+Sviluppo di Laplace rispetto alla riga o colonna con più zeri:
+
+$$\det(A) = \sum_{j=1}^n a_{ij}\,A_{ij}, \qquad A_{ij} = (-1)^{i+j}\det(C_{ij})$$
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a)** Sviluppo lungo riga 1 (zero in col. 3):
+
+$\det\begin{pmatrix}1+i&3\\1&1\end{pmatrix}=-2+i$, $\quad\det\begin{pmatrix}2&3\\i&1\end{pmatrix}=2-3i$.
+
+$(2-i)(-2+i) = -3+4i$
+
+$$\det(A) = (-3+4i)-(2-3i) = \boxed{-5+7i}$$
+
+---
+
+**(b)** Sviluppo lungo riga 1:
+
+$i(1-2i)+1(1+2i)+(1+i)(-2i) = (2+i)+(1+2i)+(2-2i)$
+
+$$\det(B) = \boxed{5+i}$$
+
+---
+
+**(c)** Sviluppo lungo riga 1 ($c_{11}=0$), contributi $A_{12}$, $A_{13}$, $A_{14}$:
+
+$-A_{12}=1$, $\quad A_{13}=1+i$, $\quad A_{14}=1$.
+
+$$\det(C) = 1+(1+i)+1 = \boxed{3+i}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 13
+
+Sia
+
+$$A(\alpha) = \begin{pmatrix}2 & 0 & 0 & 1 \\ 0 & \alpha & 0 & 1 \\ 4 & \alpha-1 & 0 & 1 \\ 0 & 2 & 3\alpha-1 & 1\end{pmatrix}, \quad \alpha \in \mathbb{R}$$
+
+Per quali $\alpha \in \mathbb{R}$ è non singolare?
+
+<Collapsible title="Teoria">
+
+$A(\alpha)$ è non singolare $\iff \det(A(\alpha)) \neq 0$. Sviluppare lungo la colonna o riga con più zeri, poi fattorizzare per trovare le radici reali.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Colonna 3 ha un solo elemento non-zero: $a_{43}=3\alpha-1$. Sviluppo lungo col. 3:
+
+$$\det(A(\alpha)) = (3\alpha-1)\cdot A_{43}$$
+
+$$A_{43} = -\det\begin{pmatrix}2&0&1\\0&\alpha&1\\4&\alpha-1&1\end{pmatrix} = -(2\cdot1+(-4\alpha)) = 2(2\alpha-1)$$
+
+$$\det(A(\alpha)) = 2(3\alpha-1)(2\alpha-1)$$
+
+$A(\alpha)$ è non singolare $\iff$
+
+$$\boxed{\alpha \neq \frac{1}{3} \quad \text{e} \quad \alpha \neq \frac{1}{2}}$$
+
+</Collapsible>

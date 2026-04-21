@@ -151,25 +151,30 @@ function EserciziCard({ note, subjectSlug, delay }: { note: Note; subjectSlug: s
           <h3 className="font-sans font-medium text-foreground group-hover:text-primary transition-colors leading-snug">
             {note.title}
           </h3>
-          <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            {note.difficulty && <DifficultyDots level={note.difficulty} />}
-            {typeCfg && (
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${typeCfg.className}`}>
-                {typeCfg.label}
-              </span>
-            )}
-            {note.hasSolution !== undefined && (
-              note.hasSolution ? (
-                <span className="flex items-center gap-1 text-[11px] text-green-600 dark:text-green-400">
-                  <CheckCircle size={11} /> Soluzione
+          {note.excerpt && (
+            <p className="mt-0.5 text-sm text-muted-foreground line-clamp-1 leading-relaxed">{note.excerpt}</p>
+          )}
+          {(note.difficulty || typeCfg || note.hasSolution !== undefined) && (
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              {note.difficulty && <DifficultyDots level={note.difficulty} />}
+              {typeCfg && (
+                <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${typeCfg.className}`}>
+                  {typeCfg.label}
                 </span>
-              ) : (
-                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Circle size={11} /> Solo risultato
-                </span>
-              )
-            )}
-          </div>
+              )}
+              {note.hasSolution !== undefined && (
+                note.hasSolution ? (
+                  <span className="flex items-center gap-1 text-[11px] text-green-600 dark:text-green-400">
+                    <CheckCircle size={11} /> Soluzione
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <Circle size={11} /> Solo risultato
+                  </span>
+                )
+              )}
+            </div>
+          )}
         </div>
         <ChevronRight
           size={14}

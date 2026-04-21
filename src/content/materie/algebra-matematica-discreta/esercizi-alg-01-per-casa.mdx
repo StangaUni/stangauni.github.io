@@ -1,0 +1,421 @@
+---
+title: "Esercizi per Casa 1"
+type: "esercitazione"
+section: "Algebra"
+excerpt: "Numeri complessi (modulo, coniugato, inverso), divisione con resto, MCD con Euclide, identità di Bézout, congruenze, tavole Z₃ e Z₆."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Esercizi per Casa 1
+
+## Esercizio 1
+
+Per ciascuno dei seguenti numeri complessi:
+
+$$z_1 = i, \quad z_2 = -3i, \quad z_3 = 1-2i, \quad z_4 = 5+3i$$
+
+- (a) si calcoli il modulo
+- (b) si calcoli il coniugato
+- (c) si scriva l'inverso in forma algebrica
+
+<Collapsible title="Teoria">
+
+- **Modulo:** $|z| = \sqrt{a^2 + b^2}$
+- **Coniugato:** $\bar{z} = a - ib$
+- **Inverso:** $\dfrac{1}{z} = \dfrac{\bar{z}}{|z|^2}$ (si moltiplica numeratore e denominatore per $\bar{z}$; usa $z \cdot \bar{z} = |z|^2 \in \mathbb{R}$)
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a) Modulo**
+
+$$|z_1| = \sqrt{0^2 + 1^2} = 1 \qquad |z_2| = \sqrt{0^2 + (-3)^2} = 3$$
+$$|z_3| = \sqrt{1^2 + (-2)^2} = \sqrt{5} \qquad |z_4| = \sqrt{5^2 + 3^2} = \sqrt{34}$$
+
+**(b) Coniugato**
+
+$$\bar{z}_1 = -i \qquad \bar{z}_2 = 3i \qquad \bar{z}_3 = 1+2i \qquad \bar{z}_4 = 5-3i$$
+
+**(c) Inverso**
+
+$$\frac{1}{z_1} = \frac{-i}{1} = -i \qquad \frac{1}{z_2} = \frac{3i}{9} = \frac{i}{3}$$
+
+$$\frac{1}{z_3} = \frac{1+2i}{5} = \frac{1}{5} + \frac{2}{5}i \qquad \frac{1}{z_4} = \frac{5-3i}{34} = \frac{5}{34} - \frac{3}{34}i$$
+
+</Collapsible>
+
+---
+
+## Esercizio 2
+
+Quali sono i numeri complessi $z$ tali che $z = -\bar{z}$?
+
+<Collapsible title="Teoria">
+
+- **Coniugato:** $\bar{z} = a - ib$, quindi $-\bar{z} = -a + ib$
+- La condizione $z = \bar{z}$ caratterizza i reali; analogamente, $z = -\bar{z}$ caratterizzerà gli immaginari puri.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Sia $z = a + ib$. Allora $-\bar{z} = -(a - ib) = -a + ib$.
+
+La condizione $z = -\bar{z}$ diventa:
+$$a + ib = -a + ib \implies a = -a \implies a = 0$$
+
+I numeri complessi tali che $z = -\bar{z}$ sono esattamente gli **immaginari puri** (incluso lo zero):
+$$z = ib \quad \text{con } b \in \mathbb{R}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 3
+
+Si trovino il quoziente $q$ ed il resto $r$ della divisione di $a$ con $b$ nei seguenti casi (N.B.: si richiede $r \geq 0$):
+
+1. $a = 46$, $b = 10$
+2. $a = 49$, $b = 52$
+3. $a = -12$, $b = 17$
+4. $a = 76$, $b = -13$
+5. $a = -21$, $b = 12$
+
+<Collapsible title="Teoria">
+
+Dati $a, b \in \mathbb{Z}$, $b \neq 0$, esistono unici $q, r \in \mathbb{Z}$ tali che:
+$$a = q \cdot b + r \qquad 0 \leq r < |b|$$
+
+Il resto è **sempre non negativo**, anche quando $a$ o $b$ sono negativi.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** $46 = 4 \cdot 10 + 6$ $\;\Rightarrow\;$ $q = 4$, $r = 6$
+
+**2)** $49 = 0 \cdot 52 + 49$ $\;\Rightarrow\;$ $q = 0$, $r = 49$
+
+**3)** $-12 = (-1) \cdot 17 + 5$ $\;\Rightarrow\;$ $q = -1$, $r = 5$
+*(verifica: $-17 + 5 = -12$ ✓, $0 \leq 5 < 17$ ✓)*
+
+**4)** $76 = (-5) \cdot (-13) + 11$ $\;\Rightarrow\;$ $q = -5$, $r = 11$
+*(verifica: $65 + 11 = 76$ ✓, $0 \leq 11 < 13$ ✓)*
+
+**5)** $-21 = (-2) \cdot 12 + 3$ $\;\Rightarrow\;$ $q = -2$, $r = 3$
+*(verifica: $-24 + 3 = -21$ ✓, $0 \leq 3 < 12$ ✓)*
+
+</Collapsible>
+
+---
+
+## Esercizio 4
+
+Si calcoli $\text{MCD}(a,b)$ con l'algoritmo di Euclide nei seguenti casi:
+
+1. $a=126$, $b=56$
+2. $a=234$, $b=273$
+3. $a=-168$, $b=180$
+4. $a=231$, $b=165$
+5. $a=-136$, $b=48$
+6. $a=-208$, $b=286$
+7. $a=132$, $b=180$
+
+<Collapsible title="Teoria">
+
+Sequenza di divisioni successive: il MCD è l'**ultimo resto non nullo**.
+
+Per $a$ o $b$ negativi: si applica l'algoritmo a $|a|$ e $|b|$ (il MCD positivo non cambia).
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** $\text{MCD}(126, 56)$
+$$126 = 2 \cdot 56 + 14 \qquad 56 = 4 \cdot 14 + 0 \qquad \boxed{\text{MCD} = 14}$$
+
+**2)** $\text{MCD}(234, 273)$
+$$234 = 0 \cdot 273 + 234 \qquad 273 = 1 \cdot 234 + 39 \qquad 234 = 6 \cdot 39 + 0 \qquad \boxed{\text{MCD} = 39}$$
+
+**3)** $\text{MCD}(168, 180)$
+$$180 = 1 \cdot 168 + 12 \qquad 168 = 14 \cdot 12 + 0 \qquad \boxed{\text{MCD} = 12}$$
+
+**4)** $\text{MCD}(231, 165)$
+$$231 = 1 \cdot 165 + 66 \qquad 165 = 2 \cdot 66 + 33 \qquad 66 = 2 \cdot 33 + 0 \qquad \boxed{\text{MCD} = 33}$$
+
+**5)** $\text{MCD}(136, 48)$
+$$136 = 2 \cdot 48 + 40 \qquad 48 = 1 \cdot 40 + 8 \qquad 40 = 5 \cdot 8 + 0 \qquad \boxed{\text{MCD} = 8}$$
+
+**6)** $\text{MCD}(208, 286)$
+$$286 = 1 \cdot 208 + 78 \qquad 208 = 2 \cdot 78 + 52 \qquad 78 = 1 \cdot 52 + 26 \qquad 52 = 2 \cdot 26 + 0 \qquad \boxed{\text{MCD} = 26}$$
+
+**7)** $\text{MCD}(132, 180)$
+$$180 = 1 \cdot 132 + 48 \qquad 132 = 2 \cdot 48 + 36 \qquad 48 = 1 \cdot 36 + 12 \qquad 36 = 3 \cdot 12 + 0 \qquad \boxed{\text{MCD} = 12}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 5
+
+Si calcolino il quoziente $q(x)$ ed il resto $r(x)$ della divisione di $f(x)$ per $g(x)$ in $\mathbb{R}[x]$:
+
+1. $f(x) = 12x^5 + 3x^4 + 7x^3 - 11x^2 - 2x - 3$, $\quad g(x) = 3x^3 + x - 3$
+2. $f(x) = 12x^6 + 20x^4 + x^2 - 7$, $\quad g(x) = 2x^4 + x^2 + 3x - 1$
+
+<Collapsible title="Teoria">
+
+Esistono unici $q(x), r(x) \in \mathbb{R}[x]$ tali che $f(x) = q(x) \cdot g(x) + r(x)$ con $\deg(r) < \deg(g)$.
+
+**Metodo:** ad ogni passo si divide il termine di grado massimo del dividendo corrente per il termine di grado massimo di $g(x)$; il risultato è il termine corrente di $q(x)$. Si sottrae il prodotto di quel termine per $g(x)$ e si ripete finché $\deg(\text{resto}) < \deg(g)$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** $f(x) = 12x^5 + 3x^4 + 7x^3 - 11x^2 - 2x - 3$, $\quad g(x) = 3x^3 + x - 3$
+
+$\deg(f)=5$, $\deg(g)=3$ $\Rightarrow$ $\deg(q)=2$.
+
+**Passo 1:** $12x^5 \div 3x^3 = 4x^2$; $\quad 4x^2 \cdot g = 12x^5 + 4x^3 - 12x^2$
+$$f - 4x^2 \cdot g = 3x^4 + 3x^3 + x^2 - 2x - 3$$
+
+**Passo 2:** $3x^4 \div 3x^3 = x$; $\quad x \cdot g = 3x^4 + x^2 - 3x$
+$$(3x^4 + 3x^3 + x^2 - 2x - 3) - (3x^4 + x^2 - 3x) = 3x^3 + x - 3$$
+
+**Passo 3:** $3x^3 \div 3x^3 = 1$; $\quad 1 \cdot g = 3x^3 + x - 3$
+$$(3x^3 + x - 3) - (3x^3 + x - 3) = 0$$
+
+$$\boxed{q(x) = 4x^2 + x + 1, \quad r(x) = 0}$$
+
+---
+
+**2)** $f(x) = 12x^6 + 20x^4 + x^2 - 7$, $\quad g(x) = 2x^4 + x^2 + 3x - 1$
+
+$\deg(f)=6$, $\deg(g)=4$ $\Rightarrow$ $\deg(q)=2$.
+
+**Passo 1:** $12x^6 \div 2x^4 = 6x^2$; $\quad 6x^2 \cdot g = 12x^6 + 6x^4 + 18x^3 - 6x^2$
+$$f - 6x^2 \cdot g = 14x^4 - 18x^3 + 7x^2 - 7$$
+
+**Passo 2:** $14x^4 \div 2x^4 = 7$; $\quad 7 \cdot g = 14x^4 + 7x^2 + 21x - 7$
+$$(14x^4 - 18x^3 + 7x^2 - 7) - (14x^4 + 7x^2 + 21x - 7) = -18x^3 - 21x$$
+
+$\deg(-18x^3 - 21x) = 3 < 4 = \deg(g)$ — stop.
+
+$$\boxed{q(x) = 6x^2 + 7, \quad r(x) = -18x^3 - 21x}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 6
+
+In tutti i casi dell'Esercizio 4, indicando con $d$ il MCD positivo di $a$ e $b$, si trovino $m, n \in \mathbb{Z}$ tali che $d = m \cdot a + n \cdot b$.
+
+<Collapsible title="Teoria">
+
+Dati $a, b \in \mathbb{Z}$ non entrambi nulli, esistono $m, n \in \mathbb{Z}$ tali che $d = m \cdot a + n \cdot b$.
+
+**Metodo:** ripercorrere l'algoritmo di Euclide a ritroso, sostituendo progressivamente i resti con le espressioni ottenute dai passi precedenti.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** $a=126$, $b=56$, $d=14$
+
+Dal passo 1 di Euclide: $14 = 126 - 2 \cdot 56$
+$$\boxed{m=1,\ n=-2} \qquad (126 - 112 = 14\ ✓)$$
+
+**2)** $a=234$, $b=273$, $d=39$
+
+Dal passo 2: $39 = 273 - 1 \cdot 234$
+$$\boxed{m=-1,\ n=1} \qquad (-234 + 273 = 39\ ✓)$$
+
+**3)** $a=-168$, $b=180$, $d=12$
+
+Dal passo 1: $12 = 180 - 1 \cdot 168 = 1\cdot(-168) + 1\cdot180$
+$$\boxed{m=1,\ n=1} \qquad (-168 + 180 = 12\ ✓)$$
+
+**4)** $a=231$, $b=165$, $d=33$
+
+Dal passo 2: $33 = 165 - 2\cdot66$. Dal passo 1: $66 = 231 - 165$, quindi:
+$$33 = 165 - 2(231 - 165) = 3\cdot165 - 2\cdot231$$
+$$\boxed{m=-2,\ n=3} \qquad (-462 + 495 = 33\ ✓)$$
+
+**5)** $a=-136$, $b=48$, $d=8$
+
+Dal passo 2: $8 = 48 - 40$. Dal passo 1: $40 = 136 - 2\cdot48$, quindi:
+$$8 = 48 - (136 - 2\cdot48) = 3\cdot48 - 136 = 1\cdot(-136) + 3\cdot48$$
+$$\boxed{m=1,\ n=3} \qquad (-136 + 144 = 8\ ✓)$$
+
+**6)** $a=-208$, $b=286$, $d=26$
+
+$26 = 78 - 52$; $52 = 208 - 2\cdot78$; $78 = 286 - 208$, quindi:
+$$26 = 78-(208-2\cdot78) = 3\cdot78-208 = 3(286-208)-208 = 4\cdot(-208)+3\cdot286$$
+$$\boxed{m=4,\ n=3} \qquad (-832 + 858 = 26\ ✓)$$
+
+**7)** $a=132$, $b=180$, $d=12$
+
+$12 = 48-36$; $36 = 132-2\cdot48$; $48 = 180-132$, quindi:
+$$12 = 48-(132-2\cdot48) = 3\cdot48-132 = 3(180-132)-132 = 3\cdot180-4\cdot132$$
+$$\boxed{m=-4,\ n=3} \qquad (-528 + 540 = 12\ ✓)$$
+
+</Collapsible>
+
+---
+
+## Esercizio 7
+
+Si dica quali delle seguenti congruenze sono vere e quali false:
+
+1. $132 \equiv 8 \pmod{9}$
+2. $132 \equiv 1 \pmod{11}$
+3. $132 \equiv 0 \pmod{12}$
+4. $132 \equiv 4 \pmod{13}$
+
+<Collapsible title="Teoria">
+
+$a \equiv b \pmod{n}$ se e solo se $a$ e $b$ hanno lo stesso resto nella divisione per $n$.
+
+**Metodo:** calcolare il resto di $132 \div n$ e confrontarlo con $b$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+| # | Divisione | Resto di $132$ | Confronto | Esito |
+|:---:|---|:---:|:---:|:---:|
+| 1 | $132 = 14\cdot9 + 6$ | $6$ | $6 \neq 8$ | **FALSA** |
+| 2 | $132 = 12\cdot11 + 0$ | $0$ | $0 \neq 1$ | **FALSA** |
+| 3 | $132 = 11\cdot12 + 0$ | $0$ | $0 = 0$ | **VERA** |
+| 4 | $132 = 10\cdot13 + 2$ | $2$ | $2 \neq 4$ | **FALSA** |
+
+</Collapsible>
+
+---
+
+## Esercizio 8
+
+Si calcolino le tavole dell'addizione e della moltiplicazione per $\mathbb{Z}_3$ e per $\mathbb{Z}_6$.
+
+<Collapsible title="Teoria">
+
+$$[a]_n + [b]_n = [a+b]_n \qquad [a]_n \cdot [b]_n = [a\cdot b]_n$$
+
+In pratica: si esegue l'operazione tra i rappresentanti interi, poi si prende il resto modulo $n$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$\mathbb{Z}_3$**
+
+$$
+\begin{array}{c|ccc}
++ & 0 & 1 & 2 \\ \hline
+0 & 0 & 1 & 2 \\
+1 & 1 & 2 & 0 \\
+2 & 2 & 0 & 1
+\end{array}
+\qquad\qquad
+\begin{array}{c|ccc}
+\cdot & 0 & 1 & 2 \\ \hline
+0 & 0 & 0 & 0 \\
+1 & 0 & 1 & 2 \\
+2 & 0 & 2 & 1
+\end{array}
+$$
+
+**$\mathbb{Z}_6$**
+
+$$
+\begin{array}{c|cccccc}
++ & 0 & 1 & 2 & 3 & 4 & 5 \\ \hline
+0 & 0 & 1 & 2 & 3 & 4 & 5 \\
+1 & 1 & 2 & 3 & 4 & 5 & 0 \\
+2 & 2 & 3 & 4 & 5 & 0 & 1 \\
+3 & 3 & 4 & 5 & 0 & 1 & 2 \\
+4 & 4 & 5 & 0 & 1 & 2 & 3 \\
+5 & 5 & 0 & 1 & 2 & 3 & 4
+\end{array}
+\qquad
+\begin{array}{c|cccccc}
+\cdot & 0 & 1 & 2 & 3 & 4 & 5 \\ \hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1 & 0 & 1 & 2 & 3 & 4 & 5 \\
+2 & 0 & 2 & 4 & 0 & 2 & 4 \\
+3 & 0 & 3 & 0 & 3 & 0 & 3 \\
+4 & 0 & 4 & 2 & 0 & 4 & 2 \\
+5 & 0 & 5 & 4 & 3 & 2 & 1
+\end{array}
+$$
+
+In $\mathbb{Z}_6$ esistono **divisori dello zero**: $[2]_6 \cdot [3]_6 = [0]_6$ con fattori entrambi non nulli. In $\mathbb{Z}_3$ ogni elemento non nullo è invertibile perché $3$ è primo.
+
+</Collapsible>
+
+---
+
+## Esercizio 9
+
+Si risolvano le seguenti congruenze (si dica se ha soluzioni e, nel caso, le si trovino tutte):
+
+1. $2x \equiv 3 \pmod{5}$
+2. $6x \equiv 9 \pmod{15}$
+3. $7x \equiv 3 \pmod{14}$
+4. $4x \equiv 8 \pmod{12}$
+5. $4x \equiv 2 \pmod{12}$
+6. $4x \equiv 2 \pmod{11}$
+
+<Collapsible title="Teoria">
+
+Data $ax \equiv b \pmod{n}$, poniamo $d = \text{MCD}(a,n)$:
+
+1. **Esistenza:** ha soluzioni $\iff d \mid b$. Se $d \nmid b$: nessuna soluzione.
+2. **Semplificazione:** se $d \mid b$, la congruenza ha le stesse soluzioni di $\dfrac{a}{d}\,x \equiv \dfrac{b}{d} \pmod{\dfrac{n}{d}}$, che ha **un'unica soluzione** $x_0$ modulo $\dfrac{n}{d}$.
+3. **Tutte le soluzioni:** in $\{0,\ldots,n-1\}$ ci sono esattamente $d$ soluzioni: $x_0,\ x_0 + \tfrac{n}{d},\ \ldots,\ x_0 + (d-1)\cdot\tfrac{n}{d}$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** $2x \equiv 3 \pmod{5}$ — $d=\text{MCD}(2,5)=1$, $1\mid3$ ✓, soluzione unica mod $5$.
+
+$2^{-1}\pmod{5}$: $2\cdot3=6\equiv1$ → $2^{-1}=3$.
+$$x \equiv 3\cdot3 = 9 \equiv 4 \pmod{5} \qquad \boxed{x \equiv 4 \pmod{5}}$$
+
+---
+
+**2)** $6x \equiv 9 \pmod{15}$ — $d=\text{MCD}(6,15)=3$, $3\mid9$ ✓, $3$ soluzioni mod $15$.
+
+Semplificazione: $2x \equiv 3 \pmod{5}$ → $x_0=4$. Le $3$ soluzioni:
+$$\boxed{x \equiv 4 \pmod{15},\quad x \equiv 9 \pmod{15},\quad x \equiv 14 \pmod{15}}$$
+
+---
+
+**3)** $7x \equiv 3 \pmod{14}$ — $d=\text{MCD}(7,14)=7$, $7\nmid3$ → $\boxed{\text{nessuna soluzione}}$.
+
+---
+
+**4)** $4x \equiv 8 \pmod{12}$ — $d=\text{MCD}(4,12)=4$, $4\mid8$ ✓, $4$ soluzioni mod $12$.
+
+Semplificazione: $x \equiv 2 \pmod{3}$ → $x_0=2$.
+$$\boxed{x \equiv 2 \pmod{12},\quad x \equiv 5 \pmod{12},\quad x \equiv 8 \pmod{12},\quad x \equiv 11 \pmod{12}}$$
+
+---
+
+**5)** $4x \equiv 2 \pmod{12}$ — $d=\text{MCD}(4,12)=4$, $4\nmid2$ → $\boxed{\text{nessuna soluzione}}$.
+
+---
+
+**6)** $4x \equiv 2 \pmod{11}$ — $d=\text{MCD}(4,11)=1$, $1\mid2$ ✓, soluzione unica mod $11$.
+
+$4^{-1}\pmod{11}$: $4\cdot3=12\equiv1$ → $4^{-1}=3$.
+$$x \equiv 3\cdot2 = 6 \pmod{11} \qquad \boxed{x \equiv 6 \pmod{11}}$$
+
+</Collapsible>
+

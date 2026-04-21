@@ -1,0 +1,229 @@
+---
+title: "Esercizi per Casa 2"
+type: "esercitazione"
+section: "Algebra"
+excerpt: "Inversi in Z_n, funzione di Eulero, sistemi di congruenze con metodo di Newton e Teorema Cinese dei Resti."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Esercizi per Casa 2
+
+## Esercizio 1
+
+Si calcoli, se esiste, l'inverso di:
+
+1. $7$ modulo $10$
+2. $4$ modulo $10$
+3. $6$ modulo $15$
+4. $8$ modulo $15$
+
+<Collapsible title="Teoria">
+
+$[a]_n$ è **invertibile** $\iff$ $\text{MCD}(a, n) = 1$.
+
+Se esiste, l'inverso $[a]_n^{-1}$ è **unico** ed è la soluzione di $a \cdot x \equiv 1 \pmod{n}$.
+
+**Come trovare l'inverso:**
+- Se $n$ è piccolo: si prova $a \cdot 1,\; a \cdot 2,\; \ldots$ finché si ottiene $\equiv 1 \pmod{n}$.
+- In generale: si usa l'**algoritmo di Euclide esteso** per trovare $m, k$ tali che $a \cdot m + n \cdot k = 1$; da qui $a \cdot m \equiv 1 \pmod{n}$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** Inverso di $7$ modulo $10$
+
+$$10 = 1 \cdot 7 + 3 \qquad 7 = 2 \cdot 3 + 1 \qquad 3 = 3 \cdot 1 + 0$$
+
+$\text{MCD}(7, 10) = 1$ → **l'inverso esiste**.
+
+Per tentativi: $7 \cdot 3 = 21 \equiv 1 \pmod{10}$ ✓
+
+$$\boxed{7^{-1} \equiv 3 \pmod{10}}$$
+
+---
+
+**2)** Inverso di $4$ modulo $10$
+
+$$10 = 2 \cdot 4 + 2 \qquad 4 = 2 \cdot 2 + 0$$
+
+$\text{MCD}(4, 10) = 2 \neq 1$ → **l'inverso non esiste**.
+
+---
+
+**3)** Inverso di $6$ modulo $15$
+
+$$15 = 2 \cdot 6 + 3 \qquad 6 = 2 \cdot 3 + 0$$
+
+$\text{MCD}(6, 15) = 3 \neq 1$ → **l'inverso non esiste**.
+
+---
+
+**4)** Inverso di $8$ modulo $15$
+
+$$15 = 1 \cdot 8 + 7 \qquad 8 = 1 \cdot 7 + 1 \qquad 7 = 7 \cdot 1 + 0$$
+
+$\text{MCD}(8, 15) = 1$ → **l'inverso esiste**.
+
+$$1 = 8 - 1 \cdot 7 = 8 - 1 \cdot (15 - 1 \cdot 8) = 2 \cdot 8 - 1 \cdot 15$$
+
+$$\boxed{8^{-1} \equiv 2 \pmod{15}}$$
+
+*(verifica: $8 \cdot 2 = 16 = 1 \cdot 15 + 1$ ✓)*
+
+</Collapsible>
+
+---
+
+## Esercizio 2
+
+Si calcoli il numero degli elementi invertibili in $\mathbb{Z}_n$ per i seguenti $n$:
+
+1. $n = 3$
+2. $n = 6$
+3. $n = 9$
+4. $n = 12$
+5. $n = 84$
+6. $n = 7^2 \cdot 2^5$
+
+<Collapsible title="Teoria">
+
+Il numero di elementi invertibili di $\mathbb{Z}_n$ è dato dalla **funzione di Eulero** $\varphi(n)$.
+
+Se $n = p_1^{k_1} \cdots p_r^{k_r}$:
+
+$$\varphi(n) = n \cdot \left(1 - \frac{1}{p_1}\right)\cdots\left(1 - \frac{1}{p_r}\right)$$
+
+- Se $p$ è primo: $\varphi(p) = p - 1$
+- Per potenze prime: $\varphi(p^k) = p^k - p^{k-1}$
+- Moltiplicatività: se $\text{MCD}(m,n)=1$, allora $\varphi(mn) = \varphi(m)\varphi(n)$
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**1)** $n = 3$ (primo) $\Rightarrow \varphi(3) = 3 - 1 = \boxed{2}$
+
+**2)** $n = 6 = 2 \cdot 3$
+
+$$\varphi(6) = 6 \cdot \frac{1}{2} \cdot \frac{2}{3} = \boxed{2}$$
+
+**3)** $n = 9 = 3^2$
+
+$$\varphi(9) = 9 \cdot \frac{2}{3} = \boxed{6}$$
+
+**4)** $n = 12 = 2^2 \cdot 3$
+
+$$\varphi(12) = 12 \cdot \frac{1}{2} \cdot \frac{2}{3} = \boxed{4}$$
+
+**5)** $n = 84 = 2^2 \cdot 3 \cdot 7$
+
+$$\varphi(84) = \varphi(4) \cdot \varphi(3) \cdot \varphi(7) = 2 \cdot 2 \cdot 6 = \boxed{24}$$
+
+**6)** $n = 7^2 \cdot 2^5$
+
+$$\varphi(7^2 \cdot 2^5) = \varphi(49) \cdot \varphi(32) = (49-7)(32-16) = 42 \cdot 16 = \boxed{672}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 3
+
+Si risolvano i seguenti sistemi di congruenze:
+
+$$1)\;\begin{cases} x \equiv 2 \pmod{6} \\ x \equiv 10 \pmod{25} \end{cases} \qquad 2)\;\begin{cases} x \equiv 2 \pmod{4} \\ x \equiv 6 \pmod{7} \\ x \equiv 7 \pmod{9} \end{cases} \qquad 3)\;\begin{cases} 2x \equiv 3 \pmod{9} \\ 5x \equiv 1 \pmod{14} \end{cases}$$
+
+$$4)\;\begin{cases} 2x \equiv 4 \pmod{22} \\ 3x \equiv 5 \pmod{15} \end{cases} \qquad 5)\;\begin{cases} x \equiv 1 \pmod{3} \\ 2x \equiv 4 \pmod{11} \\ 2x \equiv 3 \pmod{10} \end{cases} \qquad 6)\;\begin{cases} 3x \equiv 4 \pmod{5} \\ 2x \equiv 4 \pmod{8} \\ x \equiv 2 \pmod{3} \end{cases}$$
+
+<Collapsible title="Teoria">
+
+**Strategia in 3 passi:**
+
+**Passo 1 — Semplificare ogni congruenza** $a_i x \equiv c_i \pmod{m_i}$: calcola $d_i = \text{MCD}(a_i, m_i)$. Se $d_i \nmid c_i$ → nessuna soluzione. Se $d_i \mid c_i$: semplifica e moltiplica per l'inverso per ottenere $x \equiv b_i \pmod{n_i}$.
+
+**Passo 2 — Metodo di Newton**: per combinare $x \equiv b_1 \pmod{n_1}$ e $x \equiv b_2 \pmod{n_2}$ con $\text{MCD}(n_1,n_2)=1$: scrivi $x = b_1 + n_1 k$, sostituisci nella seconda, trova $k_0$, ottieni $x_0 = b_1 + n_1 k_0 \pmod{n_1 n_2}$.
+
+**Passo 3:** ripeti con la congruenza successiva. Se i moduli sono a due a due coprimi, per il **Teorema Cinese dei Resti** esiste un'unica soluzione modulo $n_1 \cdots n_t$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Sistema 1)**
+
+$$\begin{cases} x \equiv 2 \pmod{6} \\ x \equiv 10 \pmod{25} \end{cases}$$
+
+$\text{MCD}(6,25)=1$ → soluzione unica modulo $150$.
+
+$x = 2 + 6k$, impongo $6k \equiv 8 \pmod{25}$. Inverso di $6$ mod $25$: $1 = 25 - 4\cdot6$ → $6^{-1} \equiv 21$.
+
+$$k \equiv 21 \cdot 8 = 168 \equiv 18 \pmod{25} \qquad x = 2 + 6 \cdot 18 = 110$$
+
+$$\boxed{x \equiv 110 \pmod{150}}$$
+
+---
+
+**Sistema 2)**
+
+$$\begin{cases} x \equiv 2 \pmod{4} \\ x \equiv 6 \pmod{7} \\ x \equiv 7 \pmod{9} \end{cases}$$
+
+Moduli a due a due coprimi → soluzione unica modulo $252$.
+
+*Combino ① e ②:* $x = 2+4k$, $4k \equiv 4 \pmod7$. $4^{-1}\equiv2$, $k\equiv1\pmod7$. $x=6 \equiv 6\pmod{28}$.
+
+*Combino con ③:* $x = 6+28k$, $28k \equiv 1 \pmod9$. $28\equiv1\pmod9$ → $k\equiv1\pmod9$. $x=34$.
+
+$$\boxed{x \equiv 34 \pmod{252}}$$
+
+---
+
+**Sistema 3)**
+
+$$\begin{cases} 2x \equiv 3 \pmod{9} \\ 5x \equiv 1 \pmod{14} \end{cases}$$
+
+$2^{-1}\equiv5\pmod9$ → $x\equiv15\equiv6\pmod9$. $\quad$ $5^{-1}\equiv3\pmod{14}$ → $x\equiv3\pmod{14}$.
+
+$x=6+9k$, $9k\equiv-3\equiv11\pmod{14}$. $9^{-1}\equiv11\pmod{14}$, $k\equiv121\equiv9\pmod{14}$. $x=87$.
+
+$$\boxed{x \equiv 87 \pmod{126}}$$
+
+---
+
+**Sistema 4)**
+
+$$\begin{cases} 2x \equiv 4 \pmod{22} \\ 3x \equiv 5 \pmod{15} \end{cases}$$
+
+Prima: $d=2$, $2\mid4$ → $x\equiv2\pmod{11}$. $\quad$ Seconda: $d=3$, $3\nmid5$ → **impossibile**.
+
+$$\boxed{\text{Il sistema non ha soluzioni.}}$$
+
+---
+
+**Sistema 5)**
+
+$$\begin{cases} x \equiv 1 \pmod{3} \\ 2x \equiv 4 \pmod{11} \\ 2x \equiv 3 \pmod{10} \end{cases}$$
+
+Terza: $d=\text{MCD}(2,10)=2$, $2\nmid3$ → **impossibile**.
+
+$$\boxed{\text{Il sistema non ha soluzioni.}}$$
+
+---
+
+**Sistema 6)**
+
+$$\begin{cases} 3x \equiv 4 \pmod{5} \\ 2x \equiv 4 \pmod{8} \\ x \equiv 2 \pmod{3} \end{cases}$$
+
+Prima: $3^{-1}\equiv2\pmod5$, $x\equiv8\equiv3\pmod5$. $\quad$ Seconda: $d=2$, $2\mid4$ → $x\equiv2\pmod4$.
+
+Moduli $5,4,3$ a due a due coprimi → soluzione unica modulo $60$.
+
+*Combino ① e ②:* $x=3+5k$, $5k\equiv-1\equiv3\pmod4$. $5\equiv1\pmod4$ → $k\equiv3\pmod4$. $x=18\pmod{20}$.
+
+*Combino con ③:* $x=18+20k$, $20k\equiv2\pmod3$. $20\equiv2$, $2k\equiv2$ → $k\equiv1\pmod3$. $x=38$.
+
+$$\boxed{x \equiv 38 \pmod{60}}$$
+
+</Collapsible>
