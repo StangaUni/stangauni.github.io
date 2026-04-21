@@ -5,6 +5,7 @@ import { SubjectPage } from './pages/SubjectPage'
 import { NotePage } from './pages/NotePage'
 import { InfoPage } from './pages/InfoPage'
 import { NotFound } from './pages/NotFound'
+import { DevShowcase } from './pages/DevShowcase'
 
 function AppLayout() {
   return (
@@ -25,6 +26,9 @@ export function App() {
           <Route path="/info" element={<InfoPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
+        {import.meta.env.DEV && (
+          <Route path="/_dev" element={<DevShowcase />} />
+        )}
       </Routes>
     </BrowserRouter>
   )

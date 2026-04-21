@@ -31,6 +31,32 @@
     --radius: 0.5rem;
   }
 
+  /* ── Carta (light warm) ───────────────────────────────────────── */
+  .theme-carta {
+    --background:   38 28% 90%;
+    --foreground:   25 30% 10%;
+
+    --card:           38 28% 93%;
+    --card-foreground: 25 30% 10%;
+
+    --primary:           38 85% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary:           38 22% 83%;
+    --secondary-foreground: 25 30% 10%;
+
+    --muted:           38 22% 83%;
+    --muted-foreground: 38 15% 42%;
+
+    --accent:           38 22% 83%;
+    --accent-foreground: 25 30% 10%;
+
+    --border: 38 22% 76%;
+    --input:  38 22% 76%;
+    --ring:   38 85% 38%;
+  }
+
+  /* ── Notte (dark blue) ────────────────────────────────────────── */
   .dark {
     --background:   222 47% 8%;
     --foreground:   210 40% 98%;
@@ -53,6 +79,31 @@
     --border: 215 28% 20%;
     --input:  215 28% 20%;
     --ring:   217 91% 60%;
+  }
+
+  /* ── Carbon (dark neutral + indigo) ──────────────────────────── */
+  .dark.theme-carbon {
+    --background:   220 13% 10%;
+    --foreground:   220 15% 95%;
+
+    --card:           220 13% 13%;
+    --card-foreground: 220 15% 95%;
+
+    --primary:           258 80% 68%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary:           220 13% 18%;
+    --secondary-foreground: 220 15% 95%;
+
+    --muted:           220 13% 18%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent:           220 13% 18%;
+    --accent-foreground: 220 15% 95%;
+
+    --border: 220 13% 21%;
+    --input:  220 13% 21%;
+    --ring:   258 80% 68%;
   }
 }
 

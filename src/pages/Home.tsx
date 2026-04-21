@@ -224,7 +224,7 @@ export function Home() {
           </div>
 
           {/* Mobile filter button */}
-          <div className="flex items-center justify-end mb-5 px-6 sm:px-8 lg:hidden">
+          <div className="flex items-center justify-end pt-3 pb-1 px-6 sm:px-8 lg:hidden">
             <button
               onClick={() => setMobileDrawerOpen(true)}
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -236,7 +236,7 @@ export function Home() {
           </div>
 
           {/* Cards */}
-          <div className="px-6 sm:px-8 pt-8 pb-6">
+          <div className="px-6 sm:px-8 pt-4 pb-6">
             {loading ? (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
