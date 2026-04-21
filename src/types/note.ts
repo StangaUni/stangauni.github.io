@@ -11,9 +11,8 @@ export interface Note {
   subject: string
   type: NoteType
   date?: string
-  tags: string[]
+  tags?: string[]
   excerpt?: string
-  readingTime?: number
   difficulty?: 1 | 2 | 3
   hasSolution?: boolean
   week?: number

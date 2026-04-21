@@ -68,11 +68,6 @@ function NoteRow({ note, subjectSlug, delay }: { note: Note; subjectSlug: string
         </div>
 
         <div className="flex items-center gap-2 shrink-0 pt-0.5">
-          {note.readingTime && (
-            <span className="text-xs text-muted-foreground/60 tabular-nums">
-              {note.readingTime} min
-            </span>
-          )}
           <ChevronRight
             size={14}
             className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all"
@@ -137,7 +132,7 @@ const EXERCISE_TYPE_LABELS: Record<string, { label: string; className: string }>
 }
 
 function EserciziCard({ note, subjectSlug, delay }: { note: Note; subjectSlug: string; delay: number }) {
-  const exerciseType = note.tags.find((t) => Object.keys(EXERCISE_TYPE_LABELS).includes(t))
+  const exerciseType = note.tags?.find((t) => Object.keys(EXERCISE_TYPE_LABELS).includes(t))
   const typeCfg = exerciseType ? EXERCISE_TYPE_LABELS[exerciseType] : null
 
   return (

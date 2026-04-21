@@ -60,7 +60,6 @@ const NOTE_WITH_CONTRIBUTORS = {
   title: 'Limiti e Continuità',
   subject: 'analisi-matematica',
   type: 'riassunto' as const,
-  tags: ['limiti', 'continuità'],
   excerpt: 'Definizione epsilon-delta, teoremi fondamentali sui limiti e classificazione delle discontinuità.',
   contributors: [
     { name: 'Marco', github: 'octocat' },
@@ -74,7 +73,6 @@ const NOTE_SIMPLE = {
   title: 'Esercizi sulle Derivate',
   subject: 'analisi-matematica',
   type: 'esercitazione' as const,
-  tags: ['derivate'],
   excerpt: 'Raccolta di esercizi svolti su derivate di funzioni composte e regola di Leibniz.',
 }
 
@@ -354,22 +352,16 @@ export function DevShowcase() {
           <Section title="SubjectPage · Note rows (Teoria)">
             <div className="divide-y divide-border/60">
               {[
-                { title: 'Limiti e Continuità', excerpt: 'Definizione epsilon-delta, teoremi fondamentali e classificazione delle discontinuità.', tags: ['limiti', 'continuità', 'epsilon-delta'], readingTime: 12 },
-                { title: 'Derivate', excerpt: 'Regole di derivazione, derivate di funzioni composte e teorema di Lagrange.', tags: ['derivate', 'lagrange'], readingTime: 8 },
-                { title: 'Integrali', excerpt: 'Integrale di Riemann, metodo di sostituzione e integrazione per parti.', tags: ['integrali', 'riemann'], readingTime: 15 },
+                { title: 'Limiti e Continuità', excerpt: 'Definizione epsilon-delta, teoremi fondamentali e classificazione delle discontinuità.' },
+                { title: 'Derivate', excerpt: 'Regole di derivazione, derivate di funzioni composte e teorema di Lagrange.' },
+                { title: 'Integrali', excerpt: 'Integrale di Riemann, metodo di sostituzione e integrazione per parti.' },
               ].map((note, i) => (
                 <div key={i} className="group flex items-start justify-between gap-4 px-3 py-3.5 rounded-lg hover:bg-secondary/50 cursor-pointer">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground group-hover:text-primary transition-colors leading-snug">{note.title}</p>
                     <p className="mt-1 text-sm text-muted-foreground line-clamp-1 leading-relaxed">{note.excerpt}</p>
-                    <div className="mt-1.5 flex flex-wrap gap-1">
-                      {note.tags.map((tag) => (
-                        <span key={tag} className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">{tag}</span>
-                      ))}
-                    </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 pt-0.5">
-                    <span className="text-xs text-muted-foreground/60 tabular-nums">{note.readingTime} min</span>
                     <ChevronRight size={14} className="text-muted-foreground group-hover:text-primary transition-all" />
                   </div>
                 </div>

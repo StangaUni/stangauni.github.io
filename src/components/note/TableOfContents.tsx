@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 interface Heading {
@@ -24,23 +24,24 @@ function buildGroups(headings: Heading[]): Group[] {
   return groups
 }
 
-interface TableOfContentsProps {
-  collapsible?: boolean
-}
-
-export function TableOfContents({ collapsible = false }: TableOfContentsProps) {
+export function TableOfContents({ collapsible = false }: { collapsible?: boolean }) {
   const [headings, setHeadings] = useState<Heading[]>([])
   const [active, setActive] = useState<string>('')
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+  const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const els = Array.from(document.querySelectorAll('.prose-academic h2, .prose-academic h3'))
     setHeadings(
-      els.map((el) => ({
-        id: el.id,
-        text: el.textContent ?? '',
-        level: Number(el.tagName[1]),
-      }))
+      els.map((el) => {
+        const clone = el.cloneNode(true) as Element
+        clone.querySelectorAll('.katex-mathml').forEach((n) => n.remove())
+        return {
+          id: el.id,
+          text: clone.textContent ?? '',
+          level: Number(el.tagName[1]),
+        }
+      })
     )
   }, [])
 
@@ -58,8 +59,22 @@ export function TableOfContents({ collapsible = false }: TableOfContentsProps) {
       const el = document.getElementById(id)
       if (el) observer.observe(el)
     })
-    return () => observer.disconnect()
+
+    const onScroll = () => {
+      const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 40
+      if (nearBottom) setActive(headings[headings.length - 1].id)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => { observer.disconnect(); window.removeEventListener('scroll', onScroll) }
   }, [headings])
+
+  // Scroll active item into view within the nav
+  useEffect(() => {
+    if (!active || !navRef.current) return
+    const el = navRef.current.querySelector(`[data-id="${active}"]`) as HTMLElement | null
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [active])
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
@@ -69,84 +84,90 @@ export function TableOfContents({ collapsible = false }: TableOfContentsProps) {
   const toggleGroup = (id: string) => {
     setCollapsed((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
   }
 
   if (headings.length === 0) return null
 
-  const linkClass = (h: Heading) =>
-    `block rounded-md py-1 text-xs leading-snug transition-colors ${
-      h.level === 3 ? 'pl-4' : 'pl-2'
-    } ${active === h.id ? 'text-primary font-medium' : 'text-muted-foreground hover:text-foreground'}`
-
-  if (!collapsible) {
-    return (
-      <nav className="flex flex-col gap-0.5">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          In questa pagina
-        </p>
-        {headings.map((h) => (
-          <a key={h.id} href={`#${h.id}`} onClick={(e) => handleClick(e, h.id)} className={linkClass(h)}>
-            {h.text}
-          </a>
-        ))}
-      </nav>
-    )
-  }
-
-  const groups = buildGroups(headings)
+  const groups = collapsible ? buildGroups(headings) : null
 
   return (
-    <nav className="flex flex-col gap-0.5">
-      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+    <nav ref={navRef} className="overflow-y-auto scrollbar-none max-h-[calc(100vh-8rem)]">
+      <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
         In questa pagina
       </p>
-      {groups.map((g) => {
-        const isCollapsed = collapsed.has(g.parent.id)
-        const hasChildren = g.children.length > 0
-        return (
-          <div key={g.parent.id}>
-            <div className="flex items-center gap-0.5">
-              <a
-                href={`#${g.parent.id}`}
-                onClick={(e) => handleClick(e, g.parent.id)}
-                className={`flex-1 ${linkClass(g.parent)}`}
-              >
-                {g.parent.text}
-              </a>
-              {hasChildren && (
-                <button
-                  onClick={() => toggleGroup(g.parent.id)}
-                  className="shrink-0 p-0.5 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={isCollapsed ? 'Espandi sezione' : 'Comprimi sezione'}
+
+      {/* Vertical rail */}
+      <div className="relative pl-3 border-l border-border/50">
+        {(groups ?? headings.map((h) => ({ parent: h, children: [] } as Group))).map((g) => {
+          const isCollapsed = collapsed.has(g.parent.id)
+          const hasChildren = g.children.length > 0
+          const parentActive = active === g.parent.id
+          const childActive = g.children.some((c) => c.id === active)
+
+          return (
+            <div key={g.parent.id} className="mb-0.5">
+              {/* h2 row */}
+              <div className="flex items-center gap-1 group/row">
+                {/* Active indicator dot on the rail */}
+                <span
+                  className={`absolute -left-px w-[2px] rounded-full transition-all duration-200 ${
+                    parentActive || (!isCollapsed && childActive)
+                      ? 'bg-primary h-4 opacity-100'
+                      : 'bg-transparent h-0 opacity-0'
+                  }`}
+                />
+                <a
+                  data-id={g.parent.id}
+                  href={`#${g.parent.id}`}
+                  onClick={(e) => handleClick(e, g.parent.id)}
+                  className={`flex-1 block py-1 text-[11px] leading-snug transition-colors truncate ${
+                    parentActive
+                      ? 'text-primary font-semibold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
-                  <ChevronDown
-                    size={12}
-                    className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`}
-                  />
-                </button>
+                  {g.parent.text}
+                </a>
+                {hasChildren && collapsible && (
+                  <button
+                    onClick={() => toggleGroup(g.parent.id)}
+                    className="shrink-0 p-0.5 text-muted-foreground/40 hover:text-foreground opacity-0 group-hover/row:opacity-100 transition-all"
+                  >
+                    <ChevronDown
+                      size={11}
+                      className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`}
+                    />
+                  </button>
+                )}
+              </div>
+
+              {/* h3 children */}
+              {hasChildren && !isCollapsed && (
+                <div className="ml-2 flex flex-col">
+                  {g.children.map((child) => (
+                    <a
+                      key={child.id}
+                      data-id={child.id}
+                      href={`#${child.id}`}
+                      onClick={(e) => handleClick(e, child.id)}
+                      className={`block py-0.5 text-[10.5px] leading-snug transition-colors truncate ${
+                        active === child.id
+                          ? 'text-primary font-medium'
+                          : 'text-muted-foreground/70 hover:text-foreground'
+                      }`}
+                    >
+                      {child.text}
+                    </a>
+                  ))}
+                </div>
               )}
             </div>
-            {hasChildren && !isCollapsed && (
-              <div className="flex flex-col gap-0.5">
-                {g.children.map((child) => (
-                  <a
-                    key={child.id}
-                    href={`#${child.id}`}
-                    onClick={(e) => handleClick(e, child.id)}
-                    className={linkClass(child)}
-                  >
-                    {child.text}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </nav>
   )
 }
