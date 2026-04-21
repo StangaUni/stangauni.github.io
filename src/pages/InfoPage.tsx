@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import {
   BookOpen, ExternalLink, FileText, FlaskConical,
-  Github, GraduationCap, Target, Users,
+  Github, GraduationCap, Heart, Target, Users,
 } from 'lucide-react'
+import type { Contributor } from '../types/note'
 import { SEO } from '../components/ui/SEO'
 import { Badge } from '../components/ui/Badge'
 import { useSubjects } from '../hooks/useSubjects'
@@ -50,6 +51,15 @@ export function InfoPage() {
 
   const visibleSubjects = subjects.filter((s) => !s.hidden)
   const subjectsWithGithub = visibleSubjects.filter((s) => s.github)
+
+  const allContributors: Contributor[] = []
+  const seen = new Set<string>()
+  for (const note of notes) {
+    for (const c of note.contributors ?? []) {
+      const key = c.github ?? c.name
+      if (!seen.has(key)) { seen.add(key); allContributors.push(c) }
+    }
+  }
 
   const notesByType = {
     riassunto:     notes.filter((n) => n.type === 'riassunto').length,
@@ -100,6 +110,58 @@ export function InfoPage() {
             Il materiale è frutto di studio personale — segnala errori o imprecisioni aprendo
             una issue su GitHub.
           </FeatureCard>
+        </div>
+
+        {/* ── Contributors ── */}
+        <div className="rounded-xl border border-border bg-card p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="rounded-lg bg-primary/10 p-2.5 shrink-0">
+              <Heart size={18} className="text-primary" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-foreground">Contributori</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Persone che hanno contribuito al materiale del sito.
+              </p>
+            </div>
+          </div>
+          {loading ? (
+            <div className="flex flex-wrap gap-2">
+              {[1, 2, 3].map((i) => <div key={i} className="skeleton h-8 w-28 rounded-full" />)}
+            </div>
+          ) : allContributors.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nessun contributore registrato.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {allContributors.map((c, i) => {
+                const avatar = c.github ? `https://github.com/${c.github}.png?size=32` : null
+                const inner = (
+                  <span className="flex items-center gap-2">
+                    {avatar
+                      ? <img src={avatar} alt={c.name} className="w-5 h-5 rounded-full border border-border object-cover" />
+                      : <span className="w-5 h-5 rounded-full bg-secondary border border-border flex items-center justify-center text-[9px] font-semibold text-muted-foreground">{c.name[0].toUpperCase()}</span>
+                    }
+                    <span className="text-sm font-medium text-foreground">{c.name}</span>
+                  </span>
+                )
+                return c.github ? (
+                  <a
+                    key={i}
+                    href={`https://github.com/${c.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-full border border-border bg-secondary/40 pl-1 pr-3 py-1 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                  >
+                    {inner}
+                  </a>
+                ) : (
+                  <span key={i} className="flex items-center gap-2 rounded-full border border-border bg-secondary/40 pl-1 pr-3 py-1">
+                    {inner}
+                  </span>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {/* ── Note breakdown ── */}
