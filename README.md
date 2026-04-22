@@ -1,6 +1,10 @@
 # StangaUni
 
+[![Deploy](https://github.com/StangaUni/stangauni.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/StangaUni/stangauni.github.io/actions/workflows/deploy.yml)
+
 Raccolta open source di appunti universitari, costruita con React + MDX e pubblicata su GitHub Pages.
+
+**[stangauni.github.io](https://stangauni.github.io)**
 
 ## Sviluppo locale
 
@@ -22,6 +26,7 @@ La struttura del contenuto è:
 src/content/materie/
 └── <slug-materia>/
     ├── _subject.mdx          # metadati della materia
+    ├── _changelog.mdx        # cronologia modifiche
     └── 01-nome-nota.mdx      # nota
 ```
 
@@ -47,9 +52,10 @@ github: "https://github.com/StangaUni/<repo>"   # opzionale
 ---
 title: "Titolo"
 type: "riassunto"          # riassunto | esercitazione | appunti | extra
-tags: ["tag1", "tag2"]
 excerpt: "Anteprima nella lista."
-readingTime: 10
+contributors:
+  - name: "Nome Cognome"
+    github: "username"
 ---
 ```
 

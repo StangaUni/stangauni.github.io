@@ -59,7 +59,40 @@ I valori validi sono: `riassunto`, `esercitazione`, `appunti`, `extra`.
 Se presente, compare un'icona GitHub accanto al titolo nella pagina materia
 e la materia viene elencata nella pagina `/info`.
 
-## 3. Aggiungere note
+## 3. Creare `_changelog.mdx`
+
+Il file tiene traccia delle modifiche alla materia. Il corpo è ignorato; tutto è nel frontmatter.
+
+```yaml
+---
+entries:
+  - date: "2025-10-15"
+    type: "aggiunta"
+    description: "Aggiunti riassunti sui puntatori (cap. 10-11)."
+  - date: "2025-10-01"
+    type: "revisione"
+    description: "Revisione nota sulle funzioni."
+---
+```
+
+Il corpo del file è ignorato; la materia di appartenenza viene derivata automaticamente dal percorso della cartella.
+
+### Campi
+
+| Campo | Tipo | Descrizione |
+|---|---|---|
+| `entries` | `ChangelogEntry[]` | Lista voci, dalla più recente alla meno recente |
+
+### Tipo di voce (`type`)
+
+| Valore | Significato |
+|---|---|
+| `aggiunta` | Nuovo contenuto aggiunto |
+| `revisione` | Contenuto esistente revisionato |
+| `correzione` | Correzione di errori |
+| `nuovo` | Prima pubblicazione della materia |
+
+## 4. Aggiungere note
 
 Vedi [Aggiungere una nota](note.md).
 

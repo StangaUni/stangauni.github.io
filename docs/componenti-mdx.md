@@ -64,8 +64,9 @@ Usa path relativi alla cartella `public/` (es. `/immagini/foto.png` → `public/
 I blocchi di codice fenced (` ``` `) vengono automaticamente renderizzati da `CodeBlock`,
 che aggiunge:
 
-- Label con il linguaggio in alto a sinistra
-- Pulsante **copia** in alto a destra (appare all'hover)
+- **Syntax highlighting** via `react-syntax-highlighter` (Prism), con tema `oneLight` (light) e `vscDarkPlus` (dark) — si aggiorna in tempo reale al cambio tema
+- Label con il linguaggio in alto a sinistra (omessa se non viene specificato un linguaggio)
+- Pulsante **copia** in alto a destra (appare all'hover, con feedback visivo ✓)
 
 ```mdx
 ```c

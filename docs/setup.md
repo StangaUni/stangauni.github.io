@@ -30,7 +30,23 @@ npm install
 | Routing | React Router 6 |
 | Animazioni | Framer Motion |
 | Math | KaTeX (`remark-math` + `rehype-katex`) |
-| Deploy | GitHub Pages (branch `gh-pages`) |
+| Deploy | GitHub Pages via GitHub Actions (`actions/deploy-pages`) |
+
+## Deploy
+
+Il deploy è automatizzato via GitHub Actions (`.github/workflows/deploy.yml`).
+
+**Trigger:** ogni push su `main` (o manualmente via `workflow_dispatch`).
+
+**Pipeline:**
+1. Checkout del repository
+2. Setup Node.js 22 con cache npm
+3. `npm ci`
+4. `npm run build` → genera `dist/`
+5. Upload dell'artifact `dist/` con `actions/upload-pages-artifact`
+6. Deploy su GitHub Pages con `actions/deploy-pages` (nessun branch `gh-pages`)
+
+Non è necessario fare nulla manualmente: il push su `main` pubblica automaticamente.
 
 ## Note sulla pipeline MDX
 

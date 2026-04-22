@@ -25,12 +25,15 @@ che appaiano nell'ordine corretto nel TOC laterale e nella navigazione precedent
 ---
 title: "Titolo della nota"
 type: "riassunto"
-tags: ["tag1", "tag2"]
+date: "2025-10-01"
 excerpt: "Breve descrizione mostrata nella lista."
-readingTime: 12
 difficulty: 2
 hasSolution: true
 week: 3
+section: "Algebra"
+contributors:
+  - name: "Nome Cognome"
+    github: "username"
 ---
 ```
 
@@ -40,21 +43,39 @@ week: 3
 |---|---|---|---|
 | `title` | `string` | sì | Titolo della nota |
 | `type` | `NoteType` | sì | Categoria (vedi sotto) |
-| `tags` | `string[]` | sì | Tag tematici; alcuni hanno significato speciale (vedi sotto) |
+| `tags` | `string[]` | no | Tag tematici; alcuni hanno significato speciale per le esercitazioni (vedi sotto) |
+| `date` | `string` | no | Data di creazione/aggiornamento (formato `YYYY-MM-DD`) |
 | `excerpt` | `string` | no | Testo anteprima nella lista |
-| `readingTime` | `number` | no | Minuti di lettura stimati |
 | `difficulty` | `1 \| 2 \| 3` | no | Difficoltà (mostrata come pallini nelle esercitazioni) |
 | `hasSolution` | `boolean` | no | Se l'esercizio ha soluzione completa |
 | `week` | `number` | no | Settimana del corso (raggruppa gli esercizi per settimana) |
+| `section` | `string` | no | Sezione o modulo del corso di appartenenza |
+| `contributors` | `Contributor[]` | no | Autori/contributori della nota (vedi sotto) |
 
 ### Tipi di nota (`type`)
 
 | Valore | Label nel sito | Uso |
 |---|---|---|
-| `riassunto` | Riassunti | Riassunti teorici del corso |
+| `riassunto` | Teoria | Riassunti teorici del corso |
 | `esercitazione` | Esercizi | Esercizi svolti |
 | `appunti` | Strategie Esame | Consigli e strategie d'esame |
 | `extra` | Materiale Extra | Tutto il resto (compitini, dispense, ecc.) |
+
+### `contributors`
+
+Lista di autori/contributori della nota. Ogni voce ha:
+
+| Campo | Tipo | Descrizione |
+|---|---|---|
+| `name` | `string` | Nome visualizzato |
+| `github` | `string` (opzionale) | Username GitHub |
+
+```yaml
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "StangaUni"
+  - name: "Altro Autore"
+```
 
 ### Tag speciali per le esercitazioni
 
@@ -71,6 +92,7 @@ determina il badge colorato mostrato nella lista:
 
 Il contenuto MDX supporta tutto il Markdown esteso da GFM più:
 
+- **Heading H1 (`#`)** → **soppresso**: non viene renderizzato. Il titolo della nota viene mostrato dall'header card (frontmatter `title`). Non usare `#` nel corpo.
 - **Heading H2 (`##`)** → sezioni principali, appaiono nel TOC laterale come voci collassabili
 - **Heading H3 (`###`)** → sottosezioni, appaiono come figli nel TOC
 - **Formule** con `$formula$` (inline) e `$$formula$$` (blocco) — renderizzate da KaTeX
@@ -83,9 +105,10 @@ Il contenuto MDX supporta tutto il Markdown esteso da GFM più:
 ---
 title: "Puntatori"
 type: "riassunto"
-tags: ["puntatori", "memoria", "dereferenziazione"]
 excerpt: "Concetto di puntatore, operatori & e *, aritmetica dei puntatori."
-readingTime: 10
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
 ---
 
 ## Cos'è un puntatore
