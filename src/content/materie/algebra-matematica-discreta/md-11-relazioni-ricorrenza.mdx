@@ -1,0 +1,96 @@
+---
+title: "Relazioni di Ricorrenza"
+type: "riassunto"
+section: "Matematica Discreta"
+excerpt: "Relazioni di ricorrenza lineari omogenee, equazione caratteristica e metodo di risoluzione."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Relazioni di Ricorrenza
+
+## Definizioni
+
+Una **relazione di ricorrenza** è una formula che esprime $a_n$ in funzione di alcuni $a_k$ con $k < n$, dove $a_k$ conta il numero di modi di eseguire una certa procedura con $k$ oggetti.
+
+La **soluzione** di una relazione di ricorrenza è una formula esplicita per $a_n$ che dipende solo da $n$.
+
+Per calcolare ricorsivamente la successione occorrono **condizioni iniziali**: valori assegnati a $a_0, a_1, \ldots$ che fungono da punto di partenza.
+
+---
+
+## Esempi introduttivi
+
+**Permutazioni di $n$ oggetti.** Posto $a_n = \#$ allineamenti di $n$ oggetti:
+
+- Relazione: $a_n = n \cdot a_{n-1}$
+- Condizione iniziale: $a_1 = 1$
+- Soluzione: $a_n = n!$
+
+**Scala con $n$ gradini** (passi di 1 o 2 gradini). Posto $a_n = \#$ modi di salire:
+
+- Se il primo passo è da 1 gradino, restano $n-1$ gradini → $a_{n-1}$ modi.
+- Se il primo passo è da 2 gradini, restano $n-2$ gradini → $a_{n-2}$ modi.
+- Relazione: $\boxed{a_n = a_{n-1} + a_{n-2}}$ (relazione di Fibonacci)
+- Condizioni iniziali: $a_1 = 1$, $a_2 = 2$
+
+I **numeri di Fibonacci** (con $a_0=1$): $1, 1, 2, 3, 5, 8, 13, 21, 34, 55, \ldots$
+
+---
+
+## Relazioni di Ricorrenza Lineari Omogenee
+
+Sono della forma:
+
+$$a_n = c_1\,a_{n-1} + c_2\,a_{n-2} + \cdots + c_r\,a_{n-r}$$
+
+con $c_1,\ldots,c_r$ costanti reali, $c_r \neq 0$. Il numero $r$ è il **grado** della relazione. Occorrono $r$ condizioni iniziali.
+
+### Procedura di risoluzione
+
+**① Sostituire $a_k \to x^k$** e dividere per $x^{n-r}$. Si ottiene l'**equazione caratteristica**:
+
+$$x^r - c_1 x^{r-1} - c_2 x^{r-2} - \cdots - c_{r-1} x - c_r = 0$$
+
+**② Trovare le radici distinte** $d_1, d_2, \ldots, d_k$ con molteplicità $m_1, m_2, \ldots, m_k$ ($\sum m_i = r$).
+
+**③ Scrivere la soluzione generale** come combinazione lineare delle $r$ soluzioni fondamentali:
+
+| Radice $d_i$ con molteplicità $m_i$ | Soluzioni fondamentali associate |
+|---|---|
+| $d_i$ (qualsiasi $m_i$) | $d_i^n,\ n\,d_i^n,\ n^2 d_i^n,\ \ldots,\ n^{m_i-1} d_i^n$ |
+
+$$a_n = A_1\,d_1^n + A_2\,n\,d_1^n + \cdots + A_{m_1}\,n^{m_1-1}d_1^n + A_{m_1+1}\,d_2^n + \cdots + A_r\,n^{m_k-1}d_k^n$$
+
+**④ Determinare le costanti $A_1, \ldots, A_r$** imponendo le $r$ condizioni iniziali.
+
+---
+
+## Esempi risolti
+
+### Grado 1 — popolazione di conigli
+
+$$\begin{cases} a_n = 2\,a_{n-1} \\ a_0 = 6 \end{cases}$$
+
+Equazione caratteristica: $x - 2 = 0$ → $d_1 = 2$, $m_1 = 1$.
+
+Soluzione generale: $a_n = A \cdot 2^n$. Condizione iniziale: $A = 6$.
+
+$$\boxed{a_n = 6 \cdot 2^n}$$
+
+### Grado 2 — scala (Fibonacci)
+
+$$\begin{cases} a_n = a_{n-1} + a_{n-2} \\ a_1 = 1,\quad a_2 = 2 \end{cases}$$
+
+Equazione caratteristica: $x^2 - x - 1 = 0$ → $d_{1,2} = \dfrac{1 \pm \sqrt{5}}{2}$, entrambe di molteplicità 1.
+
+Soluzione generale:
+
+$$a_n = A_1\!\left(\frac{1-\sqrt{5}}{2}\right)^{\!n} + A_2\!\left(\frac{1+\sqrt{5}}{2}\right)^{\!n}$$
+
+Imponendo $a_1=1$ e $a_2=2$ si risolve il sistema $2\times 2$ e si ottiene:
+
+$$A_1 = -\frac{1-\sqrt{5}}{2\sqrt{5}}, \qquad A_2 = \frac{1+\sqrt{5}}{2\sqrt{5}}$$
+
+$$\boxed{a_n = -\frac{1-\sqrt{5}}{2\sqrt{5}}\left(\frac{1-\sqrt{5}}{2}\right)^{\!n} + \frac{1+\sqrt{5}}{2\sqrt{5}}\left(\frac{1+\sqrt{5}}{2}\right)^{\!n}}$$

@@ -1,0 +1,235 @@
+---
+title: "Esercizi per Casa 7"
+type: "esercitazione"
+section: "Algebra"
+excerpt: "Sottospazi vettoriali: verifiche su M_n(ℂ), ℝ² e ℂⁿ con dimostrazioni di chiusura e controesempi."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Esercizi per Casa 7
+
+## Esercizio 1
+
+Si provi che l'insieme delle matrici simmetriche (complesse) di ordine $n$ è un sottospazio vettoriale di $M_n(\mathbb{C})$ e che l'insieme delle matrici anti-hermitiane (complesse) di ordine $n$ non lo è.
+
+<Collapsible title="Teoria">
+
+- **Matrice simmetrica:** $A^T = A$
+- **Matrice anti-hermitiana:** $A^H = -A$, dove $A^H = \overline{A}^T$ è la trasposta coniugata
+- Un sottoinsieme $U \subseteq V$ è sottospazio se: $\mathbf{0}\in U$; chiuso per somma; chiuso per prodotto scalare
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Parte 1 — Matrici simmetriche: $W = \{A \in M_n(\mathbb{C}) \mid A^T = A\}$**
+
+1. **Elemento neutro:** $\mathbf{0}^T = \mathbf{0}$ → $\mathbf{0} \in W$ ✓
+2. **Chiusura per somma:** siano $A, B \in W$, cioè $A^T = A$ e $B^T = B$. Allora
+$$(A+B)^T = A^T + B^T = A + B$$
+quindi $A+B \in W$ ✓
+3. **Chiusura per scalare:** sia $\alpha \in \mathbb{C}$. Allora
+$$(\alpha A)^T = \alpha A^T = \alpha A$$
+quindi $\alpha A \in W$ ✓
+
+Pertanto $W \leq M_n(\mathbb{C})$.
+
+---
+
+**Parte 2 — Matrici anti-hermitiane: $W' = \{A \in M_n(\mathbb{C}) \mid A^H = -A\}$**
+
+$W'$ **non** è un sottospazio perché non è chiuso per il prodotto scalare complesso.
+
+**Controesempio** (con $n=1$): sia $A = (i)$. Allora $A^H = \overline{i} = -i = -A$, quindi $A \in W'$.
+
+Ora consideriamo $\alpha = i \in \mathbb{C}$:
+$$\alpha A = i \cdot i = -1, \qquad (\alpha A)^H = \overline{-1} = -1, \qquad -(\alpha A) = 1$$
+Poiché $-1 \neq 1$, si ha $(\alpha A)^H \neq -\alpha A$, quindi $\alpha A \notin W'$.
+
+$W'$ non è chiuso per il prodotto scalare, dunque $W' \not\leq M_n(\mathbb{C})$.
+
+</Collapsible>
+
+---
+
+## Esercizio 2
+
+Si dica quale dei seguenti sottoinsiemi di $\mathbb{R}^2$ è un suo sottospazio:
+$$W_1 = \left\{\binom{x}{y} \;\middle|\; x - 2y = 0\right\}; \quad W_2 = \left\{\binom{x}{y} \;\middle|\; x^2 - 2y = 0\right\}; \quad W_3 = \left\{\binom{x}{y} \;\middle|\; x - 2y = 1\right\}.$$
+
+<Collapsible title="Teoria">
+
+Per verificare che $U \leq V$: controllare $\mathbf{0}\in U$, chiusura per somma e per scalare. Per negare: basta trovare un singolo controesempio su una delle tre condizioni.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$W_1$: IS un sottospazio.**
+
+1. $\mathbf{0}$: $0 - 2\cdot0 = 0$ ✓
+2. Somma: se $x_1 - 2y_1 = 0$ e $x_2 - 2y_2 = 0$, allora $(x_1+x_2) - 2(y_1+y_2) = 0$ ✓
+3. Scalare: $\alpha x - 2(\alpha y) = \alpha(x - 2y) = 0$ ✓
+
+$$\boxed{W_1 \leq \mathbb{R}^2}$$
+
+---
+
+**$W_2$: NON è un sottospazio.**
+
+Contiene $\mathbf{0}$ ($0^2 - 2\cdot0 = 0$ ✓), ma non è chiuso per la somma.
+
+Controesempio: $(1,\tfrac{1}{2})\in W_2$ poiché $1^2 - 2\cdot\tfrac{1}{2} = 0$; analogamente $(-1,\tfrac{1}{2})\in W_2$ poiché $(-1)^2 - 2\cdot\tfrac{1}{2} = 0$. Ma:
+$$(1,\tfrac{1}{2}) + (-1,\tfrac{1}{2}) = (0,1), \qquad 0^2 - 2\cdot1 = -2 \neq 0$$
+quindi $(0,1) \notin W_2$.
+
+$$\boxed{W_2 \not\leq \mathbb{R}^2}$$
+
+---
+
+**$W_3$: NON è un sottospazio.**
+
+Non contiene l'elemento neutro: $0 - 2\cdot0 = 0 \neq 1$, quindi $\mathbf{0} \notin W_3$.
+
+$$\boxed{W_3 \not\leq \mathbb{R}^2}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 3
+
+Sia $\mathbf{A} \in M_n(\mathbb{C})$. Si provi che i tre seguenti sottoinsiemi di $M_n(\mathbb{C})$ sono sottospazi vettoriali di $M_n(\mathbb{C})$:
+$$W_1 = \{B \in M_n(\mathbb{C}) \mid \mathbf{A}B = B\mathbf{A}\}; \quad W_2 = \{B \in M_n(\mathbb{C}) \mid \mathbf{A}B \text{ è una matrice scalare}\}; \quad W_3 = \{B \in M_n(\mathbb{C}) \mid \mathbf{A}B = B^T\}.$$
+
+<Collapsible title="Teoria">
+
+- **Matrice scalare:** $\lambda I_n$ per qualche $\lambda \in \mathbb{C}$
+- La linearità del prodotto matriciale permette di propagare le condizioni dalla somma e dallo scalare
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$W_1 = \{B \mid \mathbf{A}B = B\mathbf{A}\}$**
+
+1. $\mathbf{0}$: $\mathbf{A}\mathbf{0} = \mathbf{0} = \mathbf{0}\mathbf{A}$ ✓
+2. Somma: se $\mathbf{A}B_1 = B_1\mathbf{A}$ e $\mathbf{A}B_2 = B_2\mathbf{A}$, allora
+$$\mathbf{A}(B_1+B_2) = \mathbf{A}B_1 + \mathbf{A}B_2 = B_1\mathbf{A} + B_2\mathbf{A} = (B_1+B_2)\mathbf{A}$$ ✓
+3. Scalare: $\mathbf{A}(\alpha B) = \alpha(\mathbf{A}B) = \alpha(B\mathbf{A}) = (\alpha B)\mathbf{A}$ ✓
+
+Pertanto $W_1 \leq M_n(\mathbb{C})$.
+
+---
+
+**$W_2 = \{B \mid \mathbf{A}B = \lambda I \text{ per qualche } \lambda\in\mathbb{C}\}$**
+
+1. $\mathbf{0}$: $\mathbf{A}\mathbf{0} = \mathbf{0} = 0\cdot I$ ✓
+2. Somma: se $\mathbf{A}B_1 = \lambda_1 I$ e $\mathbf{A}B_2 = \lambda_2 I$, allora
+$$\mathbf{A}(B_1+B_2) = \lambda_1 I + \lambda_2 I = (\lambda_1+\lambda_2)I$$ ✓
+3. Scalare: $\mathbf{A}(\alpha B) = \alpha(\mathbf{A}B) = \alpha\lambda I = (\alpha\lambda)I$ ✓
+
+Pertanto $W_2 \leq M_n(\mathbb{C})$.
+
+---
+
+**$W_3 = \{B \mid \mathbf{A}B = B^T\}$**
+
+1. $\mathbf{0}$: $\mathbf{A}\mathbf{0} = \mathbf{0} = \mathbf{0}^T$ ✓
+2. Somma: se $\mathbf{A}B_1 = B_1^T$ e $\mathbf{A}B_2 = B_2^T$, allora
+$$\mathbf{A}(B_1+B_2) = \mathbf{A}B_1 + \mathbf{A}B_2 = B_1^T + B_2^T = (B_1+B_2)^T$$ ✓
+3. Scalare: $\mathbf{A}(\alpha B) = \alpha(\mathbf{A}B) = \alpha B^T = (\alpha B)^T$ ✓
+
+Pertanto $W_3 \leq M_n(\mathbb{C})$.
+
+</Collapsible>
+
+---
+
+## Esercizio 4
+
+Sia $V = \mathbb{R}^2$ (sp. vett. reale). Si dica quale dei seguenti sottoinsiemi di $V$ è un sottospazio vettoriale di $V$:
+$$\mathcal{S}_1 = \left\{\binom{0}{0}\right\}; \quad \mathcal{S}_2 = \left\{\binom{0}{0};\binom{0}{1}\right\}; \quad \mathcal{S}_3 = \left\{\binom{a-2}{b} \;\middle|\; a,b\in\mathbb{R}\right\}; \quad \mathcal{S}_4 = \left\{\binom{a-2}{a+1} \;\middle|\; a\in\mathbb{R}\right\}.$$
+
+<Collapsible title="Teoria">
+
+Lo spazio vettoriale è **reale**, quindi gli scalari sono $\alpha \in \mathbb{R}$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$\mathcal{S}_1 = \{\mathbf{0}\}$: IS un sottospazio** (sottospazio banale).
+
+1. $\mathbf{0} \in \mathcal{S}_1$ ✓; somma: $\mathbf{0}+\mathbf{0}=\mathbf{0}$ ✓; scalare: $\alpha\cdot\mathbf{0}=\mathbf{0}$ ✓
+
+$$\boxed{\mathcal{S}_1 \leq \mathbb{R}^2}$$
+
+---
+
+**$\mathcal{S}_2$: NON è un sottospazio.**
+
+Non è chiuso per la somma: $(0,0)+(0,1) = (0,1) \in \mathcal{S}_2$ ✓, ma $(0,1)+(0,1) = (0,2) \notin \mathcal{S}_2$.
+
+$$\boxed{\mathcal{S}_2 \not\leq \mathbb{R}^2}$$
+
+---
+
+**$\mathcal{S}_3$: IS un sottospazio.**
+
+Al variare di $a \in \mathbb{R}$, la prima componente $a-2$ percorre tutto $\mathbb{R}$; la seconda componente $b$ percorre tutto $\mathbb{R}$ liberamente. Dunque $\mathcal{S}_3 = \mathbb{R}^2$, che è sottospazio (lo spazio stesso).
+
+In alternativa, verifica diretta:
+1. $\mathbf{0} = (2-2,\, 0) \in \mathcal{S}_3$ (con $a=2$, $b=0$) ✓
+2. $(a_1-2,b_1)+(a_2-2,b_2) = ((a_1+a_2)-2-2,\,b_1+b_2)$. Ponendo $a'=a_1+a_2-2$: il vettore è $(a'-2,\,b_1+b_2)\in\mathcal{S}_3$ ✓
+3. $\alpha(a-2,b) = (\alpha(a-2),\,\alpha b) = ((\alpha a - 2\alpha + 2) - 2,\,\alpha b)\in\mathcal{S}_3$ ✓
+
+$$\boxed{\mathcal{S}_3 \leq \mathbb{R}^2}$$
+
+---
+
+**$\mathcal{S}_4$: NON è un sottospazio.**
+
+Non contiene $\mathbf{0}$: servirebbe $a-2=0$ e $a+1=0$, cioè $a=2$ e $a=-1$ contemporaneamente. Impossibile.
+
+$$\boxed{\mathcal{S}_4 \not\leq \mathbb{R}^2}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 5
+
+Si dica se
+$$\mathcal{W}_1 = \{i\cdot\mathbf{v} \mid \mathbf{v}\in\mathbb{R}^n\} \quad \text{e} \quad \mathcal{W}_2 = \{2\cdot\mathbf{v} \mid \mathbf{v}\in\mathbb{C}^n\}$$
+sono sottospazi di $\mathbb{C}^n$.
+
+<Collapsible title="Teoria">
+
+$\mathbb{C}^n$ è spazio vettoriale **complesso** (scalari $\alpha \in \mathbb{C}$). La chiusura per prodotto scalare richiede di testare ogni $\alpha \in \mathbb{C}$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$\mathcal{W}_1$: NON è un sottospazio.**
+
+$\mathcal{W}_1$ è l'insieme dei vettori con tutte le componenti **immaginarie pure**: $\mathcal{W}_1 = \{(ib_1,\ldots,ib_n) \mid b_k\in\mathbb{R}\}$.
+
+Non è chiuso per il prodotto scalare complesso. Controesempio con $n=1$: il vettore $i\in\mathcal{W}_1$ (prendendo $\mathbf{v}=1\in\mathbb{R}$). Sia $\alpha = i$:
+$$\alpha \cdot (i) = i \cdot i = -1$$
+Ma $-1 \notin \mathcal{W}_1$ (servirebbe $-1 = ib$ con $b\in\mathbb{R}$, cioè $b=i\notin\mathbb{R}$).
+
+$$\boxed{\mathcal{W}_1 \not\leq \mathbb{C}^n}$$
+
+---
+
+**$\mathcal{W}_2$: IS un sottospazio** (coincide con $\mathbb{C}^n$).
+
+Per ogni $\mathbf{w}\in\mathbb{C}^n$, si ha $\mathbf{w} = 2\cdot(\mathbf{w}/2)$ con $\mathbf{w}/2\in\mathbb{C}^n$, quindi $\mathcal{W}_2 = \mathbb{C}^n$.
+
+$$\boxed{\mathcal{W}_2 = \mathbb{C}^n \leq \mathbb{C}^n}$$
+
+</Collapsible>

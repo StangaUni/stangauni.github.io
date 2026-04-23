@@ -84,4 +84,33 @@ $$\boxed{P(n;\,n_1,\ldots,n_m) = \frac{n!}{n_1!\cdots n_m!}}$$
 
 $$\boxed{C_R(n,r) = \binom{n+r-1}{r} = \binom{n+r-1}{n-1}}$$
 
-*Idea.* Una scelta corrisponde a una stringa di $r$ simboli $x$ e $n-1$ separatori $|$: scegliere le posizioni degli $x$ in $r + (n-1)$ simboli totali.
+*Dimostrazione.* Si mette in biiezione ogni scelta con una stringa di lunghezza $r + (n-1)$ formata da $r$ simboli $\times$ (gli oggetti scelti) e $n-1$ separatori $|$ (i divisori tra i tipi). Scegliere le $r$ posizioni delle $\times$ tra $r+(n-1)$ posizioni totali dà $\binom{r+n-1}{r}$. $\square$
+
+> **Corollario.** $C_R(n,r)$ è anche il numero di soluzioni intere $\geq 0$ dell'equazione $x_1 + x_2 + \cdots + x_n = r$.
+
+**Esempio.** 6 persone ordinano caffè tra 3 tipi: $C_R(3,6) = \binom{8}{6} = 28$. Corrisponde alle soluzioni di $x_1+x_2+x_3=6$, $x_i \geq 0$.
+
+---
+
+## Distribuzioni
+
+### Oggetti distinti in scatole distinte
+
+Dati $r$ oggetti distinti e $n$ scatole distinte:
+
+| Problema | Risposta |
+|---|---|
+| Nessun vincolo sul numero di oggetti per scatola | $n^r$ |
+| La scatola $i$ deve ricevere esattamente $r_i$ oggetti ($\sum r_i = r$) | $\dfrac{r!}{r_1!\, r_2!\, \cdots\, r_n!}$ |
+
+La seconda formula è il **coefficiente multinomiale**: si scelgono prima $r_1$ oggetti per la scatola 1, poi $r_2$ per la scatola 2, ecc.
+
+$$\binom{r}{r_1}\binom{r-r_1}{r_2}\cdots\binom{r_n}{r_n} = \frac{r!}{r_1!\,r_2!\,\cdots\,r_n!}$$
+
+### Oggetti identici in scatole distinte
+
+Dati $r$ oggetti identici e $n$ scatole distinte, il numero di distribuzioni è uguale al numero di $C_R(n,r)$:
+
+$$\binom{r+n-1}{r}$$
+
+*Idea.* Gli oggetti identici nella scatola $i$ corrispondono al tipo $i$ nella biiezione con stringhe $\times/|$.

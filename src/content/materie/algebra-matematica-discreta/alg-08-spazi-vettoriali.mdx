@@ -1,0 +1,151 @@
+---
+title: "Spazi Vettoriali"
+type: "riassunto"
+section: "Algebra"
+excerpt: "Definizione e assiomi degli spazi vettoriali, esempi principali e sottospazi vettoriali."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Spazi Vettoriali
+
+Sia $\mathbb{K}$ uno tra $\mathbb{R}$ e $\mathbb{C}$ (campo degli scalari).
+
+## Definizione
+
+Uno **spazio vettoriale** su $\mathbb{K}$ (detto **reale** se $\mathbb{K}=\mathbb{R}$, **complesso** se $\mathbb{K}=\mathbb{C}$) è un insieme non-vuoto $V$ i cui elementi sono detti **vettori**, dotato di due operazioni:
+
+| Operazione | Simbolo | Tipo |
+|-----------|---------|------|
+| **Somma di vettori** | $+: V \times V \to V,\quad (\underline{v},\underline{w}) \mapsto \underline{v}+\underline{w}$ | interna |
+| **Prodotto scalare per vettore** | $\cdot: \mathbb{K} \times V \to V,\quad (\alpha,\underline{v}) \mapsto \alpha\cdot\underline{v}$ | esterna |
+
+che soddisfano i seguenti **8 assiomi**:
+
+| # | Assioma | Nota |
+|---|---------|------|
+| 1 | $\underline{u}+(\underline{v}+\underline{w}) = (\underline{u}+\underline{v})+\underline{w}$ | $+$ associativa |
+| 2 | $\underline{u}+\underline{v} = \underline{v}+\underline{u}$ | $+$ commutativa |
+| 3 | $\alpha\cdot(\beta\cdot\underline{v}) = (\alpha\cdot_{\mathbb{K}}\beta)\cdot\underline{v}$ | compatibilità prodotti |
+| 4 | $1\cdot\underline{v} = \underline{v}$ | identità scalare |
+| 5 | $(\alpha+_{\mathbb{K}}\beta)\cdot\underline{v} = \alpha\cdot\underline{v}+\beta\cdot\underline{v}$ | distributiva (scalari) |
+| 6 | $\alpha\cdot(\underline{u}+\underline{v}) = \alpha\cdot\underline{u}+\alpha\cdot\underline{v}$ | distributiva (vettori) |
+| 7 | $\exists\,\underline{0}\in V$ tale che $\underline{v}+\underline{0}=\underline{v}\quad\forall\,\underline{v}$ | elemento neutro (unico) |
+| 8 | $\forall\,\underline{v}\in V\;\exists\,\underline{w}\in V$ tale che $\underline{v}+\underline{w}=\underline{0}$ | opposto $-\underline{v}$ (unico) |
+
+---
+
+## Proprietà Derivate
+
+Per ogni $\alpha\in\mathbb{K}$ e $\underline{v}\in V$:
+
+| | Proprietà |
+|-|-----------|
+| **a)** | $\alpha\cdot\underline{0} = \underline{0}$ |
+| **b)** | $0\cdot\underline{v} = \underline{0}$ |
+| **c)** | $\alpha\cdot\underline{v}=\underline{0} \;\Longrightarrow\; \alpha=0$ oppure $\underline{v}=\underline{0}$ &ensp; **(legge di cancellazione)** |
+| **d)** | $-(\alpha\cdot\underline{v}) = (-\alpha)\cdot\underline{v} = \alpha\cdot(-\underline{v})$ |
+
+> **Dimostrazione di c):** se $\alpha\neq 0$, allora $\underline{v} \stackrel{4}{=} 1\cdot\underline{v} = (\alpha^{-1}\alpha)\cdot\underline{v} \stackrel{3}{=} \alpha^{-1}(\alpha\cdot\underline{v}) = \alpha^{-1}\underline{0} \stackrel{a}{=} \underline{0}$.
+
+---
+
+## Esempi Principali
+
+### 1) Vettori colonna
+
+$$\mathbb{R}^n = \left\{\underline{u}=\begin{pmatrix}u_1\\\vdots\\u_n\end{pmatrix} \;\middle|\; u_i\in\mathbb{R}\right\}, \qquad \mathbb{C}^n \quad \text{(analogamente)}$$
+
+- $\underline{0} = (0,\ldots,0)^T$
+- $-\underline{u} = (-u_1,\ldots,-u_n)^T$
+
+### 2) Vettori riga
+
+$$\mathbb{R}_n = \{(u_1,\ldots,u_n) \mid u_i\in\mathbb{R}\}, \qquad \mathbb{C}_n$$
+
+### 3) Matrici
+
+$$M_{m,n}(\mathbb{K})$$
+
+- $\underline{0} = \mathbb{O}$ (matrice nulla)
+- $-A = (-a_{ij})$
+
+### 4) Polinomi
+
+$$\mathbb{K}[x] = \{a_0+a_1x+\cdots+a_nx^n \mid n\in\mathbb{N},\, a_i\in\mathbb{K}\}$$
+
+Sottospazio rilevante: **polinomi di grado al più $n$**
+
+$$\mathbb{K}_n[x] = \{f(x)\in\mathbb{K}[x] \mid \deg f \leq n\}$$
+
+Le operazioni sono ben definite su $\mathbb{K}_n[x]$ perché:
+- $\deg(f+g) \leq \max\{\deg f, \deg g\} \leq n$
+- $\deg(\alpha f) = \deg f \leq n$ per $\alpha\neq 0$; $\deg(0\cdot f) = -\infty \leq n$
+
+In entrambi i casi: $\underline{0}$ = polinomio nullo $f(x)=0$, e $-f(x) = -a_0-a_1x-\cdots-a_nx^n$.
+
+### 5) Funzioni da $[a,b]$ in $\mathbb{R}$
+
+Siano $a<b\in\mathbb{R}$. L'insieme $F([a,b]) = \{f:[a,b]\to\mathbb{R}\}$ è uno spazio vettoriale con:
+- $(f+g)(x) = f(x)+g(x)$
+- $(\alpha\cdot f)(x) = \alpha\cdot f(x)$
+- $\underline{0}$: funzione nulla $f(x)=0\;\forall x$
+- $(-f)(x) = -f(x)$
+
+### 6) Spazio vettoriale nullo
+
+$$V = \{\underline{0}\}, \qquad \underline{0}+\underline{0}=\underline{0}, \quad \alpha\cdot\underline{0}=\underline{0}$$
+
+È il più piccolo spazio vettoriale possibile.
+
+---
+
+## Sottospazi Vettoriali
+
+**Definizione.** Sia $V$ uno spazio vettoriale su $\mathbb{K}$. Un sottoinsieme $U\subseteq V$ è un **sottospazio vettoriale** di $V$ (scritto $U\leq V$) se:
+
+1. $\underline{0}\in U$
+2. $\underline{u}_1+\underline{u}_2\in U \quad \forall\,\underline{u}_1,\underline{u}_2\in U \qquad$ ($U$ chiuso per la somma)
+3. $\alpha\cdot\underline{u}\in U \quad \forall\,\underline{u}\in U,\,\forall\,\alpha\in\mathbb{K} \qquad$ ($U$ chiuso per il prodotto scalare)
+
+> **Nota:** $U\subseteq V$ = sottoinsieme; $U\leq V$ = sottospazio. Se $U\leq V$, allora $U$ è a sua volta spazio vettoriale su $\mathbb{K}$ (con le operazioni ristrette da $V$).
+
+> **Attenzione:** la condizione 1 ($\underline{0}\in U$) è necessaria — un sottoinsieme che non contiene $\underline{0}$ non può essere un sottospazio.
+
+### Esempi
+
+**1) Sottospazio di $\mathbb{R}^3$**
+
+$$U = \left\{\begin{pmatrix}a\\0\\b\end{pmatrix} : a,b\in\mathbb{R}\right\} \leq \mathbb{R}^3$$
+
+Verifica:
+1. $\underline{0} = \begin{pmatrix}0\\0\\0\end{pmatrix}\in U$ (scegliendo $a=b=0$). ✓
+2. $\begin{pmatrix}a_1\\0\\b_1\end{pmatrix}+\begin{pmatrix}a_2\\0\\b_2\end{pmatrix} = \begin{pmatrix}a_1+a_2\\0\\b_1+b_2\end{pmatrix}\in U$. ✓
+3. $\alpha\cdot\begin{pmatrix}a\\0\\b\end{pmatrix} = \begin{pmatrix}\alpha a\\0\\\alpha b\end{pmatrix}\in U$. ✓
+
+---
+
+**2) Spazio nullo di una matrice**
+
+Sia $A\in M_{m,n}(\mathbb{C})$. Il suo **spazio nullo** (o **kernel**) è:
+
+$$\boxed{N(A) = \{\underline{v}\in\mathbb{C}^n \mid A\cdot\underline{v}=\underline{0}\} \leq \mathbb{C}^n}$$
+
+$N(A)$ è l'insieme delle soluzioni del sistema lineare omogeneo $A\cdot\underline{x}=\underline{0}$.
+
+Verifica che $N(A)\leq\mathbb{C}^n$:
+1. $A\cdot\underline{0}=\underline{0}$ → $\underline{0}\in N(A)$. ✓
+2. $A(\underline{u}_1+\underline{u}_2) = A\underline{u}_1+A\underline{u}_2 = \underline{0}+\underline{0}=\underline{0}$. ✓
+3. $A(\alpha\cdot\underline{u}) = \alpha\cdot(A\underline{u}) = \alpha\cdot\underline{0}=\underline{0}$. ✓
+
+---
+
+**3) Sottospazi di $M_n(\mathbb{C})$**
+
+| Insieme | Definizione | Nome |
+|---------|------------|------|
+| $W_1$ | $\{A\in M_n(\mathbb{C}) \mid A^T = -A\}$ | matrici **antisimmetriche** di ordine $n$ |
+| $W_2$ | $\{A\in M_n(\mathbb{C}) \mid A^H = A\}$ | matrici **hermitiane** di ordine $n$ |
+
+Verificare se $W_1, W_2\leq M_n(\mathbb{C})$ è un esercizio.
