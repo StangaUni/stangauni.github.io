@@ -1,0 +1,46 @@
+name: Richiesta argomento
+description: Suggerisci un argomento mancante o da approfondire.
+title: "[Richiesta] "
+labels: ["richiesta", "contenuto"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hai notato un argomento mancante o trattato superficialmente? Segnalalo qui.
+        Tieni presente che gli appunti seguono il programma del corso e le aggiunte dipendono dalla disponibilità del maintainer.
+
+  - type: input
+    id: argomento
+    attributes:
+      label: Argomento
+      description: Il nome dell'argomento o del capitolo da aggiungere o approfondire.
+      placeholder: "es. Ricorsione con memoizzazione"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo di richiesta
+      options:
+        - Argomento completamente assente
+        - Argomento presente ma da approfondire
+        - Esempio o esercizio aggiuntivo
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivazione
+    attributes:
+      label: Motivazione
+      description: Perché questo argomento sarebbe utile? È nel programma ufficiale del corso?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: conferma
+    attributes:
+      label: Conferma
+      options:
+        - label: Ho verificato che non esiste già una issue aperta per questo argomento.
+          required: true

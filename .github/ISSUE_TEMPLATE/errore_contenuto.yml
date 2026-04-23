@@ -1,0 +1,44 @@
+name: Errore nei contenuti
+description: Segnala un errore concettuale, di calcolo o grammaticale negli appunti.
+title: "[Errore] "
+labels: ["errore", "contenuto"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie per la segnalazione. Compila i campi seguenti con più dettaglio possibile.
+
+  - type: input
+    id: file
+    attributes:
+      label: File o argomento
+      description: Il nome del file o dell'argomento che contiene l'errore.
+      placeholder: "es. 10. Puntatori.md"
+    validations:
+      required: true
+
+  - type: textarea
+    id: errore
+    attributes:
+      label: Descrizione dell'errore
+      description: Cosa è scritto e perché è sbagliato.
+      placeholder: "A pagina X, nella sezione Y, è scritto '...' ma dovrebbe essere '...'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: riferimento
+    attributes:
+      label: Fonte o riferimento
+      description: Se disponibile, indica la fonte che conferma la correzione (libro, slide, altro).
+      placeholder: "es. Slide del prof., capitolo 3 del libro di testo"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: conferma
+    attributes:
+      label: Conferma
+      options:
+        - label: Ho verificato che non esiste già una issue aperta per questo errore.
+          required: true

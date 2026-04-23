@@ -1,0 +1,43 @@
+name: Problema con il sito
+description: Segnala un problema di visualizzazione o funzionamento su stangauni.github.io.
+title: "[Sito] "
+labels: ["sito", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa questo template solo per problemi relativi al sito [stangauni.github.io](https://stangauni.github.io).
+        Per errori negli appunti usa il template **Errore nei contenuti**.
+
+  - type: textarea
+    id: descrizione
+    attributes:
+      label: Descrizione del problema
+      description: Cosa succede e cosa ti aspettavi invece.
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: URL della pagina
+      description: Link alla pagina dove si verifica il problema.
+      placeholder: "https://stangauni.github.io/..."
+    validations:
+      required: false
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser e versione
+      placeholder: "es. Firefox 125, Chrome 124, Safari 17"
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot o dettagli aggiuntivi
+      description: Trascina qui eventuali screenshot o incolla messaggi di errore dalla console.
+    validations:
+      required: false

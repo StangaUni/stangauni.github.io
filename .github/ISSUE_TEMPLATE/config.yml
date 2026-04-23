@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Domanda o discussione
+    url: https://github.com/orgs/StangaUni/discussions
+    about: Per domande generali o discussioni aperte usa le Discussions dell'organizzazione.
