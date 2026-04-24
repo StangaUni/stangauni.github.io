@@ -22,8 +22,8 @@ Un **Sistema Operativo** è un insieme di utilità progettate per:
 | 1944 | Colossus per decifrare Enigma |
 | 1947 | ENIAC — primo calcolatore elettronico; operatori umani come "S/O" |
 | 1949 | EDVAC — architettura von Neumann, programma memorizzato, sistema binario |
-| Anni '50 | Esecuzione **batch** (a lotti); tutto l'elaboratore a un solo programma |
-| Anni '60 | Nuovi linguaggi (BASIC); serie PDP; gestione a lotti migliorata |
+| Anni '50 | Esecuzione **batch** (a lotti); tutto l'elaboratore a un solo programma; input via schede perforate |
+| Anni '60 | Nuovi linguaggi (BASIC); serie PDP; gestione a lotti migliorata; operazioni I/O fino a **1000×** più lente dell'elaborazione |
 | '61–'64 | CTSS, DTSS → primi sistemi **time-sharing**; nascita di MULTICS |
 | 1969 | UNICS → **UNIX** (Ken Thompson, Bell Labs); kernel scritto in assembler |
 | 1974 | UNIX riscritto in **C** (Dennis Ritchie); enorme portabilità |
@@ -31,6 +31,12 @@ Un **Sistema Operativo** è un insieme di utilità progettate per:
 | Anni '80 | PC e console; plug & play; multitasking preemptive (Amiga 500 prima di Windows) |
 | Anni '90 | WWW; centinaia di milioni di PC; Windows 95 introduce preemption |
 | 2000+ | Laptop > desktop; smartphone > laptop; Cloud computing |
+
+### Spooling e multiprogrammazione
+
+**Spooling** (*Simultaneous Peripheral Operation On-Line*): emissione o ricezione di dati **in parallelo** all'esecuzione di altri lavori (es. invio richiesta di stampa, caricamento di un programma). Sfrutta la lentezza dell'I/O rispetto alla CPU.
+
+**Multiprogrammazione:** più lavori eseguiti simultaneamente. In ambiente mono-processore il parallelismo è **simulato** — occorre controllare l'assegnazione delle risorse e garantire equità di accesso mediante quanti di tempo (*time-sharing*).
 
 ---
 

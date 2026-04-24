@@ -16,6 +16,16 @@ contributors:
 | **Scheduler** | *Decide* quale processo eseguire; progettato prima dei processi che governa; parametrico rispetto agli attributi dei processi |
 | **Dispatcher** | *Attua* le scelte: salva il contesto del processo uscente, installa quello dell'entrante (context switch), cede il controllo |
 
+### Livelli di scheduling
+
+| Livello | Componente | Funzione |
+|---|---|---|
+| **Long-term** | Ammissione | Decide quali processi ammettere al sistema |
+| **Middle-term** | Swap | Decide quali processi sospendere/riprendere tra RAM e disco |
+| **Short-term** | Scheduler + Dispatcher | Decide quale processo pronto mandare in esecuzione; attua il context switch |
+
+---
+
 ### Quando si decide
 
 - Alla **creazione** di un nuovo processo
@@ -45,6 +55,24 @@ contributors:
 | **Tempo di risposta** | Reattività all'avvio (importante per sistemi interattivi) |
 
 > Tempo di turn-around = Tempo di attesa + Tempo di esecuzione (+ eventuali prerilasci)
+
+---
+
+## Classificazione dei sistemi e politiche
+
+### Caratteristiche desiderabili (per tutti i sistemi)
+
+- **Equità (fairness):** ogni processo ottiene la sua parte equa di CPU
+- **Coerenza (enforcement):** la politica dichiarata viene applicata uniformemente
+- **Bilanciamento:** tutte le risorse del sistema sono utilizzate
+
+### Obiettivi specifici
+
+| Sistema | Obiettivi |
+|---|---|
+| **Batch** | Massimo throughput, massima velocità di completamento, massimo utilizzo risorse |
+| **Interattivi** | Rapidità di risposta, soddisfazione delle aspettative dell'utente |
+| **Tempo reale** | Rispetto delle scadenze (deadline), predicibilità |
 
 ---
 

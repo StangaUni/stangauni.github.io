@@ -13,9 +13,15 @@ L'utente vuole:
 - Memoria **grande** (nessun limite a priori)
 - Memoria **veloce** (come i registri CPU)
 - Memoria **persistente** (non volatile)
-- Memoria **privata** (isolamento tra processi)
 
 Nessun singolo dispositivo soddisfa tutti i requisiti → la gerarchia (registri/cache/RAM/disco) è gestita dal S/O.
+
+### Due classi fondamentali di gestione
+
+1. Per processi allocati in **modo fisso** (posizione stabile in RAM)
+2. Per processi soggetti a **migrazione** da memoria principale a disco durante l'esecuzione
+
+> La memoria disponibile è in generale inferiore a quella necessaria per tutti i processi attivi simultaneamente.
 
 ---
 

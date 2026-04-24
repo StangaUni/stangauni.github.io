@@ -31,7 +31,38 @@ Una soluzione è **ammissibile** se e solo se:
 
 ---
 
+## Soluzioni software elementari (non ammissibili)
+
+### Alternanza stretta
+
+Mutua esclusione tramite variabile `turn` condivisa:
+
+```c
+// Processo 0:
+while (turn != 0) { /* busy wait */ }
+critical_region();
+turn = 1;
+
+// Processo 1:
+while (turn != 1) { /* busy wait */ }
+critical_region();
+turn = 0;
+```
+
+**Non ammissibile** — tre difetti: (1) attesa attiva (busy wait), (2) dipendenza dall'esecuzione dell'altro processo (condizionamento esterno alla sezione critica), (3) rischio di race condition sulla variabile `turn`.
+
+---
+
 ## Soluzioni hardware
+
+### Disabilitazione delle interruzioni
+
+Impedisce il prerilascio disabilitando tutte le interruzioni prima di entrare nella sezione critica:
+
+- Previene il prerilascio per esaurimento del quanto e la promozione di processi a priorità maggiore
+- Inaccettabile per sistemi soggetti a interruzioni frequenti
+- Sconsigliabile lasciare il controllo degli interrupt agli utenti
+- **Inutile su sistemi multi-processore**
 
 ### TSL — Test-and-Set-Lock
 
