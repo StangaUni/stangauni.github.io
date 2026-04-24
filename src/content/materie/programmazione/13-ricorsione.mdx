@@ -1,0 +1,251 @@
+---
+title: "Ricorsione"
+type: "riassunto"
+excerpt: "Definizione di ricorsione, schema progettuale (caso base e caso ricorsivo), esempi su numeri, array e stringhe, percorsi su griglia, permutazioni, confronto con l'iterazione."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Definizione
+
+La **ricorsione** è una tecnica di risoluzione di problemi che consiste nell'esprimere un problema in termini di sottoproblemi simili all'originale ma più semplici. Una funzione è ricorsiva se chiama sé stessa.
+
+Ogni soluzione ricorsiva ha due componenti:
+
+- **Caso base** — l'istanza più semplice del problema, risolvibile direttamente
+- **Caso ricorsivo** — l'istanza generale, espressa in termini di un'istanza più semplice
+
+---
+
+## Schema per Progettare Soluzioni Ricorsive
+
+1. **Identificare il fattore di complessità** — il parametro che misura la dimensione del problema (mappabile in un numero naturale n)
+2. **Riconoscere tutti i casi base** — se se ne omette uno, il programma potrebbe non terminare mai
+3. **Esprimere il caso n in funzione di n' < n** — invocare la funzione su un'istanza più semplice che si avvicini al caso base; rispondere alla domanda: *"se avessi la soluzione per n', come calcolo la soluzione per n?"*
+
+---
+
+## Esempi
+
+### Somma 1+2+…+n
+
+Relazione ricorsiva: `somma(n) = n + somma(n-1)`, con `somma(0) = 0`.
+
+```c
+/* PRE: n>=0; POST: restituisce 1+2+...+n */
+int somma1n(int n) {
+    if (n==0)
+        return 0;
+    return n + somma1n(n-1);
+}
+```
+
+### Potenza
+
+Relazione ricorsiva: `base^esp = base * base^(esp-1)`, con `base^0 = 1`.
+
+```c
+/* PRE: esp>=0, base!=0; POST: restituisce base^esp */
+int potenza(int base, int esp) {
+    if (esp==0)
+        return 1;
+    return base * potenza(base, esp-1);
+}
+```
+
+### Stampa decrescente e crescente
+
+Il posizionamento della `printf` rispetto alla chiamata ricorsiva determina l'ordine di stampa:
+
+```c
+// stampa n, n-1, ..., 1  (prima stampa, poi chiama)
+void stampa_decrescente(int n) {
+    if (n>0) { printf("%d\n", n); stampa_decrescente(n-1); }
+}
+
+// stampa 1, 2, ..., n  (prima chiama, poi stampa)
+void stampa_crescente(int n) {
+    if (n>0) { stampa_crescente(n-1); printf("%d\n", n); }
+}
+```
+
+Il codice eseguito **prima** della chiamata ricorsiva avviene in ordine discendente (n→1); il codice eseguito **dopo** avviene in ordine ascendente (1→n), al ritorno dalla ricorsione.
+
+---
+
+## Ordine di Esecuzione — Depth First
+
+La ricorsione esplora l'albero delle chiamate in profondità (**depth first**): si completa interamente il sottoalbero sinistro prima di procedere con quello destro. Questo si vede chiaramente con Fibonacci:
+
+### Fibonacci
+
+```c
+/* PRE: n>=0; POST: restituisce il numero di Fibonacci di indice n */
+int fibo(int n) {
+    if (n==0) return 0;
+    if (n==1) return 1;
+    return fibo(n-1) + fibo(n-2);
+}
+```
+
+Per `fibo(5)`, le chiamate si espandono nell'ordine: `fibo(5)` → `fibo(4)` → `fibo(3)` → `fibo(2)` → `fibo(1)` → … completando prima tutto il sottoalbero sinistro.
+
+---
+
+## Ulteriori Esempi su Array e Stringhe
+
+### Trova carattere in stringa
+
+```c
+/* PRE: s puntatore a stringa; POST: 1 se x è in s, 0 altrimenti */
+int trova_char(char *s, char x) {
+    if (*s=='\0') return 0;
+    return (*s==x) || trova_char(s+1, x);
+}
+```
+
+### Massimo di un array
+
+```c
+/* PRE: dim>0; POST: valore massimo in A */
+int max_array(int *A, int dim) {
+    if (dim==1) return A[0];
+    int max = max_array(A+1, dim-1);
+    return A[0]>max ? A[0] : max;
+}
+```
+
+### Array palindromo
+
+Un array è palindromo se il primo e l'ultimo elemento coincidono e il sotto-array interno è anch'esso palindromo.
+
+```c
+/* PRE: dim>0; POST: 1 se A è palindromo, 0 altrimenti */
+int array_palindromo(int *A, int dim) {
+    if (dim<=1) return 1;
+    if (A[0]!=A[dim-1]) return 0;
+    return array_palindromo(A+1, dim-2);
+}
+```
+
+**Correttezza per induzione:**
+- *Caso base* (`dim≤1`): un array di 0 o 1 elementi è palindromo → restituisce 1 ✓
+- *Hp induttiva*: `array_palindromo(A+1, dim-2)` è corretto per `A[1:dim-2]`
+- *Caso ricorsivo*: se `A[0]≠A[dim-1]` non è palindromo (0); altrimenti il risultato dipende da `A[1:dim-2]`, corretto per hp induttiva ✓
+
+### Conta occorrenze
+
+```c
+/* PRE: X ha dim elementi; POST: numero di occorrenze di n in X */
+int conta_occ(int X[], int dim, int n) {
+    if (dim==0) return 0;
+    return (X[0]==n) + conta_occ(X+1, dim-1, n);
+}
+```
+
+**Correttezza:** caso base `dim=0` → 0 ✓; nel caso ricorsivo, se il sottoarray `X[1:]` contiene k occorrenze di n (hp induttiva), allora X ne contiene k o k+1 a seconda che `X[0]≠n` o `X[0]=n` ✓
+
+---
+
+## Percorsi su Griglia
+
+**Problema:** contare i percorsi da (0,0) a (n-1,m-1) su una griglia n×m, muovendosi solo a destra o in basso.
+
+Definendo $P(n,m)$ = numero di percorsi su griglia n×m:
+
+$$P(n,m) = P(n-1,m) + P(n,m-1)$$
+
+**Casi base:**
+- $P(0,m) = P(n,0) = 0$ — dimensione nulla, nessun percorso
+- $P(1,1) = 1$ — punto di partenza coincide con arrivo
+
+> I casi $P(1,y)=1$ e $P(x,1)=1$ sono ridondanti: derivano automaticamente dai casi base sopra.
+
+```c
+int percorsi_griglia(int righe, int colonne) {
+    if (righe<=0 || colonne<=0) return 0;
+    if (righe==1 && colonne==1) return 1;
+    return percorsi_griglia(righe-1, colonne) +
+           percorsi_griglia(righe, colonne-1);
+}
+```
+
+---
+
+## Campo Fiorito (Ricerca di Percorso)
+
+**Problema:** data una matrice (0=fiore, 1=libero), determinare se esiste un percorso dal basso verso l'alto senza calpestare fiori, muovendosi solo in alto o a destra.
+
+```c
+int mossa(int dim_x, int dim_y, int campo[dim_x][dim_y], int pos_x, int pos_y) {
+    if (pos_x<0 || pos_y<0 || pos_y>=dim_y || pos_x>=dim_x)
+        return 0;                        // fuori dai limiti
+    if (campo[pos_x][pos_y]==0)
+        return 0;                        // fiore → percorso non valido
+    if (pos_x==0)
+        return 1;                        // prima riga raggiunta → successo
+    return mossa(dim_x, dim_y, campo, pos_x-1, pos_y) ||   // in alto
+           mossa(dim_x, dim_y, campo, pos_x, pos_y+1);     // a destra
+}
+```
+
+**Attenzione:** aggiungere la mossa a sinistra (oltre a in alto e a destra) rende la funzione potenzialmente non terminante: le mosse sinistra-destra possono generare cicli infiniti, a meno di non tracciare le celle già visitate.
+
+---
+
+## Permutazioni di una Stringa
+
+Per generare tutte le n! permutazioni, si fissa un carattere in prima posizione (iterando su tutti i caratteri) e si ricorre sulla sottostringa rimanente. Lo scambio viene annullato dopo la chiamata ricorsiva per ripristinare la stringa originale.
+
+```c
+void permuta_ric(char *s, char *s_inizio) {
+    if (*s=='\0') { printf("%s\n", s_inizio); return; }
+    for (int i=0, l=lung_stringa(s); i<l; i+=1) {
+        scambia(s, s+i);
+        permuta_ric(s+1, s_inizio);
+        scambia(s+i, s);             // ripristino
+    }
+}
+
+void permuta(char *s) { permuta_ric(s, s); }
+```
+
+---
+
+## Discussione: Ricorsione vs. Iterazione
+
+| Aspetto | Ricorsione | Iterazione |
+|---|---|---|
+| Leggibilità | Spesso più chiara | Meno immediata |
+| Overhead | Stack frame per ogni chiamata | Nessuno |
+| Memoria | O(profondità) in più | Costante |
+| Possibili problemi | Stack overflow su input grandi | — |
+
+**Regola di trasformazione** (ricorsione terminale → iterazione):
+
+```c
+// Ricorsiva
+tipo F(tipo x) {
+    if (casobase(x)) { ...; return risultato; }
+    istruzioni_non_base;
+    return F(riduci(x));
+}
+
+// Iterativa equivalente
+tipo F(tipo x) {
+    while (!casobase(x)) {
+        istruzioni_non_base;
+        x = riduci(x);
+    }
+    return risultato_caso_base;
+}
+```
+
+La trasformazione è diretta solo per la **ricorsione terminale** (la chiamata ricorsiva è l'ultima operazione). Per schemi con più chiamate ricorsive (es. Fibonacci, permutazioni) la conversione richiede uno stack esplicito.
+
+---
+
+## Quando Non Usare la Ricorsione
+
+Evitare la ricorsione quando produce **calcoli ridondanti**. Fibonacci ricorsivo calcola `fibo(3)` due volte, `fibo(2)` tre volte, ecc. In questi casi è preferibile la versione iterativa (o la memoizzazione).

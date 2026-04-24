@@ -206,14 +206,16 @@ printf("%d\n", (3>0 || 3/0));   // stampa 1; 3/0 non viene mai valutato
 
 ## Formati printf / scanf
 
-| Tipo | Formato |
-|------|---------|
-| `int` | `%d` |
-| `float` | `%f` |
-| `double` | `%lf` |
-| `char` | `%c` |
-| stringa | `%s` |
-| puntatore | `%p` |
-| `unsigned int` | `%u` |
+| Tipo | printf | scanf |
+|------|--------|-------|
+| `int` | `%d` | `%d` |
+| `float` | `%f` | `%f` |
+| `double` | `%f` | `%lf` |
+| `char` | `%c` | `%c` |
+| stringa | `%s` | `%s` |
+| puntatore | `%p` | — |
+| `unsigned int` | `%u` | `%u` |
+
+> Per `printf`, `float` viene promosso a `double`: `%f` funziona per entrambi. Per `scanf`, `%f` legge un `float` e `%lf` legge un `double` — la distinzione è obbligatoria.
 
 **Sequenze di escape:** `\n` (a capo), `\t` (tab), `\\` (backslash), `\"` (virgolette).
