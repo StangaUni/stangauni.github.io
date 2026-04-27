@@ -2,7 +2,7 @@
 title: "Relazioni di Ricorrenza"
 type: "riassunto"
 section: "Matematica Discreta"
-excerpt: "Relazioni di ricorrenza lineari omogenee, equazione caratteristica e metodo di risoluzione."
+excerpt: "Relazioni di ricorrenza lineari omogenee e non omogenee, equazione caratteristica, divide and conquer."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -94,3 +94,99 @@ Imponendo $a_1=1$ e $a_2=2$ si risolve il sistema $2\times 2$ e si ottiene:
 $$A_1 = -\frac{1-\sqrt{5}}{2\sqrt{5}}, \qquad A_2 = \frac{1+\sqrt{5}}{2\sqrt{5}}$$
 
 $$\boxed{a_n = -\frac{1-\sqrt{5}}{2\sqrt{5}}\left(\frac{1-\sqrt{5}}{2}\right)^{\!n} + \frac{1+\sqrt{5}}{2\sqrt{5}}\left(\frac{1+\sqrt{5}}{2}\right)^{\!n}}$$
+
+---
+
+## Relazioni di Ricorrenza Lineari Non Omogenee di Grado 1
+
+Sono della forma:
+
+$$a_n = c \cdot a_{n-1} + f(n)$$
+
+con $c$ costante, $c \neq 0$, e $f(n)$ una funzione di $n$.
+
+### Procedura di risoluzione
+
+**① Soluzione omogenea.** Si risolve la relazione associata $a_n = c\,a_{n-1}$, la cui soluzione generale è $A \cdot c^n$.
+
+**② Soluzione particolare.** Si cerca una soluzione particolare $p(n)$ della relazione completa. La forma di $p(n)$ dipende da $f(n)$:
+
+| $f(n)$ | $p(n)$ da cercare |
+|--------|-------------------|
+| $d$ (costante) | $B$ |
+| $d \cdot n$ | $B_1 n + B_0$ |
+| $d \cdot n^2$ | $B_2 n^2 + B_1 n + B_0$ |
+
+**③ Soluzione generale.** La soluzione generale della relazione non omogenea è:
+
+$$a_n = A \cdot c^n + p(n)$$
+
+**④ Determinare le costanti.** $A$ e le costanti di $p(n)$ si determinano **alla fine** imponendo le condizioni iniziali. Se si hanno $k$ costanti libere in totale, occorrono $k$ valori iniziali $a_0, a_1, \ldots, a_{k-1}$.
+
+### Esempio
+
+$$a_n = 2a_{n-1} + 2n^2, \quad a_0 = 3$$
+
+- **Omogenea associata:** $a_n = 2a_{n-1}$ → soluzione generale $A \cdot 2^n$.
+- **Soluzione particolare** (poiché $f(n) = 2n^2$): $p(n) = B_2 n^2 + B_1 n + B_0$.
+- **Soluzione generale:** $a_n = A \cdot 2^n + B_2 n^2 + B_1 n + B_0$ — 4 costanti.
+- Si calcolano $a_0=3$, $a_1=8$, $a_2=24$, $a_3=66$ e si risolve il sistema lineare $4\times 4$, ottenendo $A=15$, $B_2=-2$, $B_1=-8$, $B_0=-12$.
+
+$$\boxed{a_n = 15 \cdot 2^n - 2n^2 - 8n - 12}$$
+
+### Applicazione: interessi composti con versamenti periodici
+
+Una banca paga il 4% annuo. Con investimento iniziale di 100 € e versamento di 100 € a fine di ogni anno:
+
+$$a_n = \frac{104}{100}\,a_{n-1} + 100, \quad a_0 = 100$$
+
+È una relazione non omogenea con $c = 104/100$ e $f(n) = 100$ (costante). La soluzione ha forma $a_n = A \cdot (104/100)^n + B$, con costanti determinate dalle condizioni iniziali $a_0 = 100$ e $a_1 = 204$.
+
+---
+
+## Relazioni "Divide and Conquer"
+
+Sono relazioni della forma:
+
+$$a_n = c \cdot a_{n/2} + f(n)$$
+
+con $n = 2^k$, $c > 0$ costante, $f(n)$ funzione di $n$. Modellano algoritmi che dimezzano ricorsivamente il problema.
+
+### Soluzioni note
+
+| $c$ | $f(n)$ | $a_n$ |
+|-----|--------|--------|
+| $c = 1$ | $d$ (costante) | $d\lfloor\log_2 n\rfloor + A$ |
+| $c = 2$ | $d$ (costante) | $An - d$ |
+| $2 \neq c > 0$ | $d \cdot n$ | $A n^{\log_2 c} + \dfrac{2d}{2-c}\cdot n$ |
+| $c = 2$ | $d \cdot n$ | $dn\!\left(\lfloor\log_2 n\rfloor + A\right)$ |
+
+La costante $A$ va determinata dalle condizioni iniziali.
+
+### Esempio 1: trovare il massimo in un insieme
+
+**Algoritmo.** Per trovare il massimo di $n = 2^k$ numeri: si divide l'insieme a metà, si trovano ricorsivamente $M_1$ e $M_2$ (massimi delle due metà), poi si confrontano.
+
+Sia $a_n$ = numero di confronti. Il confronto finale tra $M_1$ e $M_2$ costa 1:
+
+$$a_n = 2\,a_{n/2} + 1$$
+
+Con $c = 2$, $f(n) = d = 1$: soluzione generale $a_n = An - 1$.
+
+Condizione iniziale: $n = 2$ richiede 1 confronto, quindi $a_2 = 1 = 2A - 1 \Rightarrow A = 1$.
+
+$$\boxed{a_n = n - 1}$$
+
+### Esempio 2: torneo di tennis ad eliminazione diretta
+
+$n = 2^k$ giocatori si sfidano a turni, dimezzandosi ad ogni round. Sia $a_n$ = numero di round.
+
+$$a_n = a_{n/2} + 1$$
+
+Con $c = 1$, $f(n) = d = 1$: soluzione generale $a_n = \lfloor\log_2 n\rfloor + A$.
+
+Condizione iniziale: $n = 2$ richiede 1 round, quindi $a_2 = 1 = 1 + A \Rightarrow A = 0$.
+
+$$\boxed{a_n = \lfloor\log_2 n\rfloor}$$
+
+(per $n = 2^k$, $a_n = k$)

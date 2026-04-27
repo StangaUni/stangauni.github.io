@@ -2,7 +2,7 @@
 title: "Combinazioni, Teorema Binomiale e Ripetizioni"
 type: "riassunto"
 section: "Matematica Discreta"
-excerpt: "r-permutazioni, combinazioni, teorema binomiale, triangolo di Pascal e ripetizioni."
+excerpt: "r-permutazioni, combinazioni, teorema binomiale, ripetizioni e tecniche con vincoli."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -114,3 +114,58 @@ Dati $r$ oggetti identici e $n$ scatole distinte, il numero di distribuzioni è 
 $$\binom{r+n-1}{r}$$
 
 *Idea.* Gli oggetti identici nella scatola $i$ corrispondono al tipo $i$ nella biiezione con stringhe $\times/|$.
+
+---
+
+## Tecniche con Vincoli
+
+### Vincolo "almeno $k$ oggetti di un certo tipo"
+
+Si **fissano** in anticipo i $k$ oggetti obbligatori (1 modo), riducendo il problema residuo. Poi si applica la formula standard al problema ridotto.
+
+**Esempio.** Prendere 10 palline tra rosse, blu, viola, con almeno 1 per colore:
+si fissano 1R + 1B + 1V (1 modo), restano $10 - 3 = 7$ da scegliere liberamente tra 3 tipi:
+$$C_R(3, 7) = \binom{9}{7} = 36$$
+
+**Esempio.** Prendere 10 palline tra 3 colori, con almeno 5 rosse:
+si fissano 5 rosse, restano 5 da scegliere tra 3 colori:
+$$C_R(3, 5) = \binom{7}{5} = 21$$
+
+### Vincolo "almeno 1 oggetto per scatola" (distribuzione)
+
+Si mette 1 oggetto in ciascuna scatola in anticipo (1 modo), poi si distribuiscono i rimanenti senza vincoli.
+
+**Esempio.** Distribuire 20 palline rosse e 15 verdi (identiche) in 5 scatole, con almeno 1 rossa per scatola:
+- Rosse: si fissa 1 per scatola, restano $20 - 5 = 15$ da distribuire liberamente → $\binom{19}{15}$
+- Verdi: nessun vincolo → $\binom{19}{15}$
+- Totale: $\dbinom{19}{15}^2$
+
+### Vincolo "elementi adiacenti" (blocco)
+
+Se certi elementi devono stare vicini, si trattano come un **unico blocco**, riducendo il numero di elementi totali.
+
+**Esempio — BANANA, le 3 A vicine:** le tre A formano un blocco AAA; si permutano 4 elementi \{AAA, B, N, N\} con 2 N uguali:
+$$\frac{4!}{2!} = 12$$
+
+### Vincolo "sottostringa proibita" (complemento)
+
+Si usa il **principio del complemento**: si sottraggono dal totale i casi che contengono la sottostringa vietata (trattandola come blocco).
+
+**Esempio — BANANA, senza sottosequenza BNN:** si considerano le 4 "lettere" \{BNN, A, A, A\} con 3 A uguali:
+$$\frac{6!}{3!\,2!} - \frac{4!}{3!} = 60 - 4 = 56$$
+
+### Vincolo "elemento $X$ immediatamente seguito da $Y$"
+
+Si fonde la coppia XY in un unico elemento, riducendo il totale di 1.
+
+**Esempio — BANANA, B immediatamente seguita da A:** si lavorano 5 "lettere" \{BA, A, A, N, N\} con 2 A e 2 N uguali:
+$$\frac{5!}{2!\,2!} = 30$$
+
+### Oggetti non più identici in scatole
+
+Se gli oggetti diventano distinguibili (es. numerati), per ogni oggetto si sceglie indipendentemente la scatola di destinazione.
+
+**Esempio.** Distribuire 20 palline rosse (identiche) e 15 verdi **numerate** in 5 scatole:
+- Rosse (identiche): $\binom{24}{20}$ come nel caso senza vincoli
+- Verdi (distinguibili): ogni pallina ha 5 destinazioni possibili → $5^{15}$
+- Totale: $\dbinom{24}{20} \cdot 5^{15}$

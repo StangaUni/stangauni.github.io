@@ -2,7 +2,7 @@
 title: "Principi di Conteggio e Permutazioni Semplici"
 type: "riassunto"
 section: "Matematica Discreta"
-excerpt: "Principio di addizione e moltiplicazione, permutazioni semplici e fattoriale."
+excerpt: "Principio di addizione e moltiplicazione, permutazioni semplici, fattoriale e permutazioni circolari."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -41,3 +41,19 @@ $$\boxed{n! = n \cdot (n-1) \cdot (n-2) \cdots 2 \cdot 1}$$
 **Convenzione.** $0! = 1$.
 
 **Dimostrazione.** Si riempiono $n$ posti in sequenza: $n$ scelte per il primo, $n-1$ per il secondo, …, $1$ per l'ultimo. Per il Principio di Moltiplicazione: $n!$. $\square$
+
+---
+
+## Permutazioni Circolari
+
+**Definizione.** Una **permutazione circolare** di $n$ oggetti distinti è una loro disposizione su un cerchio, dove due disposizioni sono considerate **uguali** se una si ottiene dall'altra per rotazione.
+
+$$\boxed{(n-1)!}$$
+
+**Giustificazione.** Si fissano le $n!$ permutazioni in fila. Chiudendo la fila in cerchio, ogni configurazione circolare viene contata esattamente $n$ volte (una per ciascuna rotazione). Quindi:
+
+$$\text{permutazioni circolari} = \frac{n!}{n} = (n-1)!$$
+
+**Esempio.** 6 persone sedute attorno a un tavolo rotondo:
+
+$$\frac{6!}{6} = (6-1)! = 5! = 120$$
