@@ -2,7 +2,7 @@
 title: "Spazi Vettoriali"
 type: "riassunto"
 section: "Algebra"
-excerpt: "Definizione e assiomi degli spazi vettoriali, esempi principali e sottospazi vettoriali."
+excerpt: "Definizione e assiomi degli spazi vettoriali, esempi principali, sottospazi, combinazioni lineari, indipendenza lineare, basi e dimensione."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -128,7 +128,7 @@ Verifica:
 
 **2) Spazio nullo di una matrice**
 
-Sia $A\in M_{m,n}(\mathbb{C})$. Il suo **spazio nullo** (o **kernel**) è:
+Sia $A\in M_{m,n}(\mathbb{C})$. Il suo **spazio nullo** è:
 
 $$\boxed{N(A) = \{\underline{v}\in\mathbb{C}^n \mid A\cdot\underline{v}=\underline{0}\} \leq \mathbb{C}^n}$$
 
@@ -149,3 +149,148 @@ Verifica che $N(A)\leq\mathbb{C}^n$:
 | $W_2$ | $\{A\in M_n(\mathbb{C}) \mid A^H = A\}$ | matrici **hermitiane** di ordine $n$ |
 
 Verificare se $W_1, W_2\leq M_n(\mathbb{C})$ è un esercizio.
+
+---
+
+### Criterio alternativo
+
+La condizione $\underline{0}\in U$ può essere sostituita da $U\neq\emptyset$ (dato che valgono già chiusura per somma e per prodotto scalare):
+
+> $U\neq\emptyset$ + chiusura per prod. scalare $\Rightarrow \underline{0}\in U$, poiché $\exists\,\underline{u}\in U$ e $0\cdot\underline{u}=\underline{0}\in U$.
+
+### Proprietà dei sottospazi
+
+Sia $V$ sp. vett. su $\mathbb{K}$. Allora:
+
+1. **Transitività:** $U\leq W\leq V \Rightarrow U\leq V$.
+2. **Intersezione:** se $U_1\leq V$ e $U_2\leq V$ allora $U_1\cap U_2\leq V$.
+3. **Sottospazi banali:** $\{\underline{0}\}\leq V$ (sottospazio nullo) e $V\leq V$.
+
+### Somma di sottospazi
+
+Siano $U_1,U_2\leq V$. La **somma** è:
+
+$$\boxed{U_1+U_2 = \{\underline{u}_1+\underline{u}_2 \mid \underline{u}_1\in U_1,\;\underline{u}_2\in U_2\}\leq V}$$
+
+Se $U_1\cap U_2=\{\underline{0}\}$, la somma si dice **diretta** e si scrive $U_1\oplus U_2$.
+
+**Esempio** ($V=\mathbb{C}^3$):
+
+$$U_1=\left\{\begin{pmatrix}a\\0\\b\end{pmatrix}:a,b\in\mathbb{C}\right\},\quad U_2=\left\{\begin{pmatrix}0\\h\\0\end{pmatrix}:h\in\mathbb{C}\right\}$$
+
+$U_1\cap U_2=\{\underline{0}\}$, quindi $U_1\oplus U_2 = \mathbb{C}^3$.
+
+### Insieme dei multipli
+
+Sia $\underline{v}\in V$. L'**insieme dei multipli** di $\underline{v}$ è:
+
+$$\boxed{\langle\underline{v}\rangle = \{\alpha\cdot\underline{v}\mid\alpha\in\mathbb{K}\}\leq V}$$
+
+- Se $\underline{v}=\underline{0}$: $\langle\underline{0}\rangle=\{\underline{0}\}$.
+- Se $\underline{v}\neq\underline{0}$: $\langle\underline{v}\rangle$ ha infiniti elementi (la mappa $\alpha\mapsto\alpha\cdot\underline{v}$ è iniettiva).
+
+---
+
+## 4.2 Combinazioni Lineari e Insiemi di Generatori
+
+**Definizione.** La **combinazione lineare** dei vettori $\underline{v}_1,\ldots,\underline{v}_n\in V$ con coefficienti $\alpha_1,\ldots,\alpha_n\in\mathbb{K}$ è il vettore:
+$$\underline{v} = \alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n$$
+
+> Uno stesso vettore può ammettere più rappresentazioni come combinazione lineare degli stessi vettori (se questi sono L.D.).
+
+**Definizione.** Il **sottospazio generato** da $\underline{v}_1,\ldots,\underline{v}_n$ è:
+
+$$\boxed{\langle\underline{v}_1,\ldots,\underline{v}_n\rangle = \{\alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n\mid\alpha_i\in\mathbb{K}\}\leq V}$$
+
+È il **più piccolo** sottospazio di $V$ contenente $\underline{v}_1,\ldots,\underline{v}_n$. Per convenzione $\langle\emptyset\rangle=\{\underline{0}\}$.
+
+**Definizione.** Un insieme $\mathcal{S}=\{\underline{v}_1,\ldots,\underline{v}_n\}$ è un **insieme di generatori** di $V$ se $\langle\mathcal{S}\rangle=V$.
+
+### Indipendenza lineare
+
+L'insieme $\mathcal{S}=\{\underline{v}_1,\ldots,\underline{v}_n\}$ è:
+
+- **Linearmente indipendente (L.I.)** se:
+$$\alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n=\underline{0}\;\Longrightarrow\;\alpha_1=\cdots=\alpha_n=0$$
+
+- **Linearmente dipendente (L.D.)** se esistono $\alpha_1,\ldots,\alpha_n$ **non tutti nulli** tali che $\alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n=\underline{0}$.
+
+> L.D. significa che almeno un vettore è combinazione lineare degli altri.
+
+### Proprietà degli insiemi L.I.
+
+1. $\{\underline{v}\}$ è L.I. $\iff$ $\underline{v}\neq\underline{0}$.
+2. Ogni sottoinsieme di un insieme L.I. è L.I.
+3. Un insieme L.I. non contiene vettori ripetuti né un vettore e un suo multiplo.
+
+### Esempi canonici
+
+| Spazio $V$ | Insieme $\mathcal{S}$ | Generatori? | L.I.? |
+|---|---|---|---|
+| $\mathbb{K}^n$ | $\mathcal{E}=\{\underline{e}_1,\ldots,\underline{e}_n\}$ (colonne di $\mathbb{1}_n$) | ✓ | ✓ |
+| $\mathbb{K}_n[x]$ | $\{1,x,x^2,\ldots,x^n\}$ | ✓ | ✓ |
+| $M_{m,n}(\mathbb{K})$ | $\{E_{ij}\mid 1\leq i\leq m,\,1\leq j\leq n\}$ | ✓ | ✓ |
+| $\mathbb{K}[x]$ | $\{1,x,x^2,\ldots\}$ | ✓ | ✓ |
+
+> $\mathbb{K}[x]$ **non** ha insiemi di generatori finiti: se esistesse $W=\{f_1,\ldots,f_m\}$ con grado massimo $n$, allora $x^{n+1}$ non sarebbe combinazione lineare degli $f_i$. Contraddizione.
+
+**D'ora in poi** si considerano solo spazi **finitamente generati** (esiste un insieme di generatori finito).
+
+---
+
+## 4.3 Basi e Dimensione
+
+**Definizione.** Una **base** di $V$ è un insieme di vettori che sia simultaneamente:
+
+1. insieme di generatori di $V$
+2. L.I.
+
+**Esempio.** $\mathcal{E}=\{\underline{e}_1,\ldots,\underline{e}_n\}$ è la **base canonica** di $\mathbb{K}^n$.
+
+> Uno spazio vettoriale può avere più basi (es. $\mathbb{R}^2$ ha base canonica ma anche $\left\{\begin{pmatrix}1\\1\end{pmatrix},\begin{pmatrix}1\\-1\end{pmatrix}\right\}$).
+
+### Teorema di Esistenza ed Equipotenza delle Basi
+
+Sia $V$ sp. vett. su $\mathbb{K}$. Allora:
+
+1. Ogni insieme di generatori di $V$ **contiene almeno una base**.
+2. Tutte le basi di $V$ hanno lo stesso numero di vettori, detto **dimensione** di $V$:
+$$\dim V$$
+
+**Dimensioni dei casi principali:**
+
+| Spazio | Dimensione |
+|--------|-----------|
+| $\mathbb{K}^n$ | $n$ |
+| $\mathbb{K}_n[x]$ | $n+1$ |
+| $M_{m,n}(\mathbb{K})$ | $m\cdot n$ |
+| $\{\underline{0}\}$ | $0$ |
+
+**Conseguenza.** Se $\dim V=m$ e $\mathcal{S}$ è un insieme di generatori di $V$ con esattamente $m$ elementi, allora $\mathcal{S}$ è una base.
+
+> *Dimostrazione:* il Teorema garantisce una base $\mathcal{B}\subseteq\mathcal{S}$; poiché $|\mathcal{B}|=m=|\mathcal{S}|$, si ha $\mathcal{B}=\mathcal{S}$.
+
+### Proprietà delle dimensioni
+
+Sia $V$ sp. vett. su $\mathbb{K}$ e $U,U_1,U_2\leq V$. Allora:
+
+1. $\dim U\leq\dim V$; inoltre $\dim U=\dim V\iff U=V$ e $\dim U=0\iff U=\{\underline{0}\}$.
+2. **Formula di Grassmann:**
+$$\dim(U_1+U_2) = \dim U_1+\dim U_2-\dim(U_1\cap U_2)$$
+
+---
+
+## Base Ordinata e Coordinate
+
+**Definizione.** Una **base ordinata** di $V$ è una base in cui l'ordine degli elementi è fissato.
+
+**Proprietà.** Se $\mathcal{B}=(\underline{v}_1,\ldots,\underline{v}_n)$ è una base ordinata di $V$, allora ogni $\underline{v}\in V$ si scrive **in modo unico** come:
+$$\underline{v}=\alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n,\qquad \alpha_i\in\mathbb{K}$$
+
+Il **vettore delle coordinate** di $\underline{v}$ rispetto a $\mathcal{B}$ è:
+$$C_{\mathcal{B}}(\underline{v})=\begin{pmatrix}\alpha_1\\\vdots\\\alpha_n\end{pmatrix}\in\mathbb{K}^n$$
+
+**Esempio.** $V=\left\{\begin{pmatrix}a&b\\0&c\end{pmatrix}:a,b,c\in\mathbb{C}\right\}$, base ordinata $\mathcal{B}=\left(\begin{pmatrix}1&0\\0&1\end{pmatrix},\begin{pmatrix}1&1\\0&0\end{pmatrix},\begin{pmatrix}0&0\\0&2\end{pmatrix}\right)$.
+
+Per $\underline{v}=\begin{pmatrix}2&3\\0&4\end{pmatrix}$:
+$$\underline{v}=(-1)\begin{pmatrix}1&0\\0&1\end{pmatrix}+3\begin{pmatrix}1&1\\0&0\end{pmatrix}+\tfrac{5}{2}\begin{pmatrix}0&0\\0&2\end{pmatrix} \;\Longrightarrow\; C_{\mathcal{B}}(\underline{v})=\begin{pmatrix}-1\\3\\5/2\end{pmatrix}\in\mathbb{C}^3$$
