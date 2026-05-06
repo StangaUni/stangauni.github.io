@@ -1,0 +1,256 @@
+---
+title: "Esercizi per Casa 8"
+type: "esercitazione"
+section: "Algebra"
+excerpt: "Spazi C(A), R(A), N(A): basi, rango e spazio nullo al variare di parametri; basi di spazi vettoriali; applicazioni lineari."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Esercizi per Casa 8
+
+## Esercizio 1
+
+Sia
+$$\mathbf{A}_\alpha = \begin{pmatrix}2 & 0 & 0 & 2i \\ 0 & \alpha & 0 & 2i \\ 4 & \alpha-1 & 0 & 4i \\ 0 & 2 & 4\alpha-6 & 0\end{pmatrix}, \quad \alpha\in\mathbb{C}.$$
+
+Per ogni $\alpha\in\mathbb{C}$ si dica qual è $\mathrm{rk}(\mathbf{A}_\alpha)$ e si trovino una base $\mathcal{B}_\alpha$ di $C(\mathbf{A}_\alpha)$ ed una base $\mathcal{D}_\alpha$ di $R(\mathbf{A}_\alpha)$.
+
+<Collapsible title="Teoria">
+
+- $C(A)$ = span delle colonne. Base: colonne **pivot** di $A$.
+- $R(A)$ = span delle righe. Base: righe non-nulle della forma ridotta per righe.
+- $\mathrm{rk}(A) = \dim C(A) = \dim R(A)$ = numero di pivot.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Riduzione per righe:**
+
+$$\mathbf{A}_\alpha \xrightarrow{E_1\!\left(\frac{1}{2}\right)} \begin{pmatrix}1 & 0 & 0 & i \\ 0 & \alpha & 0 & 2i \\ 4 & \alpha-1 & 0 & 4i \\ 0 & 2 & 4\alpha-6 & 0\end{pmatrix} \xrightarrow{E_{31}(-4)} \begin{pmatrix}1 & 0 & 0 & i \\ 0 & \alpha & 0 & 2i \\ 0 & \alpha-1 & 0 & 0 \\ 0 & 2 & 4\alpha-6 & 0\end{pmatrix}$$
+
+---
+
+**Caso $\alpha \neq 0,\,1,\,\tfrac{3}{2}$:**
+
+Quattro pivot (colonne 1, 2, 3, 4) $\Rightarrow$ $\mathrm{rk}(\mathbf{A}_\alpha) = 4$.
+
+$$\mathcal{B}_\alpha = \left\{\begin{pmatrix}2\\0\\4\\0\end{pmatrix},\;\begin{pmatrix}0\\\alpha\\\alpha-1\\2\end{pmatrix},\;\begin{pmatrix}0\\0\\0\\4\alpha-6\end{pmatrix},\;\begin{pmatrix}2i\\2i\\4i\\0\end{pmatrix}\right\}$$
+
+$$\mathcal{D}_\alpha = \left\{(1,0,0,i),\;(0,\alpha,0,2i),\;(0,0,4\alpha-6,-\tfrac{4i}{\alpha}),\;(0,0,0,-\tfrac{2i(\alpha-1)}{\alpha})\right\}$$
+
+---
+
+**Caso $\alpha = 0$:**
+
+$\mathrm{rk}(\mathbf{A}_0) = 4$.
+
+$$\mathcal{B}_0 = \left\{\begin{pmatrix}2\\0\\4\\0\end{pmatrix},\begin{pmatrix}0\\0\\-1\\2\end{pmatrix},\begin{pmatrix}0\\0\\0\\-6\end{pmatrix},\begin{pmatrix}2i\\2i\\4i\\0\end{pmatrix}\right\}, \quad \mathcal{D}_0 = \{(1,0,0,i),\,(0,1,0,0),\,(0,0,1,0),\,(0,0,0,1)\}$$
+
+---
+
+**Caso $\alpha = 1$:**
+
+Tre pivot (colonne 1, 2, 3) $\Rightarrow$ $\mathrm{rk}(\mathbf{A}_1) = 3$.
+
+$$\mathcal{B}_1 = \left\{\begin{pmatrix}2\\0\\4\\0\end{pmatrix},\begin{pmatrix}0\\1\\0\\2\end{pmatrix},\begin{pmatrix}0\\0\\0\\-2\end{pmatrix}\right\}, \quad \mathcal{D}_1 = \{(1,0,0,i),\,(0,1,0,2i),\,(0,0,1,2i)\}$$
+
+---
+
+**Caso $\alpha = \tfrac{3}{2}$:**
+
+La colonna 3 è nulla. Tre pivot (colonne 1, 2, 4) $\Rightarrow$ $\mathrm{rk}(\mathbf{A}_{3/2}) = 3$.
+
+$$\mathcal{B}_{3/2} = \left\{\begin{pmatrix}2\\0\\4\\0\end{pmatrix},\begin{pmatrix}0\\\frac{3}{2}\\\frac{1}{2}\\2\end{pmatrix},\begin{pmatrix}2i\\2i\\4i\\0\end{pmatrix}\right\}, \quad \mathcal{D}_{3/2} = \left\{(1,0,0,i),\,\left(0,1,0,\tfrac{4i}{3}\right),\,(0,0,0,1)\right\}$$
+
+---
+
+**Riepilogo:**
+
+| $\alpha$ | $\mathrm{rk}$ | Pivot colonne |
+|---|---|---|
+| $\alpha \neq 0,1,\tfrac{3}{2}$ | 4 | 1, 2, 3, 4 |
+| $\alpha = 0$ | 4 | 1, 2, 3, 4 |
+| $\alpha = 1$ | 3 | 1, 2, 3 |
+| $\alpha = \tfrac{3}{2}$ | 3 | 1, 2, 4 |
+
+</Collapsible>
+
+---
+
+## Esercizio 2
+
+Sia $\mathbf{A}_\alpha = \begin{pmatrix}1 & 2 & 0 & 3 \\ 1 & \alpha+2 & \alpha & \alpha+2 \\ 2 & 4 & 0 & \alpha+6\end{pmatrix}$. Per ogni $\alpha\in\mathbb{C}$ si trovi una base dello spazio nullo $N(\mathbf{A}_\alpha)$.
+
+<Collapsible title="Teoria">
+
+$N(A) = \{\mathbf{x} \mid A\mathbf{x} = \mathbf{0}\}$. Si porta $(A \mid \mathbf{0})$ a forma ridotta, si assegnano parametri alle incognite libere e si ricava una base.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$E_{21}(-1)$: $R_2 \leftarrow (0,\,\alpha,\,\alpha,\,\alpha-1)$; $E_{31}(-2)$: $R_3 \leftarrow (0,\,0,\,0,\,\alpha)$.
+
+$$\begin{pmatrix}1 & 2 & 0 & 3 \\ 0 & \alpha & \alpha & \alpha-1 \\ 0 & 0 & 0 & \alpha\end{pmatrix}$$
+
+---
+
+**Caso $\alpha \neq 0$:**
+
+Forma ridotta: $\begin{pmatrix}1 & 0 & -2 & 0 \\ 0 & 1 & 1 & 0 \\ 0 & 0 & 0 & 1\end{pmatrix}$. Colonna libera: $x_3 = t$, $x_4=0$, $x_2=-t$, $x_1=2t$.
+
+$$\boxed{N(\mathbf{A}_\alpha) = \mathrm{span}\left\{\begin{pmatrix}2\\-1\\1\\0\end{pmatrix}\right\}, \quad \alpha \neq 0}$$
+
+---
+
+**Caso $\alpha = 0$:**
+
+$$\begin{pmatrix}1 & 2 & 0 & 3 \\ 0 & 0 & 0 & -1 \\ 0 & 0 & 0 & 0\end{pmatrix} \xrightarrow{E_2(-1),\,E_{12}(-3)} \begin{pmatrix}1 & 2 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 0 & 0\end{pmatrix}$$
+
+Colonne libere: $x_2 = s$, $x_3 = t$; $x_4=0$, $x_1=-2s$.
+
+$$\boxed{N(\mathbf{A}_0) = \mathrm{span}\left\{\begin{pmatrix}-2\\1\\0\\0\end{pmatrix},\begin{pmatrix}0\\0\\1\\0\end{pmatrix}\right\}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 3
+
+Siano $\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3,\mathbf{v}_4 \in \mathbb{C}^5$ e $\mathcal{S} = \{\mathbf{v}_1;\mathbf{v}_2;\mathbf{v}_3;\mathbf{v}_4\}$:
+
+$$\mathbf{v}_1 = \begin{pmatrix}1\\i\\2\\0\\1\end{pmatrix},\quad \mathbf{v}_2 = \begin{pmatrix}i\\-1\\2i\\0\\i\end{pmatrix},\quad \mathbf{v}_3 = \begin{pmatrix}0\\-1\\0\\1\\0\end{pmatrix},\quad \mathbf{v}_4 = \begin{pmatrix}1\\2i\\2\\-i\\1\end{pmatrix}$$
+
+Sia $W = \mathrm{span}(\mathcal{S})$. Si trovi una base $\mathcal{B}$ di $W$ contenuta in $\mathcal{S}$.
+
+<Collapsible title="Teoria">
+
+Si cercano le dipendenze lineari tra i vettori. I vettori ridondanti si eliminano; i restanti indipendenti formano la base.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$\mathbf{v}_2 = i\cdot\mathbf{v}_1$:** $i\cdot(1,i,2,0,1)^T = (i,-1,2i,0,i)^T = \mathbf{v}_2$ → ridondante.
+
+**$\mathbf{v}_4 = \mathbf{v}_1 - i\cdot\mathbf{v}_3$:** $(1,i,2,0,1)^T - i(0,-1,0,1,0)^T = (1,2i,2,-i,1)^T = \mathbf{v}_4$ → ridondante.
+
+**$\mathbf{v}_1$ e $\mathbf{v}_3$ sono linearmente indipendenti** (prima componente: $1 \neq 0$ vs $0$).
+
+$$\boxed{\mathcal{B} = \{\mathbf{v}_1,\, \mathbf{v}_3\}, \quad \dim(W) = 2}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 4
+
+Si dica per quali $\alpha\in\mathbb{R}$ l'insieme
+
+$$\mathcal{B}_\alpha = \left\{\begin{pmatrix}1\\\alpha\\1\end{pmatrix};\begin{pmatrix}2\\0\\2\end{pmatrix};\begin{pmatrix}1\\\alpha+1\\\alpha+1\end{pmatrix}\right\}$$
+
+è una base di $\mathbb{R}^3$.
+
+<Collapsible title="Teoria">
+
+Tre vettori in $\mathbb{R}^3$ formano una base $\iff$ il determinante della matrice con quei vettori come colonne è $\neq 0$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$$\det\begin{pmatrix}1 & 2 & 1 \\ \alpha & 0 & \alpha+1 \\ 1 & 2 & \alpha+1\end{pmatrix} = -2\alpha^2$$
+
+$\det \neq 0 \iff \alpha \neq 0$.
+
+$$\boxed{\mathcal{B}_\alpha \text{ è una base di } \mathbb{R}^3 \iff \alpha \neq 0}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 5
+
+Si dica quale delle due seguenti posizioni definisce un'applicazione lineare:
+
+(a) $f_1 : M_n(\mathbb{C}) \to M_n(\mathbb{C})$ definita da $f_1(A) = A^T$;
+
+(b) $f_2 : M_n(\mathbb{C}) \to M_n(\mathbb{C})$ definita da $f_2(A) = A^2$.
+
+<Collapsible title="Teoria">
+
+$f: V \to W$ è lineare $\iff$ $f(A+B)=f(A)+f(B)$ e $f(\alpha A)=\alpha f(A)$ per ogni $A,B\in V$, $\alpha\in\mathbb{C}$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a) $f_1(A) = A^T$: LINEARE.**
+
+1. $f_1(A+B) = (A+B)^T = A^T+B^T = f_1(A)+f_1(B)$ ✓
+2. $f_1(\alpha A) = (\alpha A)^T = \alpha A^T = \alpha\, f_1(A)$ ✓
+
+$$\boxed{f_1 \text{ è lineare}}$$
+
+---
+
+**(b) $f_2(A) = A^2$: NON LINEARE.**
+
+$f_2(A+B) = A^2 + AB + BA + B^2 \neq A^2+B^2 = f_2(A)+f_2(B)$ in generale.
+
+**Controesempio** ($n=2$): $A = \begin{pmatrix}1&0\\0&0\end{pmatrix}$, $B = \begin{pmatrix}0&0\\1&0\end{pmatrix}$.
+
+$$f_2(A+B) = \begin{pmatrix}1&0\\1&0\end{pmatrix}^2 = \begin{pmatrix}1&0\\1&0\end{pmatrix}, \quad f_2(A)+f_2(B) = \begin{pmatrix}1&0\\0&0\end{pmatrix}$$
+
+$$\boxed{f_2 \text{ non è lineare}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 6
+
+Sia $f : M_2(\mathbb{C}) \to \mathbb{C}^2$ definita da $f(A) = A\mathbf{e}_1$ per ogni $A \in M_2(\mathbb{C})$, dove $\mathbf{e}_1 = \begin{pmatrix}1\\0\end{pmatrix}$.
+
+(a) Si provi che $f$ è un'applicazione lineare.
+
+(b) Si trovino il nucleo $N(f)$ e l'immagine $\mathrm{Im}(f)$ di $f$.
+
+<Collapsible title="Teoria">
+
+Per $A = \begin{pmatrix}a&b\\c&d\end{pmatrix}$: $A\mathbf{e}_1 = \begin{pmatrix}a\\c\end{pmatrix}$ (prima colonna di $A$).
+
+Il Teorema della Dimensione: $\dim N(f) + \dim\mathrm{Im}(f) = \dim M_2(\mathbb{C}) = 4$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**(a) $f$ è lineare.**
+
+$$f(A+B) = (A+B)\mathbf{e}_1 = A\mathbf{e}_1 + B\mathbf{e}_1 = f(A) + f(B) \quad \checkmark$$
+
+$$f(\alpha A) = (\alpha A)\mathbf{e}_1 = \alpha(A\mathbf{e}_1) = \alpha\, f(A) \quad \checkmark$$
+
+---
+
+**(b) Nucleo $N(f)$:**
+
+$$N(f) = \left\{\begin{pmatrix}0&b\\0&d\end{pmatrix} \;\middle|\; b,d\in\mathbb{C}\right\}, \quad \dim N(f) = 2$$
+
+$$\boxed{N(f) = \mathrm{span}\left\{\begin{pmatrix}0&1\\0&0\end{pmatrix},\,\begin{pmatrix}0&0\\0&1\end{pmatrix}\right\}}$$
+
+---
+
+**(b) Immagine $\mathrm{Im}(f)$:**
+
+Per ogni $\begin{pmatrix}x\\y\end{pmatrix}\in\mathbb{C}^2$, la matrice $\begin{pmatrix}x&0\\y&0\end{pmatrix}$ soddisfa $f(A) = \begin{pmatrix}x\\y\end{pmatrix}$: $f$ è suriettiva.
+
+$$\boxed{\mathrm{Im}(f) = \mathbb{C}^2}$$
+
+**Verifica:** $\dim N(f) + \dim\mathrm{Im}(f) = 2 + 2 = 4 = \dim M_2(\mathbb{C})$. ✓
+
+</Collapsible>

@@ -1,0 +1,105 @@
+---
+title: "Applicazioni Lineari"
+type: "riassunto"
+section: "Algebra"
+excerpt: "Definizione di applicazione lineare, proprietà, nucleo e immagine, teorema di nullità e rango."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Applicazioni Lineari
+
+## 4.5 Definizione
+
+Un'**applicazione lineare** (o *trasformazione lineare*) è una funzione $f: V \to W$ tra spazi vettoriali sullo stesso $\mathbb{K}$ tale che:
+
+1. **Conserva la somma:** $f(\underline{v}_1 + \underline{v}_2) = f(\underline{v}_1) + f(\underline{v}_2) \quad \forall\, \underline{v}_1, \underline{v}_2 \in V$
+2. **Conserva il prodotto scalare:** $f(\alpha \cdot \underline{v}) = \alpha \cdot f(\underline{v}) \quad \forall\, \underline{v} \in V,\, \alpha \in \mathbb{K}$
+
+Le due condizioni si possono unificare in: $f(\alpha\underline{v}_1 + \beta\underline{v}_2) = \alpha f(\underline{v}_1) + \beta f(\underline{v}_2)$.
+
+**Esempio canonico.** La **mappa delle coordinate** $C_{\mathcal{B}}: V \to \mathbb{K}^n$ associata a una base ordinata $\mathcal{B}$ di $V$ è un'applicazione lineare.
+
+**Controesempio.** Se $f: V \to W$ è lineare, allora necessariamente $f(\underline{0}_V) = \underline{0}_W$. Qualunque funzione che non mandi $\underline{0}$ in $\underline{0}$ **non** è lineare.
+
+---
+
+## Proprietà
+
+Sia $f: V \to W$ un'applicazione lineare.
+
+1. $f(\underline{0}_V) = \underline{0}_W$ &ensp; [poiché $f(\underline{0}) = f(0\cdot\underline{0}) = 0\cdot f(\underline{0}) = \underline{0}_W$]
+2. Se $g: W \to Z$ è anch'essa lineare, allora la composizione $g \circ f: V \to Z$ è lineare.
+
+---
+
+## Nucleo e Immagine
+
+Sia $f: V \to W$ un'applicazione lineare.
+
+### Nucleo (spazio nullo)
+
+$$\boxed{N(f) = \ker(f) = \{\underline{v} \in V \mid f(\underline{v}) = \underline{0}_W\} \leq V}$$
+
+### Spazio immagine
+
+$$\boxed{\mathrm{Im}(f) = \{\underline{w} \in W \mid \underline{w} = f(\underline{v}) \text{ per qualche } \underline{v} \in V\} \leq W}$$
+
+---
+
+## Proprietà di Nucleo e Immagine
+
+| Proprietà | Equivalenza |
+|-----------|-------------|
+| $N(f)$ è sottospazio di $V$ | sempre |
+| $f$ è **iniettiva** | $\iff N(f) = \{\underline{0}_V\} \iff \dim N(f) = 0$ |
+| $\mathrm{Im}(f)$ è sottospazio di $W$ | sempre |
+| $f$ è **suriettiva** | $\iff \mathrm{Im}(f) = W \iff \dim\mathrm{Im}(f) = \dim W$ |
+| $f$ è **isomorfismo** (biiettiva) | $\iff N(f) = \{\underline{0}_V\}$ e $\mathrm{Im}(f) = W$ |
+
+> $f$ è iniettiva se $\underline{v}_1 \neq \underline{v}_2 \Rightarrow f(\underline{v}_1) \neq f(\underline{v}_2)$, equivalentemente se $f(\underline{v}_1) = f(\underline{v}_2) \Rightarrow \underline{v}_1 = \underline{v}_2$.
+
+---
+
+## Teorema di Nullità + Rango
+
+Sia $f: V \to W$ un'applicazione lineare con $\dim V < \infty$. Allora:
+
+$$\boxed{\dim V = \dim N(f) + \dim \mathrm{Im}(f)}$$
+
+**Conseguenza per le matrici.** Per $A \in M_{m,n}(\mathbb{K})$, l'applicazione $\underline{x} \mapsto A\underline{x}$ ha $N = N(A)$ e $\mathrm{Im} = C(A)$, quindi:
+
+$$n = \dim N(A) + \mathrm{rk}(A)$$
+
+che equivale a $\dim N(A) = n - \mathrm{rk}(A)$ (già visto in §4.4).
+
+---
+
+## Metodo per calcolare $N(f)$ e $\mathrm{Im}(f)$
+
+### Nucleo $N(f)$
+
+Risolvere $f(\underline{v}) = \underline{0}$ imponendo le condizioni ottenute componente per componente; esprimere le soluzioni come combinazioni lineari di vettori-base.
+
+### Immagine $\mathrm{Im}(f)$
+
+Calcolare $f(\underline{v})$ per $\underline{v}$ generico, quindi estrarre i generatori raggruppando per parametri liberi:
+
+$$\mathrm{Im}(f) = \langle f(\underline{v}_1), \ldots, f(\underline{v}_n) \rangle$$
+
+dove $\mathcal{B} = (\underline{v}_1,\ldots,\underline{v}_n)$ è una base di $V$ (o equivalentemente: le colonne di $A$ se $f(\underline{x}) = A\underline{x}$).
+
+### Dimensione tramite il Teorema
+
+Se $\dim N(f)$ è noto, si ricava $\dim\mathrm{Im}(f) = \dim V - \dim N(f)$ senza calcolare $\mathrm{Im}(f)$ esplicitamente.
+
+---
+
+## Schema Riepilogativo
+
+| $f: V \to W$ | $\dim V$ | $\dim N(f)$ | $\dim\mathrm{Im}(f)$ | Iniettiva? | Suriettiva? |
+|---|---|---|---|---|---|
+| iniettiva | $n$ | $0$ | $n$ | sì | solo se $n = \dim W$ |
+| suriettiva | $n$ | $n - \dim W$ | $\dim W$ | solo se $n = \dim W$ | sì |
+| isomorfismo | $n$ | $0$ | $n = \dim W$ | sì | sì |

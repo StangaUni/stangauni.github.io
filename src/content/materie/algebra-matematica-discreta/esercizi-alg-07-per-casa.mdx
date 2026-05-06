@@ -233,3 +233,226 @@ Per ogni $\mathbf{w}\in\mathbb{C}^n$, si ha $\mathbf{w} = 2\cdot(\mathbf{w}/2)$ 
 $$\boxed{\mathcal{W}_2 = \mathbb{C}^n \leq \mathbb{C}^n}$$
 
 </Collapsible>
+
+---
+
+## Esercizio 6
+
+Sia $W = \left\{\begin{pmatrix}0 & a \\ -a & 0\end{pmatrix} \middle| a \in \mathbb{R}\right\}$ l'insieme delle matrici reali anti-simmetriche di ordine 2. Si provi che $W$ è un sottospazio vettoriale di $M_2(\mathbb{R})$ e si dica quali dei seguenti sottoinsiemi di $M_2(\mathbb{R})$ è un insieme di generatori per $W$:
+
+$$\mathcal{S}_1 = \left\{\begin{pmatrix}0 & -1 \\ 1 & 0\end{pmatrix};\begin{pmatrix}0 & 2 \\ -2 & 0\end{pmatrix}\right\}; \quad \mathcal{S}_2 = \left\{\begin{pmatrix}0 & 1 \\ -1 & 0\end{pmatrix};\begin{pmatrix}1 & 0 \\ 0 & 0\end{pmatrix}\right\}; \quad \mathcal{S}_3 = \left\{\begin{pmatrix}0 & 3 \\ -3 & 0\end{pmatrix}\right\}.$$
+
+<Collapsible title="Teoria">
+
+- Ogni matrice di $W$ ha la forma $a \cdot M$ con $M = \begin{pmatrix}0&1\\-1&0\end{pmatrix}$, quindi $\dim(W) = 1$.
+- $S$ è insieme di generatori per $W$ $\iff$ $\mathrm{span}(S) = W$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$W$ è sottospazio di $M_2(\mathbb{R})$:**
+
+1. **Elemento neutro:** $\begin{pmatrix}0&0\\0&0\end{pmatrix} \in W$ (con $a=0$) ✓
+2. **Somma:** $\begin{pmatrix}0&a\\-a&0\end{pmatrix}+\begin{pmatrix}0&b\\-b&0\end{pmatrix} = \begin{pmatrix}0&a+b\\-(a+b)&0\end{pmatrix} \in W$ ✓
+3. **Scalare** ($\alpha\in\mathbb{R}$): $\alpha\begin{pmatrix}0&a\\-a&0\end{pmatrix} = \begin{pmatrix}0&\alpha a\\-\alpha a&0\end{pmatrix} \in W$ ✓
+
+---
+
+**$\mathcal{S}_1$: IS un insieme di generatori per $W$.**
+
+Entrambi gli elementi appartengono a $W$. Poiché $\begin{pmatrix}0&-1\\1&0\end{pmatrix} = -1\cdot M$, ogni $\begin{pmatrix}0&a\\-a&0\end{pmatrix} = (-a)\cdot\begin{pmatrix}0&-1\\1&0\end{pmatrix}$.
+
+$$\boxed{\mathrm{span}(\mathcal{S}_1) = W}$$
+
+---
+
+**$\mathcal{S}_2$: NON è un insieme di generatori per $W$.**
+
+$\begin{pmatrix}1&0\\0&0\end{pmatrix} \notin W$, dunque $\mathrm{span}(\mathcal{S}_2) \supsetneq W$.
+
+$$\boxed{\mathrm{span}(\mathcal{S}_2) \neq W}$$
+
+---
+
+**$\mathcal{S}_3$: IS un insieme di generatori per $W$.**
+
+Per ogni $a\in\mathbb{R}$: $\begin{pmatrix}0&a\\-a&0\end{pmatrix} = \frac{a}{3}\begin{pmatrix}0&3\\-3&0\end{pmatrix}$.
+
+$$\boxed{\mathrm{span}(\mathcal{S}_3) = W}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 7
+
+Si dica se
+$$\mathcal{S} = \left\{\mathbf{v}_1 = \begin{pmatrix}1\\-1\\2\end{pmatrix};\; \mathbf{v}_2 = \begin{pmatrix}3\\-4\\8\end{pmatrix};\; \mathbf{v}_3 = \begin{pmatrix}1\\2\\-4\end{pmatrix}\right\}$$
+è un insieme di generatori di $\mathbb{R}^3$.
+
+<Collapsible title="Teoria">
+
+$\mathcal{S}$ genera $\mathbb{R}^3$ $\iff$ la matrice con righe $\mathbf{v}_1^T,\mathbf{v}_2^T,\mathbf{v}_3^T$ ha rango $3$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$$\begin{pmatrix}1&-1&2\\3&-4&8\\1&2&-4\end{pmatrix} \xrightarrow{E_{21}(-3),\,E_{31}(-1)} \begin{pmatrix}1&-1&2\\0&-1&2\\0&3&-6\end{pmatrix} \xrightarrow{E_{32}(3)} \begin{pmatrix}1&-1&2\\0&-1&2\\0&0&0\end{pmatrix}$$
+
+$\mathrm{rk} = 2 < 3$: $\mathbf{v}_3 = 10\mathbf{v}_1 - 3\mathbf{v}_2$.
+
+$$\boxed{\mathcal{S} \text{ NON è un insieme di generatori di } \mathbb{R}^3}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 8
+
+Siano $\mathbf{v}_1 = \begin{pmatrix}1\\2\\0\end{pmatrix}$, $\mathbf{v}_2 = \begin{pmatrix}3\\6\\0\end{pmatrix}$, $\mathbf{v}_3 = \begin{pmatrix}1\\3\\4\end{pmatrix}$ e $\mathbf{e}_3 \in \mathbb{R}^3$. Si dica per quali $x\in\mathbb{R}$ l'insieme $\mathcal{S}(x) = \{\mathbf{v}_1;\mathbf{v}_2;\mathbf{v}_3;x\cdot\mathbf{e}_3\}$ è un insieme di generatori di $\mathbb{R}^3$.
+
+<Collapsible title="Teoria">
+
+$\mathcal{S}(x)$ genera $\mathbb{R}^3$ $\iff$ $\mathrm{rk}([\mathbf{v}_1\mid\mathbf{v}_2\mid\mathbf{v}_3\mid x\mathbf{e}_3]) = 3$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+$\mathbf{v}_2 = 3\mathbf{v}_1$ è ridondante. La matrice con le quattro colonne si riduce a:
+
+$$\begin{pmatrix}1&3&1&0\\2&6&3&0\\0&0&4&x\end{pmatrix} \xrightarrow{E_{21}(-2)} \begin{pmatrix}1&3&1&0\\0&0&1&0\\0&0&4&x\end{pmatrix} \xrightarrow{E_{32}(-4)} \begin{pmatrix}1&3&1&0\\0&0&1&0\\0&0&0&x\end{pmatrix}$$
+
+Pivot in colonna 4 $\iff$ $x \neq 0$.
+
+$$\boxed{\mathcal{S}(x) \text{ genera } \mathbb{R}^3 \iff x \neq 0}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 9
+
+Si dica quale dei seguenti sottoinsiemi di $\mathbb{R}^3$ è linearmente indipendente:
+
+$$\left\{\mathbf{v}_1 = \begin{pmatrix}0\\4\\0\end{pmatrix};\;\mathbf{v}_2 = \begin{pmatrix}4\\6\\2\end{pmatrix};\;\mathbf{v}_3 = \begin{pmatrix}2\\-1\\1\end{pmatrix}\right\}, \qquad \left\{\mathbf{w}_1 = \begin{pmatrix}0\\4\\0\end{pmatrix};\;\mathbf{w}_2 = \begin{pmatrix}1\\0\\2\end{pmatrix};\;\mathbf{w}_3 = \begin{pmatrix}1\\-1\\1\end{pmatrix}\right\}.$$
+
+<Collapsible title="Teoria">
+
+Tre vettori in $\mathbb{R}^3$ sono linearmente indipendenti $\iff$ il determinante della matrice con quei vettori come colonne è $\neq 0$.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**Primo insieme $\{\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3\}$:**
+
+$$\det\begin{pmatrix}0&4&2\\4&6&-1\\0&2&1\end{pmatrix} = 4\cdot(-1)^{2+1}\det\begin{pmatrix}4&2\\2&1\end{pmatrix} = -4(4-4) = 0$$
+
+$\det = 0$ → **linearmente dipendente**.
+
+---
+
+**Secondo insieme $\{\mathbf{w}_1,\mathbf{w}_2,\mathbf{w}_3\}$:**
+
+$$\det\begin{pmatrix}0&1&1\\4&0&-1\\0&2&1\end{pmatrix} = 4\cdot(-1)^{2+1}\det\begin{pmatrix}1&1\\2&1\end{pmatrix} = -4(1-2) = 4 \neq 0$$
+
+$\det = 4 \neq 0$ → **linearmente indipendente**.
+
+$$\boxed{\{\mathbf{w}_1,\mathbf{w}_2,\mathbf{w}_3\} \text{ è l.i.};\quad \{\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3\} \text{ è l.d.}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 10
+
+Sia $W$ l'insieme delle matrici anti-simmetriche reali di ordine 2 (vedi Es. 6). Per ciascuno degli insiemi $\mathcal{S}_1$, $\mathcal{S}_2$, $\mathcal{S}_3$ dell'Es. 6 si dica se è linearmente indipendente oppure dipendente.
+
+<Collapsible title="Teoria">
+
+Si identificano le matrici $2\times 2$ con vettori di $\mathbb{R}^4$ e si verifica se l'unica combinazione lineare nulla è quella banale.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+**$\mathcal{S}_1$: LINEARMENTE DIPENDENTE.**
+
+$\begin{pmatrix}0&2\\-2&0\end{pmatrix} = -2\begin{pmatrix}0&-1\\1&0\end{pmatrix}$: i due elementi sono proporzionali.
+
+$$\boxed{\mathcal{S}_1 \text{ è l.d.}}$$
+
+---
+
+**$\mathcal{S}_2$: LINEARMENTE INDIPENDENTE.**
+
+$\alpha\begin{pmatrix}0&1\\-1&0\end{pmatrix} + \beta\begin{pmatrix}1&0\\0&0\end{pmatrix} = \begin{pmatrix}\beta&\alpha\\-\alpha&0\end{pmatrix} = \mathbb{O}$ implica $\alpha=\beta=0$.
+
+$$\boxed{\mathcal{S}_2 \text{ è l.i.}}$$
+
+---
+
+**$\mathcal{S}_3$: LINEARMENTE INDIPENDENTE.**
+
+Un singolo elemento non-zero è sempre linearmente indipendente.
+
+$$\boxed{\mathcal{S}_3 \text{ è l.i.}}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 11
+
+Sia $V = \{a + bx + cx^2 \mid a,b,c\in\mathbb{C}\}$. Si provi che $\mathcal{B} = \{2+x^2;\; x-x^2;\; 1+x\}$ è una base di $V$.
+
+<Collapsible title="Teoria">
+
+$\dim(V) = 3$ (base canonica $\{1, x, x^2\}$) e $|\mathcal{B}| = 3$: basta provare che $\mathcal{B}$ è linearmente indipendente (ovvero che $\det \neq 0$ nella matrice delle coordinate).
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Coordinate nella base $\{1, x, x^2\}$:
+
+$$2+x^2 \;\leftrightarrow\; (2,0,1), \quad x-x^2 \;\leftrightarrow\; (0,1,-1), \quad 1+x \;\leftrightarrow\; (1,1,0)$$
+
+$$\det\begin{pmatrix}2&0&1\\0&1&1\\1&1&0\end{pmatrix} = 2(0-1) - 0 + 1(0-1) = -3 \neq 0$$
+
+Poiché $\det \neq 0$, $\mathcal{B}$ è l.i.; avendo $|\mathcal{B}| = \dim V = 3$, è una base.
+
+$$\boxed{\mathcal{B} \text{ è una base di } V}$$
+
+</Collapsible>
+
+---
+
+## Esercizio 12
+
+Sia $V = \left\{\begin{pmatrix}a&0\\b&c\end{pmatrix} \middle| a,b,c\in\mathbb{C}\right\}$. Si provi che
+
+$$\mathcal{B} = \left\{B_1 = \begin{pmatrix}1&0\\1&1\end{pmatrix};\; B_2 = \begin{pmatrix}2&0\\1&1\end{pmatrix};\; B_3 = \begin{pmatrix}0&0\\1&0\end{pmatrix}\right\}$$
+
+è una base di $V$.
+
+<Collapsible title="Teoria">
+
+$\dim(V) = 3$ (parametri liberi $a,b,c$). Si identifica $\begin{pmatrix}a&0\\b&c\end{pmatrix} \leftrightarrow (a,b,c) \in \mathbb{C}^3$ e si calcola il determinante.
+
+</Collapsible>
+
+<Collapsible title="Soluzione">
+
+Coordinate: $B_1 \leftrightarrow (1,1,1)$, $B_2 \leftrightarrow (2,1,1)$, $B_3 \leftrightarrow (0,1,0)$.
+
+$$\det\begin{pmatrix}1&2&0\\1&1&1\\1&1&0\end{pmatrix} = 1(0-1) - 2(0-1) + 0 = 1 \neq 0$$
+
+Poiché $\det \neq 0$ e $|\mathcal{B}| = \dim V = 3$, $\mathcal{B}$ è una base di $V$.
+
+$$\boxed{\mathcal{B} \text{ è una base di } V}$$
+
+</Collapsible>
