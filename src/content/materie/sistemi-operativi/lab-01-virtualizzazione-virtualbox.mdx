@@ -1,0 +1,94 @@
+---
+title: "Laboratorio: Virtualizzazione e VirtualBox"
+type: "riassunto"
+section: "Laboratorio"
+excerpt: "Virtualizzazione: concetti base, Oracle VirtualBox, creazione e configurazione VM, installazione Xubuntu 22.04, snapshot e salvataggio stato."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Cos'è la virtualizzazione
+
+La **virtualizzazione** consente di creare un sistema "finto" (guest) all'interno di un sistema reale (host), emulando via software le periferiche hardware: CPU, memoria, disco, rete.
+
+- **Host** — il sistema fisico che esegue il virtualizzatore
+- **Guest** — il sistema virtualizzato che gira sopra l'host
+
+Ogni componente finto è mappato a un componente reale dell'host e ne usa una frazione di tempo/spazio.
+
+```
+Sistema Host
+├── Virtualizzatore ──► Sistema Guest
+│                        ├── SO guest
+│                        ├── CPU finta  (→ CPU reale, frazione di tempo)
+│                        ├── Memoria finta  (→ porzione RAM reale)
+│                        ├── Disco finto  (→ file VDI sull'host)
+│                        └── Rete finta
+└── SO Host + Hardware reale
+```
+
+Il virtualizzatore si occupa di: implementare le astrazioni HW, creare/configurare/avviare/fermare/distruggere sistemi guest, offrire un'interfaccia utente (GUI o CLI).
+
+---
+
+## Oracle VirtualBox
+
+Software di virtualizzazione consigliato: **Oracle VirtualBox** (`https://www.virtualbox.org`).
+
+### Creazione di una VM
+
+1. Cliccare **"Nuova"** nella finestra principale.
+2. Assegnare nome univoco; scegliere famiglia **Linux** e tipo **Debian 64-bit**.
+3. **Memoria:** quantità nell'intervallo verde suggerito; non eccedere per non degradare l'host.
+4. **Disco fisso:** creare un nuovo disco in formato **VDI** (nativo VirtualBox).
+   - *Allocazione dinamica*: occupa spazio sull'host solo quando serve (più lenta, risparmia spazio).
+   - *Allocazione statica*: occupa subito tutto lo spazio dichiarato (più veloce, spreca spazio).
+   - **Consigliato: dinamica.**
+   - Non creare immagini eccessive: se l'host esaurisce il disco smette di funzionare.
+
+### Configurazione VM (tuning consigliato)
+
+| Scheda | Impostazione | Valore consigliato | Note |
+|--------|-------------|-------------------|------|
+| Scheda madre | Chipset | **ICH9** | più moderno di PIIX3 (1996 vs 2006) |
+| Processore | N. CPU virtuali | **1** | più CPU degradano l'host |
+| Processore | Execution cap | **100%** | ridurlo rallenta il guest |
+| Processore | PAE/NX | **abilitato** | PAE → 64 GB RAM indirizzabili; NX → protezione buffer overflow |
+| Archiviazione | Controller IDE chipset | **ICH6** | più moderno di PIIX4 |
+
+---
+
+## Installazione di Linux (Xubuntu 22.04)
+
+Distribuzione consigliata: **Xubuntu 22.04** (*Jammy Jellyfish*), o in alternativa Ubuntu 22.04, Pop!\_OS 22.04, Debian 11.
+
+Passi principali dall'installer:
+
+1. Avvio da DVD → scegliere **Install**
+2. Lingua → **Italiano**
+3. Tipo installazione → **Installazione minima**
+4. Partizioni → **Cancella disco e installa Xubuntu** (opera sul disco virtuale)
+5. Fuso orario → es. **Roma**
+6. Configurare nome host, nome utente e password
+
+---
+
+## Funzionalità avanzate di VirtualBox
+
+### Spegnimento del guest
+
+| Opzione | Effetto |
+|---------|---------|
+| Invia segnale di arresto | Simula pressione ON/OFF (shutdown ACPI) |
+| Spegni la macchina | Simula stacco alimentazione (power off immediato) |
+
+### Salvataggio stato
+
+VirtualBox serializza la RAM del guest su file e congela la macchina. Al riavvio lo stato viene ripristinato esattamente. Richiede spazio libero sull'host pari alla RAM emulata del guest.
+
+### Snapshot
+
+Uno **snapshot** cattura disco e memoria del guest in un dato istante. Permette di sperimentare liberamente: se qualcosa va storto, si ripristina l'ultimo snapshot valido.
+
+Gestione via bottone **"Istantanee"** nella GUI: crea, ripristina, visualizza, cancella snapshot.

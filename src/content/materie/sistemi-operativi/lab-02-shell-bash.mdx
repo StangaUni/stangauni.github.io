@@ -1,0 +1,260 @@
+---
+title: "Laboratorio: Shell Bash"
+type: "riassunto"
+section: "Laboratorio"
+excerpt: "Shell Bash: navigazione del file system, lettura e filtraggio file, I/O pipe e metacaratteri, permessi, gestione processi, produttività, variabili d'ambiente, rete e archivi."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## La shell
+
+La **shell** è un'interfaccia a riga di comando (CLI) che consente all'utente di interagire con il SO. Risiede nel layer dei programmi di utilità dello **user space**, sopra le librerie di sistema e il kernel.
+
+Evoluzione: `sh` (1977) → `bash` (1989) → `zsh`, `fish`, ...
+
+**Modalità d'uso:**
+- *Interattiva*: ciclo `prompt → input → esecuzione → output → prompt`
+- *Non interattiva (script)*: la shell esegue una sequenza di comandi da file
+
+### Formato dei comandi
+
+```
+comando [opzioni] [argomenti]
+```
+
+Le opzioni hanno formato breve (`-a`) o lungo (`--all`). I comandi si dividono in:
+- **Builtin** — implementati nella shell stessa (es. `cd`, `echo`)
+- **Esterni** — eseguibili trovati nelle directory in `$PATH` (es. `ls`, `grep`)
+
+```bash
+type mv        # scopre se un comando è builtin o esterno
+echo $PATH     # elenco directory dove la shell cerca gli eseguibili
+```
+
+---
+
+## File system e navigazione
+
+In Linux **tutto è un file**: file regolari, directory, dispositivi (`/dev/sda`), processi (`/proc`). Il file system è un albero con radice `/`.
+
+### Navigazione
+
+```bash
+pwd            # directory corrente
+cd /var/log    # percorso assoluto
+cd ../         # directory padre
+cd ~           # home dell'utente
+cd -           # directory precedente
+```
+
+### Listare contenuto
+
+```bash
+ls -l          # lista dettagliata
+ls -la         # include file nascosti (prefisso .)
+ls -lh         # dimensioni human-readable (KB, MB, GB)
+```
+
+### Operazioni su file e directory
+
+```bash
+mkdir nome_dir        # crea directory
+touch nome_file       # crea file vuoto (o aggiorna timestamp)
+cp -r origine dest    # copia (ricorsivo per directory)
+mv origine dest       # sposta o rinomina
+rm nome_file          # elimina file
+```
+
+> `rm -rf` elimina ricorsivamente senza chiedere conferma — usare con cautela.
+
+---
+
+## Leggere e filtrare file
+
+```bash
+cat file.txt             # stampa tutto il contenuto
+head -n 10 file.txt      # prime 10 righe
+tail -n 10 file.txt      # ultime 10 righe
+tail -f /var/log/syslog  # segue il log in tempo reale
+```
+
+**`bat`** — alternativa moderna a `cat` (Rust): syntax highlighting, numerazione righe, diff Git.
+
+### grep e ripgrep
+
+```bash
+grep "ERROR" file.log     # righe contenenti "ERROR"
+grep -i "error" file.log  # case-insensitive
+grep -v "DEBUG" file.log  # righe che NON contengono "DEBUG"
+rg "ERROR" file.log       # ripgrep: più veloce, rispetta .gitignore
+```
+
+---
+
+## I/O, pipe e metacaratteri
+
+### Stream standard
+
+| Stream | N. | Descrizione |
+|--------|----|-------------|
+| stdin  | 0  | input |
+| stdout | 1  | output |
+| stderr | 2  | errori |
+
+### Redirezione
+
+```bash
+cmd > file.txt    # sovrascrive stdout su file
+cmd >> file.txt   # append stdout su file
+cmd 2> err.txt    # redirige stderr su file
+cmd 2> /dev/null  # scarta gli errori
+```
+
+### Pipe
+
+La pipe `|` passa lo stdout di un comando allo stdin del successivo:
+
+```bash
+cat file.log | grep "ERROR" | wc -l
+```
+
+*Filosofia Unix*: "un programma, una cosa sola, fatta bene."
+
+### Metacaratteri (glob)
+
+| Pattern | Significato |
+|---------|------------|
+| `*` | qualsiasi stringa (anche vuota) |
+| `?` | un singolo carattere |
+| `{a,b}` / `{1..5}` | brace expansion |
+
+```bash
+rm *.log
+touch file{1..5}.txt    # crea file1.txt … file5.txt
+```
+
+---
+
+## Permessi e processi
+
+### Modello U-G-O
+
+```
+-rwxr-xr--
+  ^^^        User  (rwx = 7)
+     ^^^     Group (r-x = 5)
+        ^^^  Others(r-- = 4)
+```
+
+| Bit | Simbolo | Valore |
+|-----|---------|--------|
+| Read | r | 4 |
+| Write | w | 2 |
+| Execute | x | 1 |
+
+```bash
+chmod 644 file.txt    # rw-r--r--
+chmod 755 script.sh   # rwxr-xr-x
+chmod +x script.sh    # aggiunge execute
+```
+
+### Gestione processi
+
+```bash
+ps aux               # tutti i processi del sistema
+pgrep ssh            # PID dei processi di nome "ssh"
+top / htop           # monitor interattivo (htop: barre grafiche, mouse, F4/F9)
+```
+
+### Job control e segnali
+
+```bash
+sleep 1000 &   # lancia in background
+jobs           # lista job in background
+fg %1          # porta in foreground il job 1
+kill 1234      # SIGTERM (terminazione pulita)
+kill -9 1234   # SIGKILL (terminazione forzata)
+```
+
+---
+
+## Produttività
+
+| Scorciatoia | Effetto |
+|-------------|---------|
+| `TAB` | autocompletamento di comandi, percorsi, opzioni |
+| `↑` / `↓` | naviga nella history |
+| `CTRL+R` | ricerca incrementale nella history |
+| `!150` | riesegue il comando n. 150 della history |
+
+### Documentazione
+
+- **`man cmd`** — manuale completo; usa `less` come paginatore
+- **`tldr cmd`** — solo gli esempi pratici essenziali
+- Il manuale è diviso in sezioni: es. `printf` è in sezione 1 (comando) e sezione 3 (funzione C)
+
+```bash
+man 3 printf    # sezione 3
+man -a printf   # tutte le sezioni
+```
+
+**Navigazione in `less`:**
+
+| Tasto | Azione |
+|-------|--------|
+| `/pattern` | cerca |
+| `n` / `N` | occorrenza successiva/precedente |
+| `<num>g` | vai alla riga |
+| `q` | esci |
+
+---
+
+## Ambiente, rete e archivi
+
+### Variabili d'ambiente
+
+```bash
+env           # tutte le variabili
+echo $USER    # utente corrente
+echo $HOME    # home directory
+echo $PATH    # directory degli eseguibili (la più importante)
+```
+
+### Rete
+
+```bash
+ping google.com              # test connettività
+curl -I https://example.com  # solo header HTTP
+ssh utente@IP                # connessione remota
+ssh -i chiave.pem ubuntu@IP  # con chiave privata (es. AWS)
+```
+
+### Archivi tar
+
+```bash
+tar -czf backup.tar.gz /cartella/   # crea archivio gzip
+tar -xzf pacchetto.tar.gz           # estrae archivio gzip
+```
+
+Mnemonica opzioni: **c**reate / e**x**tract · **z**ip · **f**ile.
+
+### Sessioni persistenti
+
+`tmux` e `screen` mantengono vive le sessioni anche dopo disconnessione SSH — indispensabili su server remoti.
+
+---
+
+## Container Docker (cenni)
+
+| Caratteristica | VM | Container |
+|---|---|---|
+| Kernel | proprio | condivide quello dell'host |
+| Peso | pesante | leggerissimo |
+| Avvio | secondi/minuti | millisecondi |
+
+```bash
+docker run -d -p 8080:80 nginx      # avvia container nginx in background
+docker exec -it <id> /bin/bash      # apre shell nel container
+```
