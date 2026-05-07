@@ -1,0 +1,172 @@
+---
+title: "Calcolo dei Sequenti Predicativo LC e LC="
+type: "riassunto"
+section: "Calcolo Predicativo"
+excerpt: "Sostituzione lecita, regole per quantificatori (∀-D/S, ∃-D/S), regole veloci, calcolo LC= con uguaglianza e vademecum per le derivazioni."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Calcolo dei Sequenti Predicativo LC e LC=
+
+Il calcolo $\mathrm{LC}$ estende $\mathrm{LC}_p$ con regole per i quantificatori; $\mathrm{LC}_{=}$ aggiunge inoltre le regole per l'uguaglianza.
+
+---
+
+## Sostituzione $\mathtt{fr}[x/t_{ter}]$
+
+$\mathtt{fr}[x/t_{ter}]$ indica la formula ottenuta sostituendo **tutte le occorrenze libere** di $x$ in $\mathtt{fr}$ con il termine $t_{ter}$.
+
+**La sostituzione è lecita** solo se nessuna variabile **libera** di $t_{ter}$ diventa **vincolata** in $\mathtt{fr}[x/t_{ter}]$, cioè se nessun quantificatore in $\mathtt{fr}$ "cattura" una variabile di $t_{ter}$.
+
+**Definizione ricorsiva** di $\mathtt{pr}[x/t_{ter}]$:
+
+| Formula | Risultato |
+|---|---|
+| $\mathtt{tt},\,\bot$ | invariate |
+| $P_k(t_1,\ldots,t_m)$ | $P_k(t_1[x/t_{ter}],\ldots,t_m[x/t_{ter}])$ |
+| $(t_1=t_2)$ | $t_1[x/t_{ter}]=t_2[x/t_{ter}]$ |
+| $\forall y\,\mathtt{pr}$ | $\forall y\,\mathtt{pr}[x/t_{ter}]$ se $x$ compare in $\mathtt{pr}$ e $y\notin VL(t_{ter})$; invariata se $x$ non compare |
+| $\exists y\,\mathtt{pr}$ | analogo al $\forall$ |
+| $(\mathtt{pr}_1\square\mathtt{pr}_2)$ | $\mathtt{pr}_1[x/t_{ter}]\square\mathtt{pr}_2[x/t_{ter}]$ (idem per $\neg$) |
+
+---
+
+## Regole di LC
+
+LC eredita tutti gli assiomi e le regole proposizionali di $\mathrm{LC}_p$ (ax-id, ax-$\bot$, ax-tt, sc, &-D/S, $\lor$-D/S, $\neg$-D/S, $\to$-D/S), con $A,B$ ora formule predicative qualsiasi. In aggiunta:
+
+### Regola universale a destra ($\forall$-D) — **sicura**
+
+$$\frac{\Gamma\vdash\mathtt{fr}[x/w],\nabla}{\Gamma\vdash\forall x\,\mathtt{fr},\nabla}\;\forall\text{-D}\qquad(w\notin VL(\Gamma,\forall x\,\mathtt{fr},\nabla))$$
+
+La variabile $w$ deve essere **nuova**: non deve comparire libera in tutto il sequente conclusione. La regola è sicura perché vale: $\forall w\,(\Gamma^\&\to\mathtt{fr}[x/w]\lor\nabla^\lor)\;\leftrightarrow\;(\Gamma^\&\to\forall x\,\mathtt{fr}\lor\nabla^\lor)$.
+
+### Regola universale a sinistra ($\forall$-S) — **sicura**
+
+$$\frac{\Gamma,\forall x\,\mathtt{fr},\mathtt{fr}[x/t_{ter}]\vdash\nabla}{\Gamma,\forall x\,\mathtt{fr}\vdash\nabla}\;\forall\text{-S}$$
+
+La formula $\forall x\,\mathtt{fr}$ rimane in ipotesi (sicurezza garantita da $\forall x\,\mathtt{fr}\;\&\;\mathtt{fr}[x/t_{ter}]\leftrightarrow\forall x\,\mathtt{fr}$). La sostituzione $x/t_{ter}$ deve essere **lecita**.
+
+### Regola esistenziale a destra ($\exists$-D) — **sicura**
+
+$$\frac{\Gamma\vdash\mathtt{fr}[x/t_{ter}],\exists x\,\mathtt{fr},\nabla}{\Gamma\vdash\exists x\,\mathtt{fr},\nabla}\;\exists\text{-D}$$
+
+La formula $\exists x\,\mathtt{fr}$ rimane nel conseguente (sicurezza da $\mathtt{fr}[x/t_{ter}]\lor\exists x\,\mathtt{fr}\leftrightarrow\exists x\,\mathtt{fr}$).
+
+### Regola esistenziale a sinistra ($\exists$-S) — **sicura**
+
+$$\frac{\Gamma,\mathtt{fr}[x/w]\vdash\nabla}{\Gamma,\exists x\,\mathtt{fr}\vdash\nabla}\;\exists\text{-S}\qquad(w\notin VL(\Gamma,\exists x\,\mathtt{fr},\nabla))$$
+
+Analogo a $\forall$-D: $w$ deve essere variabile nuova.
+
+---
+
+## Regole veloci (NON sicure)
+
+$$\frac{\Gamma,\mathtt{fr}[x/t_{ter}]\vdash\nabla}{\Gamma,\forall x\,\mathtt{fr}\vdash\nabla}\;\forall\text{-Sv}\qquad\qquad\frac{\Gamma\vdash\mathtt{fr}[x/t_{ter}],\nabla}{\Gamma\vdash\exists x\,\mathtt{fr},\nabla}\;\exists\text{-Dv}$$
+
+Sono **valide** ma non sicure: l'inversa non vale. Usarle solo quando si è certi di poter derivare il sequente.
+
+---
+
+## Derivabilità in LC
+
+Un sequente $\Gamma\vdash\Delta$ è **derivabile in LC** se esiste un albero con radice $\Gamma\vdash\Delta$, foglie assiomi di LC, e nodi costruiti con le regole di LC. Vale il teorema fondamentale: $\Gamma\vdash\Delta$ derivabile in LC $\iff$ $\Gamma\vdash\Delta$ è tautologia.
+
+---
+
+## Attenzione alle condizioni di variabile
+
+Nelle regole $\forall$-D e $\exists$-S la condizione $w\notin VL(\ldots)$ è **essenziale**. Esempi di errori tipici:
+
+- Usare $\forall$-D con $w$ libera a sinistra di $\vdash$ nel sequente conclusione.
+- Usare $\exists$-S con $w$ libera a destra di $\vdash$ nel sequente conclusione.
+- Sostituire $x$ con una variabile $y$ già vincolata in $\mathtt{fr}$ (sostituzione illecita).
+
+> **Consiglio:** applicare sempre $\forall$-D e $\exists$-S con variabili **nuove**, che non compaiono affatto nel sequente conclusione.
+
+---
+
+## Calcolo LC=
+
+$\mathrm{LC}_{=}$ estende LC con il predicato atomico di uguaglianza $t=s$ e due nuove regole.
+
+### Grammatica (aggiunta)
+
+$t_{ter}=s_{ter}$ è una formula se $t_{ter}$ ed $s_{ter}$ sono termini.
+
+### Assioma di uguaglianza
+
+$$\text{=ax}:\quad\Gamma\vdash t_{ter}=t_{ter},\,\Delta$$
+
+### Regola di uguaglianza a sinistra ($=$-S) — **sicura**
+
+$$\frac{\Sigma,\,t_{ter}=s_{ter},\,\Gamma(t_{ter})\vdash\Delta(t_{ter}),\,\nabla}{\Sigma,\,\Gamma(s_{ter}),\,t_{ter}=s_{ter}\vdash\Delta(s_{ter}),\,\nabla}\;{=\text{-S}}$$
+
+La ricopiatura di $t_{ter}=s_{ter}$ in ipotesi rende la regola **sicura**. Non è necessario rimpiazzare **tutte** le occorrenze di $s_{ter}$ con $t_{ter}$ (quelle in $\Sigma$ rimangono invariate).
+
+**Versione veloce** ($=\text{-S}_v$, NON sicura): senza ricopiare $t_{ter}=s_{ter}$.
+
+---
+
+## Teorema fondamentale di LC=
+
+$$\Gamma\vdash\Delta\text{ derivabile in }\mathrm{LC}_{=}\iff\Gamma\vdash\Delta\text{ è TAUTOLOGIA}$$
+
+---
+
+## Vademecum per le derivazioni in LC=
+
+1. **Prima**: applicare le regole proposizionali ($\&$, $\lor$, $\neg$, $\to$) e le regole **con variabili nuove** ($\forall$-D, $\exists$-S).
+2. **Poi**: applicare $\forall$-S e $\exists$-D con i **termini già presenti** nel sequente.
+3. Solo se si è certi di poter derivare, usare le regole veloci ($\forall$-Sv, $\exists$-Dv, indebolimento).
+
+---
+
+## Esempi notevoli
+
+### Sillogismo di Socrate
+
+$$\forall x\,(U(x)\to M(x)),\,U(s)\vdash M(s)$$
+
+Si applica $\forall$-S a $\forall x\,(U(x)\to M(x))$ con $t_{ter}=s$, poi $\to$-S.
+
+### Simmetria dell'uguaglianza
+
+$$t=s\vdash s=t$$
+
+Ponendo $\Sigma\equiv\emptyset,\,\Gamma(x)\equiv\emptyset,\,\Delta(x)\equiv x=t$: si applica =-S alla foglia $t=s\vdash t=t$ (assioma =-ax).
+
+### Transitività dell'uguaglianza
+
+$$t=u,\,u=s\vdash t=s$$
+
+Si applica =-S con $\Delta(x)\equiv t=x$, foglia $t=u,\,u=s\vdash t=u$ (ax-id).
+
+### Formalizzazione dell'unicità
+
+*"$O$ ha un unico output"* si formalizza in due modi equivalenti:
+
+$$\exists x\,O(x)\;\&\;\forall y_1\,\forall y_2\,(O(y_1)\&O(y_2)\to y_1=y_2)$$
+
+$$\exists x\,(O(x)\;\&\;\forall y\,(O(y)\to y=x))$$
+
+Il primo modo è consigliato per velocizzare le derivazioni.
+
+### Il miliardo
+
+$\forall x\,\forall y\,(\neg E(x,y)\to P(x,y)),\,\neg\exists x\,E(x,m)\vdash\forall x\,P(x,m)$
+
+Si applica $\forall$-D con variabile nuova $w$, poi $\neg$-S sull'ipotesi $\neg\exists x\,E(x,m)$, poi $\exists$-Dv e $\forall$-Sv (veloci) per $\neg E(w,m)$, infine $\to$-S.
+
+---
+
+## Regole e assiomi derivati in LC=
+
+Tutte le regole derivate e gli assiomi derivati di $\mathrm{LC}_p$ rimangono validi in $\mathrm{LC}_{=}$, ad esempio:
+
+$$\frac{\Gamma,A\vdash\Delta}{\Gamma,\neg\neg A\vdash\Delta}\;\neg\neg\text{-S}\qquad\qquad\frac{\Gamma\vdash A,\Delta}{\Gamma\vdash\neg\neg A,\Delta}\;\neg\neg\text{-D}$$
+
+$$\neg\text{-ax}_{sx1}:\quad\Gamma,\mathtt{fr},\Gamma',\neg\mathtt{fr},\Gamma''\vdash C\qquad\neg\text{-ax}_{dx1}:\quad\Gamma\vdash\Sigma,\mathtt{fr},\Sigma',\neg\mathtt{fr},\Sigma''$$

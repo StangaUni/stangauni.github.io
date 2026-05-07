@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
   BookOpen, ExternalLink, FileText, FlaskConical,
-  Github, GraduationCap, Heart, Target, Users,
+  Github, GraduationCap, Heart, Info, Target, Users,
 } from 'lucide-react'
 import type { Contributor } from '../types/note'
 import { SEO } from '../components/ui/SEO'
@@ -238,6 +238,18 @@ export function InfoPage() {
               })}
             </div>
           )}
+        </div>
+
+        {/* ── Disclaimer docenti ── */}
+        <div className="rounded-xl border border-border bg-secondary/20 px-5 py-4 flex gap-3">
+          <Info size={15} className="text-muted-foreground shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            I riferimenti ai docenti indicati per ciascuna materia sono puramente indicativi:
+            identificano i docenti responsabili dell'insegnamento sul quale si basano i materiali
+            caricati, senza implicare in alcun modo alcuna forma di attribuzione, approvazione o
+            responsabilità riguardo ai contenuti del sito. Tutto il materiale presente è redatto
+            interamente dagli studenti contributori degli stessi.
+          </p>
         </div>
 
         {/* ── Contribute CTA ── */}

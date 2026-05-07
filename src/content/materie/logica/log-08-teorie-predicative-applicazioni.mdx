@@ -1,0 +1,147 @@
+---
+title: "Teorie Predicative e Applicazioni"
+type: "riassunto"
+section: "Calcolo Predicativo"
+excerpt: "Teorie predicative, Aritmetica di Peano, logica di Hoare per la correttezza dei programmi e classificazione in una teoria."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Teorie Predicative e Applicazioni
+
+Una **teoria predicativa** estende $\mathrm{LC}_{=}$ con assiomi specifici e la regola di composizione, esattamente come le teorie proposizionali estendono $\mathrm{LC}_p$.
+
+---
+
+## Struttura di una teoria predicativa
+
+$$\mathcal{T} = \mathrm{LC}_{=} + \text{Ax.1},\ldots,\text{Ax.k} + \text{comp}$$
+
+**Regola di composizione:**
+
+$$\frac{\vdash\mathtt{fr}\qquad\Gamma,\mathtt{fr},\Gamma'\vdash\nabla}{\Gamma,\Gamma'\vdash\nabla}\;\text{comp}$$
+
+Un sequente $\Gamma\vdash\Delta$ è **derivabile in $\mathcal{T}$** se esiste un albero con $\Gamma\vdash\Delta$ come radice, foglie che sono assiomi di $\mathcal{T}$ (logici o extralogici) e nodi costruiti con regole di $\mathrm{LC}_{=}$ più comp.
+
+Una formula $\mathtt{fr}$ è **teorema di $\mathcal{T}$** se $\vdash\mathtt{fr}$ è derivabile in $\mathcal{T}$.
+
+---
+
+## Equivalenza fondamentale
+
+$$\Gamma\vdash\Delta\text{ derivabile in }\mathcal{T}\iff\text{Ax.1},\ldots,\text{Ax.k},\Gamma\vdash\Delta\text{ derivabile in }\mathrm{LC}_{=}$$
+
+In particolare: $\Gamma\vdash\Delta$ **non** è derivabile in $\mathcal{T}$ $\iff$ esiste un **contromodello** che rende veri tutti gli $\text{Ax.i}$ e $\Gamma^\&$ ma falso $\Delta^\lor$.
+
+---
+
+## Come usare la regola comp
+
+**I modo — comporre con assiomi:**
+
+$$\frac{\vdash\text{Ax.}i_1\qquad\dfrac{\vdash\text{Ax.}i_2\qquad\dfrac{\pi}{\text{Ax.}i_1,\text{Ax.}i_2\vdash\mathtt{fr}}}{\text{Ax.}i_1\vdash\mathtt{fr}}\;\text{comp}}{\vdash\mathtt{fr}}\;\text{comp}$$
+
+**II modo — usare teoremi già noti:**
+
+$$\frac{\dfrac{\pi_1}{\vdash T_1}\qquad\dfrac{\pi_2}{T_1\vdash T_2}}{\vdash T_2}\;\text{comp}$$
+
+Nella teoria la conoscenza si accumula: teoremi dimostrati in precedenza possono essere usati come lemmi.
+
+---
+
+## Proprietà fondamentali
+
+- Tutte le **tautologie predicative classiche** sono teoremi di ogni teoria.
+- $\mathrm{LC}_{=}$ è **NON contraddittorio**: non si può derivare $\vdash\bot$ (si possono fare solo scambi a vuoto).
+
+---
+
+## Teorie contraddittorie
+
+Una teoria con assiomi contraddittori (es. $\vdash\mathtt{fr}$ e $\vdash\neg\mathtt{fr}$) permette di derivare $\vdash\bot$, dopodiché ogni formula diventa teorema:
+
+$$\frac{\vdash\bot\qquad\dfrac{\text{ax-}\bot}{\bot\vdash\mathtt{pr}}}{\vdash\mathtt{pr}}\;\text{comp}$$
+
+---
+
+## Classificazione in una teoria $\mathcal{T}$
+
+| **Teoremi di $\mathcal{T}$** | **Opinioni di $\mathcal{T}$** | **Paradossi di $\mathcal{T}$** |
+|---|---|---|
+| tautologie logiche + teoremi specifici di $\mathcal{T}$ | $\mathtt{fr}$ e $\neg\mathtt{fr}$ non sono teoremi di $\mathcal{T}$ | $\neg\mathtt{fr}$ è teorema di $\mathcal{T}$ |
+
+---
+
+## Aritmetica di Peano PA
+
+$$\text{PA}\equiv\mathrm{LC}_{=}+\text{Ax.1}+\cdots+\text{Ax.7}+\text{comp}$$
+
+**Linguaggio** $\mathcal{L}_\text{PA}$ (solo termini aggiuntivi, nessun predicato nuovo):
+- Costante $0$ ("il numero zero")
+- Funzioni: $s(x)$ (successore), $x+y$ (somma), $x\cdot y$ (prodotto)
+- Variabili $x,y,z,\ldots$ su numeri naturali
+
+**Assiomi:**
+
+| Assioma | Enunciato | Significato |
+|---|---|---|
+| Ax.1 | $\vdash\forall x\,s(x)\neq 0$ | ogni successore è diverso da zero |
+| Ax.2 | $\vdash\forall x\,\forall y\,(s(x)=s(y)\to x=y)$ | il successore è iniettivo |
+| Ax.3 | $\vdash\forall x\,x+0=x$ | 0 è neutro per la somma |
+| Ax.4 | $\vdash\forall x\,\forall y\,x+s(y)=s(x+y)$ | definizione ricorsiva della somma |
+| Ax.5 | $\vdash\forall x\,x\cdot 0=0$ | 0 è annullatore del prodotto |
+| Ax.6 | $\vdash\forall x\,\forall y\,x\cdot s(y)=x\cdot y+x$ | definizione ricorsiva del prodotto |
+| Ax.7 | $\vdash\mathtt{fr}[x/0]\;\&\;\forall x\,(\mathtt{fr}\to\mathtt{fr}[x/s(x)])\to\forall x\,\mathtt{fr}$ | principio di induzione |
+
+Il **modello standard** per PA è $D=\mathbb{N}$ con le interpretazioni ovvie ($s(x)^\mathcal{D}(n)=n+1$, ecc.).
+
+---
+
+## Esempi di derivazioni in PA
+
+Si usa la notazione $\mathtt{n}\equiv\underbrace{s(s\cdots(0))}_{n\text{-volte}}$.
+
+**Derivazione di $\vdash 1+0=1$** (usando Ax.3 con comp):
+
+$$\frac{\vdash\text{Ax.3}\qquad\dfrac{\text{ax-id}}{\dfrac{\text{Ax.3},\;1{+}0{=}1\vdash 1{+}0{=}1}{\forall x\;x{+}0{=}x\vdash 1{+}0{=}1}\;\forall\text{-S}}}{\vdash 1+0=1}\;\text{comp}$$
+
+**Derivazione di $\vdash 5+1=6$** (usando Ax.4 e Ax.3 con comp):
+
+Si nota che $6\equiv s(5)$. Con Ax.4 ($\forall x\,\forall y\;x{+}s(y)=s(x{+}y)$) si ottiene $5{+}1=5{+}s(0)=s(5{+}0)$ applicando $\forall$-S due volte (prima su $x$ con $5$, poi su $y$ con $0$). Poi con Ax.3 si sostituisce $5{+}0=5$ per concludere $5{+}1=s(5)=6$. Ogni passo si ottiene componendo con gli assiomi tramite comp.
+
+---
+
+## Logica di Hoare (cenni)
+
+La logica di Hoare estende PA con regole per la **correttezza parziale dei programmi**. Una **tripla di Hoare** $(\phi)\,C\,(\psi)$ afferma: "se $\phi$ vale prima dell'esecuzione di $C$ e $C$ termina, allora $\psi$ vale dopo".
+
+**Regole di Hoare:**
+
+$$\frac{(\phi)\,C_1\,(\eta)\quad(\eta)\,C_2\,(\psi)}{(\phi)\;C_1;C_2\;(\psi)}\;\text{Composition}$$
+
+$$\overline{(\psi[E/x])\;x=E\;(\psi)}\;\text{Assignment}$$
+
+$$\frac{(\phi\land B)\,C_1\,(\psi)\quad(\phi\land\neg B)\,C_2\,(\psi)}{(\phi)\;\mathtt{if}\;B\;\{C_1\}\;\mathtt{else}\;\{C_2\}\;(\psi)}\;\text{If-statement}$$
+
+$$\frac{(\psi\land B)\,C\,(\psi)}{(\psi)\;\mathtt{while}\;B\;\{C\}\;(\psi\land\neg B)}\;\text{Partial-while}$$
+
+$$\frac{\vdash_\text{AR}\phi'\to\phi\quad(\phi)\,C\,(\psi)\quad\vdash_\text{AR}\psi\to\psi'}{(\phi')\,C\,(\psi')}\;\text{Implied}$$
+
+---
+
+## Esempio di test: teoria $T_\text{Ip}$
+
+$$\text{Ip}:\quad E\to\exists x\,\neg F(x)\qquad\text{(d'estate c'è qualcuno infelice)}$$
+
+$$T_\text{Ip}=\mathrm{LC}_{=}+\text{Ip}\qquad F(x)=\text{"$x$ è felice"},\;E=\text{"è estate"}$$
+
+| Aff. | Formalizzazione | Deducibile da Ip? |
+|---|---|---|
+| A | $\neg\exists x\,F(x)\to\neg E$ | **NO** — contromodello: $D=\{\text{Minni}\}$, $E=1$, $F=0$ sempre |
+| B | $\exists x\,\neg F(x)$ | **NO** — contromodello: $D=\{\text{Minni}\}$, $E=0$, $F=1$ sempre |
+| C | $\neg E\to\forall x\,\neg F(x)$ | **NO** — contromodello: $D=\{\text{Minni}\}$, $E=0$, $F=1$ sempre |
+| **D** | $\forall x\,F(x)\to\neg E$ | **SÌ** — $\text{Ip}\vdash\text{Aff.D}$ è tautologia (derivabile in $\mathrm{LC}_{=}$) |
+| E | $\neg E\to\exists x\,F(x)$ | **NO** — contromodello: $D=\{\text{Minni}\}$, $E=0$, $F=0$ sempre |
+
+**Derivazione di Aff.D:** si parte da $\text{Ip},\forall x\,F(x)\vdash\neg E$, si applica $\neg$-D, poi $\to$-S su Ip; sul ramo con $\exists x\,\neg F(x)$ si applica $\exists$-S con variabile nuova $w$ e si conclude con $\neg\text{-ax}_{dx2}$ ($F(w)$ e $\neg F(w)$ a destra); sull'altro ramo $\forall x\,F(x),E\vdash E$ è ax-id.

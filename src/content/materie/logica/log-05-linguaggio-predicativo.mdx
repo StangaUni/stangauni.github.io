@@ -1,0 +1,127 @@
+---
+title: "Linguaggio Formale Predicativo"
+type: "riassunto"
+section: "Calcolo Predicativo"
+excerpt: "Struttura del linguaggio predicativo, termini, formule, quantificatori universale ed esistenziale, variabili libere e vincolate."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Linguaggio Formale Predicativo
+
+Il linguaggio predicativo estende quello proposizionale per esprimere enunciati con quantificatori ("tutti", "qualcuno") e predicati.
+
+---
+
+## Motivazione: sillogismo di Aristotele
+
+> Tutti gli uomini sono mortali. Socrate è un uomo. → Socrate è mortale.
+
+Formalizzazione: $\forall x\,(U(x)\to M(x)),\,U(s)\vdash M(s)$
+
+---
+
+## Struttura di un linguaggio predicativo
+
+Un linguaggio formale predicativo $\mathcal{L}$ è caratterizzato da:
+
+| Simboli | Notazione | Descrizione |
+|---|---|---|
+| **Costanti** | $a,b,c,d,\ldots,h$ | lettere minuscole (non $x,w,y,z$) |
+| **Variabili** | $w,x,y,z,x_1,x_2,\ldots$ | ultime lettere minuscole + indicizzate |
+| **Predicati atomici** | $A,B,\ldots,Z$; $A(x)$, $B(x,y)$, ecc. | lettere MAIUSCOLE, con lista di variabili |
+
+I predicati atomici senza argomenti (es. $A$, $B$) coincidono con le **variabili proposizionali**.
+
+---
+
+## Termini
+
+Un **termine** è o una variabile o una costante:
+$$\text{Termini} = \{\text{costanti}: a,b,\ldots\} \cup \{\text{variabili}: x,y,z,x_1,\ldots\}$$
+
+---
+
+## Formule
+
+Una **formula** (= predicato) $\mathtt{fr}$ si costruisce per induzione:
+- Predicati atomici $P_k(t_1,\ldots,t_m)$ con termini $t_i$
+- $\forall x\,(\mathtt{fr})$ se $\mathtt{fr}$ è formula
+- $\exists x\,(\mathtt{fr})$ se $\mathtt{fr}$ è formula
+- $\perp$, $\mathtt{tt}$
+- $(\mathtt{fr}_1)\&(\mathtt{fr}_2)$, $(\mathtt{fr}_1)\lor(\mathtt{fr}_2)$, $(\mathtt{fr}_1)\to(\mathtt{fr}_2)$, $\neg(\mathtt{fr})$
+
+---
+
+## Priorità di legame in assenza di parentesi
+
+$$\neg,\,\forall,\,\exists \quad\text{legano più di}\quad \lor,\,\& \quad\text{che legano più di}\quad \to$$
+
+Esempi:
+- $\forall x\,A(x)\lor B$ = "($\forall x\,A(x)$) o $B$"
+- $\forall x\,(A(x)\lor B)$ = "tutti gli $x$ tali che ($A(x)$ o $B$)"
+
+---
+
+## Quantificatori
+
+### Quantificatore universale $\forall$
+
+$\forall x\,P(x)$ = "per ogni $x$ vale $P(x)$"
+
+$\forall x\,(P(x)\to Q(x))$ traduce: "tutti i $P$ sono $Q$", "ogni $P$ è $Q$", "chi è $P$ è pure $Q$", "soltanto i $Q$ sono $P$".
+
+### Quantificatore esistenziale $\exists$
+
+$\exists x\,P(x)$ = "esiste un $x$ per cui vale $P(x)$"
+
+$\exists x\,(P(x)\&Q(x))$ traduce: "c'è un $P$ che è $Q$", "qualche $P$ è $Q$".
+
+$\neg\exists x\,(P(x)\&Q(x))$ traduce: "nessun $P$ è $Q$".
+
+### Trucco per "soltanto/solo quelli che"
+Togliere "solo", tradurre con $\forall$ e $\to$, poi scambiare antecedente e conseguente.
+
+Esempio: "Solo quelli che hanno il biglietto salgono sull'aereo" → $\forall x\,(S(x)\to B(x))$.
+
+---
+
+## Variabili libere e vincolate
+
+La variabile $x$ è **vincolata** in $\forall x\,\mathtt{fr}$ e $\exists x\,\mathtt{fr}$; è **libera** altrimenti.
+
+**Definizione ricorsiva** dell'insieme $VL(\mathtt{fr})$ delle variabili libere:
+
+| Formula | $VL$ |
+|---|---|
+| $\perp$ | $\emptyset$ |
+| $P_k(t_1,\ldots,t_m)$ | $VL(t_1)\cup\cdots\cup VL(t_m)$ |
+| $\forall y\,(\mathtt{fr})$ | $VL(\mathtt{fr})\setminus\{y\}$ |
+| $\exists y\,(\mathtt{fr})$ | $VL(\mathtt{fr})\setminus\{y\}$ |
+| $\mathtt{fr}_1\,\square\,\mathtt{fr}_2$ (conn. bin.) | $VL(\mathtt{fr}_1)\cup VL(\mathtt{fr}_2)$ |
+| $\neg\mathtt{fr}$ | $VL(\mathtt{fr})$ |
+
+> **Regola importante:** le formule che traducono frasi in italiano sono **sempre senza variabili libere**!
+
+---
+
+## Esempi notevoli
+
+| Frase | Formalizzazione |
+|---|---|
+| Tutti sono mortali | $\forall x\,M(x)$ |
+| Qualche antenato di Mario è nobile | $\exists x\,(A(x,m)\&N(x))$ |
+| Solo chi ha il biglietto sale sull'aereo | $\forall x\,(S(x)\to B(x))$ |
+| Non si dà che nessun programma termini | $\neg\neg\exists x\,(P(x)\&T(x))$ |
+| Nessun programma con ciclo infinito termina | $\neg\exists x\,((P(x)\&\exists y\,C(x,y))\&T(x))$ |
+| Un programma senza cicli termina | $\forall x\,(P(x)\&\neg\exists y\,C(x,y)\to T(x))$ |
+
+---
+
+## Rilevanza del nome della variabile vincolata
+
+Il nome di una variabile **vincolata** è **irrilevante**: $\forall x\,A(x)$, $\forall y\,A(y)$, $\forall z\,A(z)$ sono tutte corrette formalizzazioni di "tutti sono $A$". Si può cambiare la variabile vincolata purché si usi una variabile **nuova** (non presente nella formula).
+
+Formalmente sono derivabili:
+$$\vdash\forall x\,\mathtt{fr}\leftrightarrow\forall z\,\mathtt{fr}[x/z] \qquad\vdash\exists x\,\mathtt{fr}\leftrightarrow\exists z\,\mathtt{fr}[x/z] \quad (z\text{ non compare in }\mathtt{fr})$$

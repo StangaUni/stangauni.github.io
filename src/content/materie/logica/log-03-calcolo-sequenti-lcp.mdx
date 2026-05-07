@@ -1,0 +1,151 @@
+---
+title: "Calcolo dei Sequenti Proposizionale LC_p"
+type: "riassunto"
+section: "Calcolo Proposizionale"
+excerpt: "Sequenti, assiomi, regole dei connettivi, alberi di derivazione, procedura di decisione e regole derivate."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Calcolo dei Sequenti Proposizionale LC_p
+
+Il **calcolo dei sequenti** $\text{LC}_p$ permette di classificare proposizioni in modo **automatico/robotizzabile**, senza costruire l'intera tabella di verità.
+
+---
+
+## Cos'è un sequente
+
+Un **sequente** $\Gamma\vdash\Delta$ (con $\Gamma$ e $\Delta$ liste anche vuote di proposizioni) rappresenta la proposizione:
+
+$$\Gamma^{\&}\to\Delta^{\lor}$$
+
+dove $\Gamma^{\&}$ è la congiunzione delle proposizioni in $\Gamma$ (= $\mathtt{tt}$ se vuota) e $\Delta^{\lor}$ è la disgiunzione di quelle in $\Delta$ (= $\perp$ se vuota).
+
+**Quattro casi particolari:**
+
+| Sequente | Significato |
+|---|---|
+| $\text{pr}_1,\ldots,\text{pr}_n\vdash\text{cl}_1,\ldots,\text{cl}_m$ | se tutti i $\text{pr}_i$ allora qualche $\text{cl}_j$ |
+| $\vdash\text{cl}_1,\ldots,\text{cl}_m$ | almeno una $\text{cl}_j$ è vera |
+| $\text{pr}_1,\ldots,\text{pr}_n\vdash$ | le premesse implicano $\perp$ (= $\neg(\text{pr}_1\&\ldots\&\text{pr}_n)$) |
+| $\vdash$ | $\perp$ è vera (impossibile) |
+
+Nota: $\vdash\text{pr}$ equivale ad affermare $\text{pr}$; $\text{pr}\vdash$ equivale ad affermare $\neg\text{pr}$.
+
+---
+
+## Regole del calcolo LC_p
+
+### Assiomi
+
+$$\text{ax-id}:\quad \Gamma,\text{pr},\Gamma'\vdash\Delta,\text{pr},\Delta'$$
+$$\text{ax-}\perp:\quad \Gamma,\perp,\Gamma'\vdash\nabla \qquad\qquad \text{ax-tt}:\quad \Gamma\vdash\nabla,\mathtt{tt},\nabla'$$
+
+### Regole strutturali (scambio)
+
+$$\frac{\Sigma,\Gamma,\Theta,\Gamma',\Delta\vdash\Sigma'}{\Sigma,\Gamma',\Theta,\Gamma,\Delta\vdash\Sigma'}\;\text{sc}_\text{sx} \qquad\qquad \frac{\Gamma\vdash\Sigma,\Delta,\Theta,\Delta',\nabla}{\Gamma\vdash\Sigma,\Delta',\Theta,\Delta,\nabla}\;\text{sc}_\text{dx}$$
+
+### Regole per i connettivi
+
+$$\frac{\Gamma\vdash A,\Delta\quad\Gamma\vdash B,\Delta}{\Gamma\vdash A\&B,\Delta}\;\&\text{-D} \qquad\qquad \frac{\Gamma,A,B\vdash\Delta}{\Gamma,A\&B\vdash\Delta}\;\&\text{-S}$$
+
+$$\frac{\Gamma\vdash A,B,\Delta}{\Gamma\vdash A\lor B,\Delta}\;\lor\text{-D} \qquad\qquad \frac{\Gamma,A\vdash\Delta\quad\Gamma,B\vdash\Delta}{\Gamma,A\lor B\vdash\Delta}\;\lor\text{-S}$$
+
+$$\frac{\Gamma,A\vdash\Delta}{\Gamma\vdash\neg A,\Delta}\;\neg\text{-D} \qquad\qquad \frac{\Gamma\vdash A,\Delta}{\Gamma,\neg A\vdash\Delta}\;\neg\text{-S}$$
+
+$$\frac{\Gamma,A\vdash B,\Delta}{\Gamma\vdash A\to B,\Delta}\;\to\text{-D} \qquad\qquad \frac{\Gamma\vdash A,\Delta\quad\Gamma,B\vdash\Delta}{\Gamma,A\to B\vdash\Delta}\;\to\text{-S}$$
+
+---
+
+## Alberi di derivazione
+
+Un **albero di derivazione** per $\Gamma\vdash\Delta$ è un albero con:
+- **radice**: $\Gamma\vdash\Delta$
+- **foglie**: istanze di assiomi
+- costruito applicando le regole del calcolo
+
+Un sequente $\Gamma\vdash\Delta$ è **derivabile** in $\text{LC}_p$ se è radice di un albero di derivazione.
+
+**Teorema fondamentale (completezza e correttezza):**
+$$\Gamma\vdash\Delta\text{ è \textbf{TAUTOLOGIA}} \iff \Gamma\vdash\Delta\text{ è \textbf{derivabile} in }\text{LC}_p$$
+
+Equivalentemente: $\text{pr}$ è tautologia sse $\vdash\text{pr}$ è derivabile in $\text{LC}_p$.
+
+---
+
+## Chiusura per sostituzione
+
+Se esiste una derivazione di $\Gamma\vdash\Delta$, allora esiste anche una derivazione di $\Gamma[A/\text{pr}]\vdash\Delta[A/\text{pr}]$ ottenuta sostituendo tutte le occorrenze di $A$ con la proposizione $\text{pr}$.
+
+---
+
+## Propagazione di verità e falsità
+
+Le regole di $\text{LC}_p$:
+- **Conservano la VERITÀ** $\Updownarrow$ lungo **tutti i rami** (dall'alto di tutte le foglie verso il basso e viceversa).
+- **Conservano la FALSITÀ** $\Updownarrow$ lungo **almeno un ramo** (non necessariamente tutti).
+
+---
+
+## Regole valide e sicure
+
+### Regola valida
+Una regola è **valida** se la verità delle premesse implica la verità della conclusione (la verità scende ↓ dall'alto verso il basso).
+
+- **Ad una premessa** $\dfrac{\Gamma_1\vdash\Delta_1}{\Gamma_2\vdash\Delta_2}$ è valida sse $(\Gamma_1^{\&}\to\Delta_1^{\lor})\to(\Gamma_2^{\&}\to\Delta_2^{\lor})$ è tautologia.
+
+- **A due premesse** $\dfrac{\Gamma_1\vdash\Delta_1\quad\Gamma_2\vdash\Delta_2}{\Gamma_3\vdash\Delta_3}$ è valida sse $(\Gamma_1^{\&}\to\Delta_1^{\lor})\&(\Gamma_2^{\&}\to\Delta_2^{\lor})\to(\Gamma_3^{\&}\to\Delta_3^{\lor})$ è tautologia.
+
+### Condizione scorciatoia-verità
+Per una regola ad una premessa: su ogni riga $r$, se $\Gamma_1^{\&}\to\Delta_1^{\lor}=1$ e $\Gamma_2^{\&}=1$ allora $\Delta_2^{\lor}=1$.
+
+### Regola sicura
+Una regola è **sicura** = valida + le sue inverse sono pure valide. Equivalentemente:
+
+- **Ad una premessa**: $(\Gamma_1^{\&}\to\Delta_1^{\lor})\leftrightarrow(\Gamma_2^{\&}\to\Delta_2^{\lor})$ è tautologia.
+- **A due premesse**: $(\Gamma_1^{\&}\to\Delta_1^{\lor})\&(\Gamma_2^{\&}\to\Delta_2^{\lor})\leftrightarrow(\Gamma_3^{\&}\to\Delta_3^{\lor})$ è tautologia.
+
+**Tutte le regole di $\text{LC}_p$ sono sicure** (equivalenze di implicazioni).
+
+> **Importante:** regole NON sicure (es. $\dfrac{\Gamma\vdash A}{\Gamma\vdash A\lor B}$) non preservano la falsità verso l'alto, quindi non si può usarle nella procedura di decisione.
+
+---
+
+## Procedura di decisione per $\text{LC}_p$
+
+Per classificare un sequente $\Gamma\vdash\Delta$:
+
+**Passo 1:** Costruire l'albero applicando le regole a tutte le formule composte (fermandosi agli assiomi).
+- Se tutte le foglie sono assiomi → $\Gamma\vdash\Delta$ è **TAUTOLOGIA**.
+- Se una foglia non è derivabile → $\Gamma\vdash\Delta$ **NON è tautologia** → vai al passo 2.
+
+**Passo 2:** Trovare una **riga falsaria** (una riga della tabella che manda a 0 il sequente):
+- Prendere una foglia non-assioma di sole variabili proposizionali.
+- Porre a 1 le variabili a sx del $\vdash$ e a 0 quelle a dx.
+→ Vai al passo 3.
+
+**Passo 3:** Derivare $\vdash\neg(\Gamma^{\&}\to\Delta^{\lor})$:
+- Se si deriva → $\Gamma\vdash\Delta$ è **PARADOSSO**.
+- Se non si deriva → $\Gamma\vdash\Delta$ è **OPINIONE** (applicare passo 2 alla negazione per trovare una riga che manda a 1).
+
+---
+
+## Regole derivate e assiomi derivati
+
+Una **regola derivata** abbrevia un pezzo di albero di derivazione con regole di $\text{LC}_p$.
+
+**Esempi:**
+$$\frac{\Gamma,A\vdash\Delta}{\Gamma,\neg\neg A\vdash\Delta}\;\neg\neg\text{-S} \qquad\qquad \frac{\Gamma\vdash A,\Delta}{\Gamma\vdash\neg\neg A,\Delta}\;\neg\neg\text{-D}$$
+
+**Assiomi derivati** (abbreviano sequenti con formule complementari):
+$$\neg\text{-ax}_{sx1}:\quad \Gamma,A,\Gamma',\neg A,\Gamma''\vdash\Sigma$$
+$$\neg\text{-ax}_{dx1}:\quad \Gamma\vdash\Sigma,A,\Sigma',\neg A,\Sigma''$$
+
+---
+
+## Regole di indebolimento (valide ma NON sicure)
+
+$$\frac{\Gamma_1,\Gamma_3\vdash\Delta}{\Gamma_1,\Gamma_2,\Gamma_3\vdash\Delta}\;\text{in}_\text{sx} \qquad\qquad \frac{\Gamma\vdash\Delta_1,\Delta_3}{\Gamma\vdash\Delta_1,\Delta_2,\Delta_3}\;\text{in}_\text{dx}$$
+
+Usarle solo quando si è sicuri di poter derivare il sequente.

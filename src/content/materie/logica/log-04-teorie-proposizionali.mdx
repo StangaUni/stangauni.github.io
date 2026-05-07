@@ -1,0 +1,115 @@
+---
+title: "Teorie Proposizionali"
+type: "riassunto"
+section: "Calcolo Proposizionale"
+excerpt: "Struttura di una teoria proposizionale, regola di composizione, derivabilità, teorie contraddittorie e paradosso del mentitore."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Teorie Proposizionali
+
+Una **teoria proposizionale** estende $\text{LC}_p$ con assiomi specifici.
+
+---
+
+## Struttura di una teoria proposizionale
+
+$$\mathcal{T} = \text{LC}_p + \text{Ax.1},\,\text{Ax.2},\,\ldots,\,\text{Ax.k} + \text{regola di composizione (comp)}$$
+
+**Regola di composizione:**
+
+$$\frac{\vdash\mathtt{fr}\qquad\Gamma,\mathtt{fr},\Gamma'\vdash\nabla}{\Gamma,\Gamma'\vdash\nabla}\;\text{comp}$$
+
+---
+
+## Derivabilità in una teoria
+
+Un sequente $\Gamma\vdash\Delta$ è **derivabile** nella teoria $\mathcal{T}$ se esiste un albero avente:
+1. $\Gamma\vdash\Delta$ come radice.
+2. Ogni foglia è istanza di un assioma di $\mathcal{T}$ (logico o extralogico).
+3. L'albero usa regole di $\text{LC}_p$ + regola comp.
+
+Una formula $\mathtt{fr}$ è **teorema di $\mathcal{T}$** se $\vdash\mathtt{fr}$ è derivabile in $\mathcal{T}$.
+
+**Equivalenza fondamentale:**
+
+$$\vdash\mathtt{pr}\text{ derivabile in }\mathcal{T} \iff \text{Ax.1},\ldots,\text{Ax.k}\vdash\mathtt{pr}\text{ derivabile in }\text{LC}_p$$
+
+Analogamente per un sequente generico:
+
+$$\Gamma\vdash\Delta\text{ derivabile in }\mathcal{T} \iff \text{Ax.1},\ldots,\text{Ax.k},\Gamma\vdash\Delta\text{ derivabile in }\text{LC}_p$$
+
+---
+
+## Due modi di usare la regola comp
+
+**I modo — comporre con assiomi:**
+
+$$\frac{\vdash\text{Ax.}i_1\qquad\dfrac{\vdash\text{Ax.}i_2\qquad\dfrac{\pi}{\text{Ax.}i_1,\text{Ax.}i_2\vdash\mathtt{fr}}}{\text{Ax.}i_1\vdash\mathtt{fr}}\;\text{comp}}{\vdash\mathtt{fr}}\;\text{comp}$$
+
+**II modo — usare teoremi già noti (la conoscenza si accumula):**
+
+$$\frac{\dfrac{\pi_1}{\vdash T_1}\qquad\dfrac{\pi_2}{T_1\vdash T_2}}{\vdash T_2}\;\text{comp}$$
+
+---
+
+## Proprietà fondamentali
+
+- Tutte le **tautologie classiche** sono teoremi di ogni teoria.
+- $\text{LC}_p$ è **NON contraddittorio**: non si può derivare $\vdash\perp$ (si possono fare solo scambi a vuoto).
+
+---
+
+## Teorie contraddittorie
+
+Una teoria con assiomi contraddittori (es. $\vdash A$ e $\vdash\neg A$) permette di derivare $\vdash\perp$, e quindi **ogni formula diventa un teorema**:
+
+$$\frac{\underbrace{\vdash\perp}_{\text{derivazione del falso}}\qquad\dfrac{\text{ax-}\perp}{\perp\vdash\mathtt{fr}}}{\vdash\mathtt{fr}}\;\text{comp}$$
+
+---
+
+## Esempio di teoria proposizionale: $T_{gi}$
+
+Assiomi extralogici (variabili: $G$=Giovanni, $B$=Beppe, $C$=Carla, $T$=Toni va in gita):
+
+| Affermazione | Formalizzazione |
+|---|---|
+| Giovanni va in gita se Carla non ci va | $\text{Ax.1}: \neg C\to G$ |
+| Beppe non va sse va Giovanni | $\text{Ax.2}: (\neg B\to G)\&(G\to\neg B)$ |
+| Beppe va se Carla non va | $\text{Ax.3}: \neg C\to B$ |
+| Toni va solo se va Carla | $\text{Ax.4}: T\to C$ |
+
+---
+
+## Risoluzione di test di logica con teorie
+
+### Test di Morgana e Celeste (le 5 amiche)
+
+Teoria $T_{Mor} = \text{Ax.3} + \text{LC}_p$ con $\text{Ax.3}: M\leftrightarrow\neg C$.
+
+La procedura per stabilire se 3, 2 o 4 dicono il vero riduce la questione a verificare la derivabilità di certi sequenti in $\text{LC}_p$.
+
+**Risultato:** Esattamente **3 amiche** dicono il vero (risposta d), perché:
+- $\text{Ax.3}\vdash M\&C$ **non** è derivabile (esclude risposta e e b).
+- $\text{Ax.3}\vdash M\lor C$ è derivabile (conferma risposta d).
+- La teoria è non contraddittoria (la riga falsaria di $\text{Ax.3}\vdash M$ rende vera $\text{Ax.3}$).
+
+**Lemma scorciatoia** per $\leftrightarrow$ (regola derivata sicura):
+
+$$\frac{\vdash\text{pr}_1,\text{pr}_2,\alpha\qquad\text{pr}_1,\text{pr}_2\vdash\alpha}{\text{pr}_1\leftrightarrow\text{pr}_2\vdash\alpha}\;\leftrightarrow\text{-S}$$
+
+$$\frac{\Gamma,\text{pr}_1\vdash\text{pr}_2,\Sigma\qquad\Gamma,\text{pr}_2\vdash\text{pr}_1,\Sigma}{\Gamma\vdash\text{pr}_1\leftrightarrow\text{pr}_2,\Sigma}\;\leftrightarrow\text{-D}$$
+
+---
+
+## Paradosso del mentitore
+
+Se Morgana afferma "io mento", si formalizza con $\text{Ax}_{Mor}: M\leftrightarrow\neg M$.
+
+Usando la regola $\leftrightarrow$-S:
+
+$$\frac{\dfrac{}{\vdash M,\neg M,\alpha}\;\neg\text{-ax}_{dx1}\qquad\dfrac{}{M,\neg M\vdash\alpha}\;\neg\text{-ax}_{sx1}}{M\leftrightarrow\neg M\vdash\alpha}\;\leftrightarrow\text{-S}$$
+
+Applicando con $\alpha=\perp$ si ottiene che $T_{Mor}$ è **contraddittoria**: l'affermazione di Morgana è un paradosso e non può essere né vera né falsa. In una teoria contraddittoria, ogni risposta e il suo contrario risultano ugualmente "corretti".

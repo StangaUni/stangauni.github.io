@@ -1,0 +1,92 @@
+---
+title: "Linguaggio Formale Proposizionale"
+type: "riassunto"
+section: "Calcolo Proposizionale"
+excerpt: "Alfabeto, grammatica delle proposizioni formali, convenzioni sulle parentesi e traduzione dei connettivi."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Linguaggio Formale Proposizionale
+
+Il linguaggio formale ha due livelli:
+1. **Linguaggio formale** (SINTASSI)
+2. **Metalinguaggio/linguaggio naturale** (SEMANTICA)
+
+---
+
+## Alfabeto
+
+Il linguaggio formale **proposizionale** ha questo alfabeto:
+
+- **Variabili proposizionali** (dette anche proposizioni atomiche): $A, B, C, \ldots, Z$
+- **Connettivo unario** — negazione: $\neg$
+- **Connettivi binari**: congiunzione $\&$, disgiunzione $\lor$, implicazione $\to$
+- **Parentesi**: `(` e `)`
+- **Costanti**: $\perp$ (falso), $\mathtt{tt}$ (vero)
+
+---
+
+## Grammatica delle proposizioni formali
+
+Le **proposizioni formali** `pr` si costruiscono come segue:
+
+1. Ogni variabile proposizionale è una proposizione **atomica**: `pr` $\equiv A$, $B$, ecc.
+2. Le proposizioni **composte** si ottengono da $\text{pr}_1$ e $\text{pr}_2$:
+   - $(\text{pr}_1)\&(\text{pr}_2)$ — "$\text{pr}_1$ e $\text{pr}_2$"
+   - $(\text{pr}_1)\lor(\text{pr}_2)$ — "$\text{pr}_1$ o $\text{pr}_2$"
+   - $(\text{pr}_1)\to(\text{pr}_2)$ — "se $\text{pr}_1$ allora $\text{pr}_2$"
+   - $\neg(\text{pr}_1)$ — "NON si dà il caso che $\text{pr}_1$"
+
+---
+
+## Convenzione sulle parentesi (priorità di legame)
+
+$$\neg \quad \text{lega più di} \quad \lor,\,\& \quad \text{che legano più di} \quad \to$$
+
+Si possono omettere le parentesi quando il connettivo più esterno lega *meno* di quelli immediatamente interni.
+
+| Scrittura con parentesi | Forma abbreviata |
+|---|---|
+| $(\neg A)\&B$ | $\neg A\&B$ |
+| $\neg(A\&B)$ | $\neg(A\&B)$ ← le parentesi restano! |
+| $(\neg A)\to(B\&C)$ | $\neg A\to B\&C$ |
+
+---
+
+## Cosa traduce ciascun connettivo
+
+### $\&$ (congiunzione)
+Traduce: "e", "ma", "però", "mentre", "perché", "quindi", "perciò".
+
+### $\lor$ (disgiunzione)
+Traduce: "o … o …" (disgiunzione inclusiva).
+
+### $\to$ (implicazione)
+Traduce: "se … allora …", "$\text{pr}_1$ solo se $\text{pr}_2$", "$\text{pr}_2$ se $\text{pr}_1$".
+
+**Trucco per "solo se":**
+1. Togliere "solo" e tradurre la frase → si ottiene $\text{pr}_1\to\text{pr}_2$.
+2. La traduzione con "solo se" è $\text{pr}_2\to\text{pr}_1$ (si scambia antecedente e conseguente).
+
+> *"Sono a Padova **solo se** sono in Italia"* → $P\to I$
+
+### Condizioni necessarie e sufficienti nell'implicazione $\text{Pr}_1\to\text{Pr}_2$
+
+| $\text{Pr}_1$ (antecedente) | $\text{Pr}_2$ (conseguente) |
+|---|---|
+| condizione **SUFFICIENTE** affinché valga $\text{Pr}_2$ | condizione **NECESSARIA** affinché valga $\text{Pr}_1$ |
+
+### $\leftrightarrow$ (equivalenza — abbreviazione)
+$$\text{pr}_1\leftrightarrow\text{pr}_2 \;\equiv\; (\text{pr}_1\to\text{pr}_2)\&(\text{pr}_2\to\text{pr}_1)$$
+
+Traduce: "se e solo se", "è equivalente a".
+
+---
+
+## Note sull'uso di "solo se" in matematica
+
+In enunciati matematici e scientifici, "*solo se*" **non** sottintende "*se e solo se*":
+
+- "*Vale il teorema 1 **solo se** vale il teorema 2*" significa: "se vale T1 allora necessariamente vale T2" (cioè T1 è condizione sufficiente per T2).

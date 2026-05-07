@@ -1,0 +1,150 @@
+---
+title: "Semantica Predicativa e Modelli"
+type: "riassunto"
+section: "Calcolo Predicativo"
+excerpt: "Modelli, dominio, interpretazione, verità di una formula, testimoni e falsari, classificazione degli enunciati e tautologie controintuitive."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Semantica Predicativa e Modelli
+
+La semantica predicativa sostituisce le righe di una tabella di verità con i **modelli**: strutture matematiche che assegnano un significato concreto ai simboli del linguaggio.
+
+---
+
+## Confronto con la semantica proposizionale
+
+| | Proposizionale | Predicativa |
+|---|---|---|
+| Variabili | $A,B,C,\ldots$ | $A(x),B(y),C(x,y),\ldots$ |
+| Verità globale | tabella di verità | insieme di tutti i modelli |
+| Verità locale | riga della tabella | un singolo modello |
+
+---
+
+## Definizione di modello
+
+Dato un linguaggio predicativo $\mathcal{L}$ con costanti $c_j$ e predicati atomici $P_k(x_1,\ldots,x_n)$, un **modello** $\mathcal{D}$ per $\mathcal{L}$ è dato da:
+
+- un **dominio** $D$ (insieme non vuoto)
+- un'**interpretazione** di ogni costante come elemento di $D$:
+$$c_j\;\leadsto\;c_j^D\in D$$
+- un'**interpretazione** di ogni predicato atomico come funzione:
+$$P_k(x_1,\ldots,x_n)\;\leadsto\;P_k^D(-,\ldots,-):D^n\to\{0,1\}$$
+
+L'**uguaglianza** ha interpretazione fissa in ogni modello:
+$$(x=y)^D(d_1,d_2)\equiv\begin{cases}1&\text{se }d_1=d_2\\0&\text{se }d_1\neq d_2\end{cases}$$
+
+---
+
+## Interpretazione delle formule in un modello
+
+L'interpretazione di una formula $\mathtt{fr}(x_1,\ldots,x_n)$ in un modello con dominio $D$ è una funzione $\mathtt{fr}^D(-,\ldots,-):D^n\to\{0,1\}$, definita per induzione:
+
+| Formula | Interpretazione |
+|---|---|
+| $\neg\mathtt{fr}_1$ | $1-\mathtt{fr}_1^D$ |
+| $\mathtt{fr}_1\&\mathtt{fr}_2$ | $\min(\mathtt{fr}_1^D,\mathtt{fr}_2^D)$ (1 sse entrambe 1) |
+| $\mathtt{fr}_1\lor\mathtt{fr}_2$ | $\max(\mathtt{fr}_1^D,\mathtt{fr}_2^D)$ (1 sse almeno una 1) |
+| $\mathtt{fr}_1\to\mathtt{fr}_2$ | $1$ sse $\mathtt{fr}_1^D=0$ oppure $\mathtt{fr}_2^D=1$ |
+| $\forall x_n\,\mathtt{fr}(x_1,\ldots,x_n)$ | $(d_1,\ldots,d_{n-1})\mapsto 1$ sse $\mathtt{fr}^D(d_1,\ldots,d_{n-1},d)=1$ per ogni $d\in D$ |
+| $\exists x_n\,\mathtt{fr}(x_1,\ldots,x_n)$ | $(d_1,\ldots,d_{n-1})\mapsto 1$ sse esiste $d\in D$ con $\mathtt{fr}^D(d_1,\ldots,d_{n-1},d)=1$ |
+| $\mathtt{fr}(c)$ con costante | $(\mathtt{fr}(x))^D(c^D)$ |
+
+---
+
+## Verità di una formula in un modello
+
+Una formula $\mathtt{fr}(y_1,\ldots,y_n)$ è **vera** nel modello $\mathcal{D}$ se e solo se per ogni $(d_1,\ldots,d_n)\in D^n$ vale $\mathtt{fr}^D(d_1,\ldots,d_n)=1$, cioè se $(\forall y_1\cdots\forall y_n\,\mathtt{fr})^D=1$.
+
+---
+
+## Testimoni e falsari
+
+| Termine | Definizione |
+|---|---|
+| **testimone** | elemento $d\in D$ tale che $\mathtt{fr}(x)^D(d)=1$; rende vera $\exists x\,\mathtt{fr}(x)$ |
+| **falsario** | elemento $d_f\in D$ tale che $\mathtt{fr}(x)^D(d_f)=0$; rende falsa $\forall x\,\mathtt{fr}(x)$ |
+
+$\exists x\,\mathtt{fr}(x)$ è falsa $\iff$ **tutti** gli elementi di $D$ sono falsari.
+
+---
+
+## Classificazione degli enunciati
+
+| | Tautologia | Opinione | Contraddizione/Paradosso |
+|---|---|---|---|
+| | vera in **ogni** modello | falsa in un **contromodello** $D_{no}$ | falsa in **ogni** modello |
+| | | vera in un modello $D_{yes}$ | |
+
+**Teorema fondamentale:** $\mathtt{fr}$ è tautologia $\iff$ $\vdash\mathtt{fr}$ è derivabile in $\mathrm{LC}_{=}$.
+
+---
+
+## Procedura di classificazione in LC=
+
+**Passo 1:** Provare a derivare $\Gamma\vdash\Delta$ in $\mathrm{LC}_{=}$ secondo il vademecum.
+- Se si deriva $\Rightarrow$ **TAUTOLOGIA**.
+- Se non riesci, vai al passo 2.
+
+**Passo 2:** Costruire un **contromodello** dalla foglia non derivabile $\Rightarrow$ **NON tautologia**. Vai al passo 3.
+
+**Passo 3:** Provare a derivare $\vdash\neg(\Gamma^\&\to\Delta^\lor)$.
+- Se si deriva $\Rightarrow$ **PARADOSSO**.
+- Se non si deriva, costruire un contromodello di $\vdash\neg(\Gamma^\&\to\Delta^\lor)$ (= modello di $\Gamma\vdash\Delta$) $\Rightarrow$ **OPINIONE**.
+
+---
+
+## Esempio: $\forall x\,\forall y\,x=y$ è un'OPINIONE
+
+**Contromodello** (rende la formula falsa): $D_1=\{\text{Topolino},\text{Minni}\}$; due elementi diversi rendono $(w=z)^{D_1}=0$.
+
+**Modello** (rende la formula vera): $D_2=\{\text{Minni}\}$; con un solo elemento $(\forall x\,\forall y\,x=y)^{D_2}=1$.
+
+---
+
+## Paradosso dell'uguaglianza: $\forall x\,\forall y\,\neg x=y$
+
+La traduzione *letterale* di "siamo tutti diversi" con $\forall x\,\forall y\,\neg x=y$ è un **PARADOSSO** in $\mathrm{LC}_{=}$. Si dimostra derivando $\vdash\neg\forall x\,\forall y\,\neg x=y$ in $\mathrm{LC}_{=}$:
+
+$$\dfrac{
+  \dfrac{
+    \dfrac{
+      \dfrac{}{\forall x\,\forall y\,\neg x=y,\;\forall y\,\neg z=y \vdash z=z}\;{=\!\text{-ax}}
+    }{\forall x\,\forall y\,\neg x=y,\;\forall y\,\neg z=y,\;\neg z=z \vdash}\;\neg\!\text{-S}
+  }{\forall x\,\forall y\,\neg x=y,\;\forall y\,\neg z=y \vdash}\;\forall\!\text{-S}
+}{\forall x\,\forall y\,\neg x=y \vdash}\;\forall\!\text{-S}
+\qquad\Longrightarrow\qquad
+\dfrac{\forall x\,\forall y\,\neg x=y \vdash}{\vdash\neg\forall x\,\forall y\,\neg x=y}\;\neg\!\text{-D}$$
+
+**Corretta traduzione:** $\forall x\,\forall y\,(\neg x=y \to \neg x=y)$ è invece una **TAUTOLOGIA** ovvia (è un'istanza di $A\to A$), derivabile in $\mathrm{LC}_{=}$ con una sola applicazione di $\to$-D e ax-id.
+
+> La stessa frase in linguaggio naturale può tradursi in un paradosso o in una tautologia a seconda della formalizzazione scelta: la precisione nella traduzione è essenziale.
+
+---
+
+## Tautologia controintuitiva: $\exists x\,(R(x)\to\forall y\,R(y))$
+
+Questa formula — "c'è qualcuno tale che se lui riceve una Ferrari allora tutti la ricevono" — è una **TAUTOLOGIA**. Spiegazione:
+
+Poiché $R(x)\to\forall y\,R(y)\;\equiv\;\neg R(x)\lor\forall y\,R(y)$, la formula è equivalente a:
+$$\exists x\,(\neg R(x)\lor\forall y\,R(y))\;\equiv\;\exists x\,\neg R(x)\;\lor\;\forall y\,R(y)$$
+(l'$\exists$ si distribuisce perché $\forall y\,R(y)$ non contiene $x$ libera).
+
+Quest'ultima è una tautologia classica: in ogni modello, o $\forall y\,R(y)=1$ (e ogni elemento è testimone) oppure $\forall y\,R(y)=0$ e allora esiste un falsario $d_f$ per cui $R(x)^D(d_f)=0$, cioè $\neg R(d_f)=1$ e $d_f$ è testimone.
+
+> **Attenzione:** $\exists x\,R(x)\to\forall x\,R(x)$ ("se qualcuno riceve allora tutti ricevono") è invece un'**OPINIONE** (ha contromodello con due elementi, uno che riceve e uno no).
+
+---
+
+## Esempio: Topolino e Minni
+
+Con $A(x)=$"$x$ è femmina", $t=$Topolino, $m=$Minni:
+
+| Modello $D_1$ | $A(x)^{D_1}(d)=1$ sse $d$ è femmina | $t^{D_1}=$Topolino, $m^{D_1}=$Minni |
+|---|---|---|
+| | $(A(m)\&\neg A(t))^{D_1}=1$ | modello di $A(m)\&\neg A(t)$ |
+
+Cambiando interpretazione di $A(x)$ o delle costanti si ottengono modelli diversi con valori di verità diversi, mostrando che $A(m)\&\neg A(t)$ è un'**opinione**.

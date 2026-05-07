@@ -1,0 +1,143 @@
+---
+title: "Semantica Proposizionale e Tabelle di Verità"
+type: "riassunto"
+section: "Calcolo Proposizionale"
+excerpt: "Tabelle di verità dei connettivi, classificazione (tautologia/opinione/paradosso), equivalenza logica e tautologie notevoli."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Semantica Proposizionale e Tabelle di Verità
+
+La logica studia la verità delle proposizioni **soltanto in base alla loro forma logica**. Lo strumento fondamentale è la **tabella di verità** (Frege, Post, Russell, Wittgenstein).
+
+---
+
+## Tabelle di verità dei connettivi
+
+Ad ogni proposizione $\text{conn}(V_1,\ldots,V_n)$ si associa una funzione $\{0,1\}^n\to\{0,1\}$.
+
+### Negazione $\neg$
+$\neg A$ è vero sse $A$ è falso.
+
+| $A$ | $\neg A$ |
+|---|---|
+| 0 | 1 |
+| 1 | 0 |
+
+### Congiunzione $\&$
+$A\&B$ è vero sse entrambi sono veri.
+
+| $A$ | $B$ | $A\&B$ |
+|---|---|---|
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+### Disgiunzione $\lor$
+$A\lor B$ è vero sse almeno uno è vero.
+
+| $A$ | $B$ | $A\lor B$ |
+|---|---|---|
+| 0 | 0 | 0 |
+| 0 | 1 | 1 |
+| 1 | 0 | 1 |
+| 1 | 1 | 1 |
+
+### Implicazione $\to$
+$A\to B$ è vero sse $\neg A\lor B$ è vero (è falso solo quando $A=1$ e $B=0$).
+
+| $A$ | $B$ | $A\to B$ |
+|---|---|---|
+| 0 | 0 | 1 |
+| 0 | 1 | 1 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+> **L'implicazione classica è una DISGIUNZIONE**: $\text{pr}_1\to\text{pr}_2 \equiv \neg(\text{pr}_1)\lor(\text{pr}_2)$
+
+### Equivalenza $\leftrightarrow$
+$(A\to B)\&(B\to A)$: vero sse $A$ e $B$ hanno lo stesso valore.
+
+| $A$ | $B$ | $A\leftrightarrow B$ |
+|---|---|---|
+| 0 | 0 | 1 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+### Costanti
+| $\perp$ | $\mathtt{tt}$ |
+|---|---|
+| 0 | 1 |
+
+Tautologie utili: $(\mathtt{tt}\to\text{pr})\leftrightarrow\text{pr}$ e $(\text{pr}\to\perp)\leftrightarrow\neg\text{pr}$.
+
+---
+
+## Classificazione in logica classica
+
+| `pr` **TAUTOLOGIA** | `pr` **OPINIONE** | `pr` **PARADOSSO** |
+|---|---|---|
+| tutte le uscite = 1 | almeno una uscita 1 e una uscita 0 | tutte le uscite = 0 |
+
+**Relazione tra `pr` e `¬pr`:**
+
+| `pr` | sse | $\neg$`pr` |
+|---|---|---|
+| TAUTOLOGIA | | PARADOSSO |
+| PARADOSSO | | TAUTOLOGIA |
+| OPINIONE | | OPINIONE |
+
+**Procedura automatica per classificare `pr`:**
+1. Verifica se `pr` è tautologia (tramite tabella o derivazione).
+2. Se no, verifica se $\neg$`pr` è tautologia → allora `pr` è paradosso.
+3. Se no, `pr` è opinione.
+
+---
+
+## Equivalenza logica
+
+Due proposizioni $\text{pr}_1$ e $\text{pr}_2$ sono **equivalenti** se hanno la stessa tabella di verità.
+
+**Teorema:** $\text{pr}_1$ e $\text{pr}_2$ hanno la stessa tabella sse $\text{pr}_1\leftrightarrow\text{pr}_2$ è una **tautologia**.
+
+**Nota:** proposizioni equivalenti NON sono la stessa proposizione sintatticamente (es. $\neg A$ e $A\to\perp$ sono equivalenti ma diverse).
+
+---
+
+## Alcune tautologie classiche notevoli
+
+| Nome | Tautologia |
+|---|---|
+| Essenza $\to$ | $(A\to B)\leftrightarrow\neg A\lor B$ |
+| Associatività $\lor$ | $(A\lor B)\lor C\leftrightarrow A\lor(B\lor C)$ |
+| Associatività $\&$ | $(A\&B)\&C\leftrightarrow A\&(B\&C)$ |
+| Commutatività $\lor$ | $A\lor B\leftrightarrow B\lor A$ |
+| Commutatività $\&$ | $A\&B\leftrightarrow B\&A$ |
+| Distributività $\lor$ su $\&$ | $A\lor(B\&C)\leftrightarrow(A\lor B)\&(A\lor C)$ |
+| Distributività $\&$ su $\lor$ | $A\&(B\lor C)\leftrightarrow(A\&B)\lor(A\&C)$ |
+| Idempotenza $\lor$ | $A\lor A\leftrightarrow A$ |
+| Idempotenza $\&$ | $A\&A\leftrightarrow A$ |
+| De Morgan | $\neg(B\lor C)\leftrightarrow\neg B\&\neg C$ |
+| De Morgan | $\neg(B\&C)\leftrightarrow\neg B\lor\neg C$ |
+| Doppia negazione | $\neg\neg A\leftrightarrow A$ |
+| Non contraddizione | $\neg(A\&\neg A)$ |
+| Terzo escluso | $A\lor\neg A$ |
+| Tautologia controintuitiva | $(A\to B)\lor(B\to A)$ |
+
+> **Esempio controintuitivo:** $(A\to B)\lor(B\to A)$ è sempre vera perché equivale a $(\neg A\lor B)\lor(\neg B\lor A)$, che è ovviamente vera.
+
+---
+
+## Paradosso del barbiere di Russell
+
+"Nel villaggio di Cantù c'è un barbiere **RAD** che rade tutti e soli i barbieri che non si radono da soli."
+
+Se RAD esistesse, si otterrebbe la proprietà $(***)$: "RAD si rade sse RAD NON si rade" → $A\leftrightarrow\neg A$ — contraddizione in entrambi i casi. Dunque RAD non può esistere.
+
+La forma logica alla base: $A\leftrightarrow\neg A$ è il principale esempio di **paradosso proposizionale**.
+
+Formalmente: dalla verità di $\mathcal{R}$ (esistenza di RAD) segue $\mathcal{R}\to\perp$, che equivale a $\neg\mathcal{R}$.
