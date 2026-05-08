@@ -1,0 +1,118 @@
+---
+title: "Limiti di Funzioni"
+type: "riassunto"
+section: "Calcolo"
+excerpt: "Topologia di ℝ, definizione epsilon-delta di limite, limiti laterali, teoremi fondamentali, limiti notevoli e gerarchia di infiniti."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Limiti di Funzioni
+
+## Topologia di $\mathbb{R}$: intorni
+
+**Intorno** di $x_0 \in \mathbb{R}$: qualsiasi intervallo aperto contenente $x_0$. In particolare, l'**intorno circolare** di centro $x_0$ e raggio $\delta > 0$ è:
+$$I_\delta(x_0) = ]x_0 - \delta,\, x_0 + \delta[ = \{x \in \mathbb{R} : |x - x_0| < \delta\}$$
+
+**Proprietà di separazione.** Se $x_1 \neq x_2$, esistono intorni disgiunti $U$ di $x_1$ e $V$ di $x_2$.
+
+**Punto di accumulazione.** $x_0$ è un **punto di accumulazione** di $A \subseteq \mathbb{R}$ se ogni intorno di $x_0$ contiene almeno un punto di $A$ diverso da $x_0$:
+$$\forall\, \delta > 0,\ \exists\, x \in A : 0 < |x - x_0| < \delta$$
+
+**"Definitivamente".** Una proprietà vale *definitivamente* per $x \to x_0$ se vale in un intorno bucato di $x_0$.
+
+---
+
+## Definizione di limite
+
+Sia $f: A \to \mathbb{R}$ e $x_0$ punto di accumulazione di $A$. Si scrive:
+$$\lim_{x \to x_0} f(x) = l \in \mathbb{R}$$
+
+se:
+$$\forall\, \varepsilon > 0\ \exists\, \delta > 0 : 0 < |x - x_0| < \delta \Rightarrow |f(x) - l| < \varepsilon$$
+
+**Limite a $\pm\infty$ (valore):**
+$$\lim_{x \to x_0} f(x) = +\infty \iff \forall\, M > 0\ \exists\, \delta > 0 : 0 < |x-x_0| < \delta \Rightarrow f(x) > M$$
+
+**Limite in $x_0 = \pm\infty$:**
+$$\lim_{x \to +\infty} f(x) = l \iff \forall\, \varepsilon > 0\ \exists\, K : x > K \Rightarrow |f(x) - l| < \varepsilon$$
+
+**Teorema di unicità.** Se il limite esiste, è unico.
+
+---
+
+## Limiti laterali
+
+$$\lim_{x \to x_0^+} f(x) = l \iff \forall\, \varepsilon > 0\ \exists\, \delta > 0 : 0 < x - x_0 < \delta \Rightarrow |f(x) - l| < \varepsilon$$
+
+Analogamente per $x \to x_0^-$.
+
+**Teorema.** $\displaystyle\lim_{x \to x_0} f(x) = l \iff \lim_{x \to x_0^+} f(x) = \lim_{x \to x_0^-} f(x) = l$.
+
+---
+
+## Teoremi fondamentali sui limiti
+
+**Permanenza del segno.** Se $\lim_{x \to x_0} f(x) = l \neq 0$, allora $f(x)$ ha lo stesso segno di $l$ definitivamente.
+
+**Teorema del confronto.** Se $f(x) \leq g(x)$ definitivamente e $\lim f = l$, $\lim g = m$, allora $l \leq m$.
+
+**Teorema dei carabinieri.** Se $f(x) \leq g(x) \leq h(x)$ definitivamente e $\lim f = \lim h = l$, allora $\lim g = l$.
+
+---
+
+## Algebra dei limiti
+
+Se $\lim_{x \to x_0} f(x) = l$ e $\lim_{x \to x_0} g(x) = m$ (finiti):
+- $\lim(f \pm g) = l \pm m$
+- $\lim(f \cdot g) = l \cdot m$
+- $\lim(f/g) = l/m$ (se $m \neq 0$)
+- $\lim |f| = |l|$
+- Se $l > 0$: $\lim f^\alpha = l^\alpha$
+
+**Infinitesimo $\times$ limitata.** Se $f(x) \to 0$ e $g$ è limitata, allora $f(x)g(x) \to 0$.
+
+---
+
+## Limiti notevoli
+
+$$\lim_{x \to 0} \frac{\sin x}{x} = 1, \qquad \lim_{x \to 0} \frac{1-\cos x}{x^2} = \frac{1}{2}$$
+
+$$\lim_{x \to 0} \frac{e^x - 1}{x} = 1, \qquad \lim_{x \to 0} \frac{\ln(1+x)}{x} = 1$$
+
+$$\lim_{x \to 0} \frac{(1+x)^\alpha - 1}{x} = \alpha \quad (\alpha \in \mathbb{R})$$
+
+$$\lim_{x \to +\infty} \left(1 + \frac{1}{x}\right)^x = e, \qquad \lim_{x \to 0} (1+x)^{1/x} = e$$
+
+$$\lim_{x \to +\infty} \left(1 + \frac{\alpha}{x}\right)^x = e^\alpha \quad (\alpha \in \mathbb{R})$$
+
+**Per funzioni monotone.** Una funzione monotona su un intervallo ammette limiti laterali finiti o infiniti in ogni punto.
+
+---
+
+## Forme indeterminate
+
+Le seguenti espressioni richiedono analisi più approfondita:
+$$\frac{0}{0}, \quad \frac{\infty}{\infty}, \quad 0 \cdot \infty, \quad \infty - \infty, \quad 0^0, \quad 1^\infty, \quad \infty^0$$
+
+---
+
+## Gerarchia di infiniti (per $x \to +\infty$)
+
+$$e^x \gg x^\alpha \gg \ln x \qquad (\alpha > 0)$$
+
+Più precisamente:
+$$\lim_{x \to +\infty} \frac{e^x}{x^\alpha} = +\infty, \qquad \lim_{x \to +\infty} \frac{x^\alpha}{\ln x} = +\infty$$
+
+Per $x \to 0^+$: $\ln x \to -\infty$ più lentamente di ogni $x^{-\alpha}$ ($\alpha > 0$).
+
+---
+
+## Limiti di polinomi e funzioni razionali
+
+Per $x \to +\infty$, un polinomio $p(x) = a_n x^n + \cdots + a_0$ con $a_n \neq 0$:
+$$p(x) \sim a_n x^n$$
+
+Per una funzione razionale $r(x) = p(x)/q(x)$ con $\deg p = n$, $\deg q = m$:
+$$\lim_{x \to +\infty} r(x) = \begin{cases} 0 & n < m \\ \text{rapporto coeff. dominanti} & n = m \\ \pm\infty & n > m \end{cases}$$

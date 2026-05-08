@@ -1,0 +1,114 @@
+---
+title: "Calcolo Vettoriale e Funzioni di Più Variabili"
+type: "riassunto"
+section: "Calcolo Vettoriale"
+excerpt: "Spazio ℝⁿ, norma euclidea, topologia in ℝⁿ, limiti e continuità in più variabili, derivate parziali, gradiente e differenziabilità."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Calcolo Vettoriale e Funzioni di Più Variabili
+
+## Lo spazio $\mathbb{R}^n$
+
+$$\mathbb{R}^n = \underbrace{\mathbb{R} \times \cdots \times \mathbb{R}}_{n \text{ volte}}$$
+
+Gli elementi $\mathbf{x} = (x_1, \ldots, x_n) \in \mathbb{R}^n$ si chiamano **vettori**. Le componenti $x_i \in \mathbb{R}$.
+
+---
+
+## Norma euclidea
+
+$$\|\mathbf{x}\| = \sqrt{x_1^2 + x_2^2 + \cdots + x_n^2}$$
+
+**Proprietà:**
+- $\|\mathbf{x}\| \geq 0$, con $\|\mathbf{x}\| = 0 \iff \mathbf{x} = \mathbf{0}$
+- $\|c\mathbf{x}\| = |c|\,\|\mathbf{x}\|$
+- $\|\mathbf{x} + \mathbf{y}\| \leq \|\mathbf{x}\| + \|\mathbf{y}\|$ (disuguaglianza triangolare)
+
+**Distanza:**
+$$\|\mathbf{x} - \mathbf{y}\| = \sqrt{(x_1-y_1)^2 + \cdots + (x_n-y_n)^2}$$
+
+---
+
+## Topologia di $\mathbb{R}^n$
+
+**Palla aperta (intorno sferico)** di centro $\mathbf{x}_0$ e raggio $r > 0$:
+$$B_r(\mathbf{x}_0) = \{\mathbf{x} \in \mathbb{R}^n : \|\mathbf{x} - \mathbf{x}_0\| < r\}$$
+
+Per $n=1$: $B_r(x_0) = ]x_0-r, x_0+r[$.
+
+**Insieme aperto.** $A \subseteq \mathbb{R}^n$ è **aperto** se:
+$$\forall\, \mathbf{x}_0 \in A\ \exists\, r > 0 : B_r(\mathbf{x}_0) \subseteq A$$
+
+**Insieme chiuso.** $C \subseteq \mathbb{R}^n$ è **chiuso** se $\mathbb{R}^n \setminus C$ è aperto.
+
+---
+
+## Funzioni $f: \mathbb{R}^n \to \mathbb{R}^m$
+
+Esempi di interesse fisico:
+- $f: \mathbb{R} \to \mathbb{R}^3$, $t \mapsto (\sin t, \cos t, t^2)$ (curva parametrica)
+- $f: \mathbb{R}^3 \to \mathbb{R}$, $(x,y,z) \mapsto xy + z^2$ (campo scalare)
+- $f: \mathbb{R}^3 \to \mathbb{R}^3$ (campo vettoriale)
+
+---
+
+## Limiti e continuità in $\mathbb{R}^n$
+
+### Successioni in $\mathbb{R}^n$
+
+$\mathbf{x}_k \to \mathbf{x}_0$ in $\mathbb{R}^n$ per $k \to +\infty$ se:
+$$\|\mathbf{x}_k - \mathbf{x}_0\| \to 0$$
+
+Equivalentemente: ogni componente $x_{k,i} \to x_{0,i}$ in $\mathbb{R}$.
+
+### Limite di funzione
+
+Sia $f: A \subseteq \mathbb{R}^n \to \mathbb{R}$ definita in un intorno di $\mathbf{x}_0$ (escluso $\mathbf{x}_0$):
+
+$$\lim_{\mathbf{x} \to \mathbf{x}_0} f(\mathbf{x}) = l \iff \forall\, \varepsilon > 0\ \exists\, \delta > 0 : 0 < \|\mathbf{x}-\mathbf{x}_0\| < \delta \Rightarrow |f(\mathbf{x}) - l| < \varepsilon$$
+
+**Difficoltà in più variabili.** Il limite deve essere lo stesso per *tutte* le direzioni di avvicinamento a $\mathbf{x}_0$. Per escludere l'esistenza del limite, è sufficiente trovare due percorsi che diano valori diversi.
+
+### Continuità
+
+$f$ è **continua** in $\mathbf{x}_0$ se $\displaystyle\lim_{\mathbf{x} \to \mathbf{x}_0} f(\mathbf{x}) = f(\mathbf{x}_0)$.
+
+---
+
+## Derivate parziali
+
+Sia $f: A \subseteq \mathbb{R}^n \to \mathbb{R}$ e $\mathbf{x}_0 \in A$.
+
+**Versori standard:**
+$$e_i = (0, \ldots, 0, \underbrace{1}_{i\text{-esima posizione}}, 0, \ldots, 0)$$
+
+**Derivata parziale** rispetto a $x_i$:
+$$\frac{\partial f}{\partial x_i}(\mathbf{x}_0) = \lim_{t \to 0} \frac{f(\mathbf{x}_0 + t\,e_i) - f(\mathbf{x}_0)}{t}$$
+
+Geometricamente: è la derivata di $f$ lungo la direzione dell'asse $x_i$, fissando tutte le altre variabili.
+
+**Notazioni:** $\partial_{x_i} f(\mathbf{x}_0)$, $f_{x_i}(\mathbf{x}_0)$, $\dfrac{\partial f}{\partial x_i}(\mathbf{x}_0)$.
+
+**Calcolo pratico.** Per calcolare $\partial f/\partial x_i$, si deriva rispetto a $x_i$ trattando tutte le altre variabili come costanti.
+
+---
+
+## Gradiente
+
+Il **gradiente** di $f$ in $\mathbf{x}_0$ è il vettore di tutte le derivate parziali:
+$$\nabla f(\mathbf{x}_0) = \left(\frac{\partial f}{\partial x_1}(\mathbf{x}_0),\, \frac{\partial f}{\partial x_2}(\mathbf{x}_0),\, \ldots,\, \frac{\partial f}{\partial x_n}(\mathbf{x}_0)\right)$$
+
+---
+
+## Differenziabilità
+
+Il **prodotto scalare** di $\mathbf{a}, \mathbf{b} \in \mathbb{R}^n$ è:
+$$\langle \mathbf{a}, \mathbf{b} \rangle = \sum_{i=1}^n a_i b_i$$
+
+$f$ è **differenziabile** in $\mathbf{x}_0$ se:
+$$\lim_{\|\mathbf{h}\| \to 0} \frac{f(\mathbf{x}_0 + \mathbf{h}) - f(\mathbf{x}_0) - \langle \nabla f(\mathbf{x}_0),\, \mathbf{h} \rangle}{\|\mathbf{h}\|} = 0$$
+
+Ossia, $f$ è approssimata linearmente da $f(\mathbf{x}_0) + \langle \nabla f(\mathbf{x}_0), \mathbf{h} \rangle$ con un errore $o(\|\mathbf{h}\|)$.

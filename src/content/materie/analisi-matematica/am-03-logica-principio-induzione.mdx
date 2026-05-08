@@ -1,0 +1,114 @@
+---
+title: "Logica e Principio di Induzione"
+type: "riassunto"
+section: "Fondamenti"
+excerpt: "Logica proposizionale, predicati e quantificatori, principio di induzione nelle due forme, coefficienti binomiali e binomio di Newton."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Logica e Principio di Induzione
+
+## Logica proposizionale
+
+Una **proposizione** è un enunciato che è vero (V) o falso (F).
+
+**Connettivi logici:**
+
+| Simbolo | Nome | Significato |
+|---------|------|-------------|
+| $\neg P$ | negazione | "non $P$" |
+| $P \land Q$ | congiunzione | "$P$ e $Q$" |
+| $P \lor Q$ | disgiunzione | "$P$ o $Q$" |
+| $P \Rightarrow Q$ | implicazione | "se $P$ allora $Q$" |
+| $P \iff Q$ | doppia implicazione | "$P$ se e solo se $Q$" |
+
+**Leggi di De Morgan:**
+$$\neg(P \land Q) \equiv \neg P \lor \neg Q$$
+$$\neg(P \lor Q) \equiv \neg P \land \neg Q$$
+
+**Contronominale.** $P \Rightarrow Q \equiv \neg Q \Rightarrow \neg P$.
+
+---
+
+## Predicati e quantificatori
+
+Un **predicato** $P(x)$ è un enunciato che dipende da una variabile $x$ in un dominio $D$.
+
+- $\forall\, x \in D,\ P(x)$: "$P(x)$ vale per ogni $x \in D$"
+- $\exists\, x \in D : P(x)$: "esiste almeno un $x \in D$ tale che $P(x)$"
+- $\exists!\, x \in D : P(x)$: "esiste un unico $x \in D$ tale che $P(x)$"
+
+**Negazione dei quantificatori:**
+$$\neg\bigl(\forall\, x \in D,\ P(x)\bigr) \equiv \exists\, x \in D : \neg P(x)$$
+$$\neg\bigl(\exists\, x \in D : P(x)\bigr) \equiv \forall\, x \in D,\ \neg P(x)$$
+
+---
+
+## Principio di induzione (1ª forma)
+
+Sia $P(n)$ un predicato definito per $n \in \mathbb{N}$.
+
+**Teorema.** Se:
+1. **(Base)** $P(0)$ è vera (o $P(n_0)$ per qualche $n_0 \in \mathbb{N}$),
+2. **(Passo induttivo)** $\forall\, n \geq n_0$: $P(n) \Rightarrow P(n+1)$,
+
+allora $P(n)$ è vera per ogni $n \geq n_0$.
+
+**Esempio (disuguaglianza di Bernoulli).** Per ogni $x \geq -1$ e $n \in \mathbb{N}$: $(1+x)^n \geq 1 + nx$.
+
+*Dimostrazione.* Base: $n=0$, $(1+x)^0 = 1 \geq 1 = 1+0\cdot x$. Passo: supponendo $(1+x)^n \geq 1+nx$,
+$$(1+x)^{n+1} = (1+x)^n(1+x) \geq (1+nx)(1+x) = 1+(n+1)x + nx^2 \geq 1+(n+1)x$$
+poiché $nx^2 \geq 0$. $\square$
+
+**Esempio.** Per ogni $m \in \mathbb{N}$, $m \geq 1$: $2^m \geq m+1$.
+
+---
+
+## Principio di induzione (2ª forma o forte)
+
+**Teorema.** Se:
+1. $P(0)$ è vera,
+2. $\forall\, n \geq 1$: se $P(k)$ è vera per ogni $k < n$, allora $P(n)$ è vera,
+
+allora $P(n)$ è vera per ogni $n \in \mathbb{N}$.
+
+**Applicazione: Teorema fondamentale dell'aritmetica.**
+
+*Enunciato.* Ogni intero $n \geq 2$ si scrive come prodotto di numeri primi in modo unico (a meno dell'ordine).
+
+*Dimostrazione dell'esistenza* (per induzione forte). Base: $n=2$ è primo. Passo: se $n$ è primo si è fatto; altrimenti $n = a \cdot b$ con $1 < a, b < n$; per ipotesi induttiva $a$ e $b$ si scrivono come prodotto di primi, quindi anche $n$. $\square$
+
+---
+
+## Coefficienti binomiali e combinatoria
+
+$$\binom{n}{k} = \frac{n!}{k!\,(n-k)!}, \qquad 0 \leq k \leq n$$
+
+con $n! = 1 \cdot 2 \cdots n$ e $0! = 1$.
+
+**Interpretazione combinatoria:** $\binom{n}{k}$ è il numero di modi di scegliere $k$ elementi da un insieme di $n$ elementi (senza ordine, senza ripetizione).
+
+**Triangolo di Tartaglia (Pascale):**
+$$\binom{n+1}{k} = \binom{n}{k-1} + \binom{n}{k}$$
+
+**Disposizioni** (con ordine, senza ripetizione): $D_{n,k} = \dfrac{n!}{(n-k)!}$
+
+**Permutazioni:** $P_n = n!$
+
+---
+
+## Binomio di Newton
+
+**Teorema.** Per ogni $a, b \in \mathbb{R}$ e $n \in \mathbb{N}$:
+
+$$\boxed{(a+b)^n = \sum_{k=0}^n \binom{n}{k} a^{n-k} b^k}$$
+
+*Dimostrazione per induzione su $n$.*
+
+Base: $(a+b)^0 = 1 = \binom{0}{0}a^0 b^0$.
+
+Passo: $(a+b)^{n+1} = (a+b)^n (a+b)$. Usando l'ipotesi induttiva e la regola di Tartaglia $\binom{n}{k-1}+\binom{n}{k} = \binom{n+1}{k}$:
+
+$$= \sum_{k=0}^n \binom{n}{k} a^{n-k}b^k \cdot (a+b) = \sum_{k=0}^{n+1} \binom{n+1}{k} a^{n+1-k} b^k \quad \square$$

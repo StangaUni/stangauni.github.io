@@ -1,0 +1,139 @@
+---
+title: "Derivate"
+type: "riassunto"
+section: "Calcolo Differenziale"
+excerpt: "Definizione di derivata, derivate fondamentali, regole di derivazione, teoremi di Rolle e Lagrange, regola di de l'Hôpital, punti di estremo."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Derivate
+
+## Definizione
+
+Sia $f: A \to \mathbb{R}$ e $x_0 \in A$ punto interno. La **derivata** di $f$ in $x_0$ è:
+
+$$f'(x_0) = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h} = \lim_{x \to x_0} \frac{f(x) - f(x_0)}{x - x_0}$$
+
+se il limite esiste finito. In tal caso $f$ è **derivabile** in $x_0$.
+
+Il rapporto $\dfrac{f(x_0+h)-f(x_0)}{h}$ è detto **rapporto incrementale**.
+
+**Notazioni:** $f'(x_0)$, $\dfrac{df}{dx}(x_0)$, $Df(x_0)$.
+
+**Significato geometrico.** $f'(x_0)$ è la pendenza della retta tangente al grafico di $f$ in $(x_0, f(x_0))$:
+$$y = f(x_0) + f'(x_0)(x - x_0)$$
+
+---
+
+## Derivabilità e continuità
+
+**Teorema.** Se $f$ è derivabile in $x_0$, allora è continua in $x_0$.
+
+Il viceversa è falso: $f(x) = |x|$ è continua ma non derivabile in $x_0 = 0$.
+
+---
+
+## Derivate fondamentali
+
+| $f(x)$ | $f'(x)$ |
+|--------|---------|
+| $c$ (costante) | $0$ |
+| $x^n$ ($n \in \mathbb{Z}$) | $nx^{n-1}$ |
+| $x^\alpha$ ($\alpha \in \mathbb{R}$) | $\alpha x^{\alpha-1}$ |
+| $e^x$ | $e^x$ |
+| $a^x$ ($a > 0$) | $a^x \ln a$ |
+| $\ln x$ | $1/x$ |
+| $\log_a x$ | $1/(x \ln a)$ |
+| $\sin x$ | $\cos x$ |
+| $\cos x$ | $-\sin x$ |
+| $\tan x$ | $1/\cos^2 x$ |
+| $\arcsin x$ | $1/\sqrt{1-x^2}$ |
+| $\arccos x$ | $-1/\sqrt{1-x^2}$ |
+| $\arctan x$ | $1/(1+x^2)$ |
+| $\text{arccot}\, x$ | $-1/(1+x^2)$ |
+| $\sinh x$ | $\cosh x$ |
+| $\cosh x$ | $\sinh x$ |
+
+---
+
+## Algebra delle derivate
+
+Se $f$ e $g$ sono derivabili in $x_0$:
+- $(f \pm g)' = f' \pm g'$
+- $(cf)' = cf'$
+- $(fg)' = f'g + fg'$ (regola di Leibniz)
+- $\left(\dfrac{f}{g}\right)' = \dfrac{f'g - fg'}{g^2}$ (per $g \neq 0$)
+
+**Regola della catena.** Se $g$ è derivabile in $x_0$ e $f$ è derivabile in $g(x_0)$:
+$$(f \circ g)'(x_0) = f'(g(x_0)) \cdot g'(x_0)$$
+
+**Derivata della funzione inversa.** Se $f$ è derivabile e biiettiva con $f'(x_0) \neq 0$:
+$$(f^{-1})'(y_0) = \frac{1}{f'(x_0)} \quad \text{dove } y_0 = f(x_0)$$
+
+---
+
+## Derivate laterali e punti speciali
+
+**Derivata destra/sinistra:**
+$$f'_+(x_0) = \lim_{h \to 0^+} \frac{f(x_0+h)-f(x_0)}{h}, \qquad f'_-(x_0) = \lim_{h \to 0^-} \frac{f(x_0+h)-f(x_0)}{h}$$
+
+**Punto angoloso.** $f$ ha un punto angoloso in $x_0$ se $f'_+(x_0) \neq f'_-(x_0)$ (entrambi finiti).
+
+**Flesso a tangente verticale.** $\lim_{h \to 0} \dfrac{f(x_0+h)-f(x_0)}{h} = \pm\infty$.
+
+**Cuspide.** $f'_+ = +\infty$ e $f'_- = -\infty$ (o viceversa).
+
+---
+
+## Derivate di ordine superiore
+
+$$f''(x_0) = (f')'(x_0), \qquad f^{(n)}(x_0) = (f^{(n-1)})'(x_0)$$
+
+$f \in C^n(A)$ significa che $f$ è $n$ volte derivabile con derivata $n$-esima continua.
+
+**Formula di Leibniz** per la derivata $n$-esima di un prodotto:
+$$(fg)^{(n)} = \sum_{k=0}^n \binom{n}{k} f^{(k)} g^{(n-k)}$$
+
+---
+
+## Teorema del limite della derivata
+
+**Teorema.** Se $f$ è continua in $[a,b]$, derivabile in $]a,b[$, e $\lim_{x \to x_0} f'(x) = l$ (finito), allora $f'(x_0) = l$.
+
+---
+
+## Regola di de l'Hôpital
+
+**Teorema.** Sia $\lim_{x \to x_0} f(x) = \lim_{x \to x_0} g(x) = 0$ (o entrambi $\pm\infty$). Se $\lim_{x \to x_0} \dfrac{f'(x)}{g'(x)} = l$ (finito o $\pm\infty$), allora:
+$$\lim_{x \to x_0} \frac{f(x)}{g(x)} = l$$
+
+---
+
+## Punti di massimo e minimo
+
+**Def.** $x_0$ è un **massimo relativo** di $f$ se $\exists\, \delta > 0 : f(x) \leq f(x_0)$ per ogni $x \in ]x_0-\delta, x_0+\delta[$.
+
+Analogamente per **minimo relativo** e per i corrispondenti **assoluti** (su tutto il dominio).
+
+**Teorema di Fermat.** Se $x_0$ è un punto di massimo o minimo relativo di $f$ e $f$ è derivabile in $x_0$, allora $f'(x_0) = 0$.
+
+I punti con $f'(x_0) = 0$ si chiamano **punti stazionari** (o critici). Non ogni punto stazionario è un estremo (es. flesso orizzontale).
+
+---
+
+## Teoremi fondamentali del calcolo differenziale
+
+**Teorema di Rolle.** Se $f$ è continua su $[a,b]$, derivabile su $]a,b[$, e $f(a) = f(b)$, allora $\exists\, c \in ]a,b[$ con $f'(c) = 0$.
+
+**Teorema di Lagrange (valore medio).** Se $f$ è continua su $[a,b]$ e derivabile su $]a,b[$, allora:
+$$\exists\, c \in ]a,b[ : f'(c) = \frac{f(b) - f(a)}{b - a}$$
+
+**Corollari:**
+- $f'(x) = 0$ su $]a,b[$ $\Rightarrow$ $f$ costante su $[a,b]$
+- $f'(x) > 0$ su $]a,b[$ $\Rightarrow$ $f$ strettamente crescente su $[a,b]$
+- $f'(x) < 0$ su $]a,b[$ $\Rightarrow$ $f$ strettamente decrescente su $[a,b]$
+
+**Teorema di Cauchy (valore medio generalizzato).** Se $f, g$ sono continue su $[a,b]$ e derivabili su $]a,b[$:
+$$\exists\, c \in ]a,b[ : f'(c)\bigl[g(b)-g(a)\bigr] = g'(c)\bigl[f(b)-f(a)\bigr]$$

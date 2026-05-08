@@ -1,0 +1,91 @@
+---
+title: "Continuità"
+type: "riassunto"
+section: "Calcolo"
+excerpt: "Definizione, tipi di discontinuità, algebra della continuità, teoremi di Weierstrass, degli zeri (Bolzano), dei valori intermedi e continuità uniforme."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Continuità
+
+## Definizione
+
+**Def.** $f: A \to \mathbb{R}$ è **continua in $x_0 \in A$** se:
+$$\lim_{x \to x_0} f(x) = f(x_0)$$
+
+Esplicitamente: $\forall\, \varepsilon > 0\ \exists\, \delta > 0 : |x - x_0| < \delta \Rightarrow |f(x) - f(x_0)| < \varepsilon$.
+
+$f$ è **continua su $A$** se è continua in ogni punto di $A$.
+
+---
+
+## Tipi di discontinuità
+
+In un punto $x_0$ in cui $f$ non è continua:
+
+- **Discontinuità eliminabile:** $\lim_{x \to x_0} f(x) = l \in \mathbb{R}$ ma $l \neq f(x_0)$ (o $f$ non è definita in $x_0$). Si "elimina" ponendo $f(x_0) = l$ (**prolungamento per continuità**).
+
+- **Discontinuità di 1° specie (salto):** i limiti laterali $\lim_{x \to x_0^\pm} f(x)$ esistono finiti ma sono diversi tra loro.
+
+- **Discontinuità di 2° specie:** almeno uno dei limiti laterali è $\pm\infty$ o non esiste.
+
+---
+
+## Algebra della continuità
+
+Se $f$ e $g$ sono continue in $x_0$, allora sono continue in $x_0$ anche:
+- $f + g$, $f - g$, $f \cdot g$
+- $f/g$ (se $g(x_0) \neq 0$)
+- $|f|$, $f^\alpha$ (con opportune restrizioni)
+
+**Composizione.** Se $g$ è continua in $x_0$ e $f$ è continua in $g(x_0)$, allora $f \circ g$ è continua in $x_0$.
+
+**Funzioni elementari.** Polinomi, funzioni razionali (dove definite), $e^x$, $\ln x$, $\sin x$, $\cos x$, $\arcsin x$, $\arctan x$, $|x|$, $x^\alpha$ (dove definite) sono tutte continue.
+
+---
+
+## Continuità e funzioni inverse
+
+**Teorema.** Se $f: I \to \mathbb{R}$ è strettamente monotona e continua su un intervallo $I$, allora $f^{-1}: f(I) \to I$ è continua.
+
+---
+
+## Teorema di Weierstrass
+
+**Teorema.** Se $f$ è continua su un intervallo chiuso e limitato $[a,b]$, allora $f$ è limitata e attinge il suo massimo e minimo assoluti:
+$$\exists\, x_{\min}, x_{\max} \in [a,b] : f(x_{\min}) \leq f(x) \leq f(x_{\max}) \quad \forall\, x \in [a,b]$$
+
+**Nota.** Il risultato cade se si rimuove la chiusura o la limitatezza.
+
+---
+
+## Teorema degli zeri (Bolzano)
+
+**Teorema.** Se $f$ è continua su $[a,b]$ e $f(a) \cdot f(b) < 0$ (cioè $f(a)$ e $f(b)$ hanno segni opposti), allora:
+$$\exists\, c \in ]a,b[ : f(c) = 0$$
+
+**Applicazione.** Permette di localizzare le radici di un'equazione $f(x) = 0$.
+
+---
+
+## Teorema dei valori intermedi
+
+**Teorema.** Se $f$ è continua su $[a,b]$ e $y_0$ è un valore compreso tra $f(a)$ e $f(b)$, allora:
+$$\exists\, c \in [a,b] : f(c) = y_0$$
+
+**Corollario.** L'immagine di un intervallo chiuso e limitato tramite una funzione continua è un intervallo chiuso e limitato: $f([a,b]) = [\min f, \max f]$.
+
+Più in generale, l'immagine di un intervallo tramite una funzione continua è un intervallo.
+
+---
+
+## Continuità uniforme
+
+**Def.** $f: A \to \mathbb{R}$ è **uniformemente continua** su $A$ se:
+$$\forall\, \varepsilon > 0\ \exists\, \delta > 0 : |x - y| < \delta \Rightarrow |f(x) - f(y)| < \varepsilon \quad \forall\, x, y \in A$$
+
+La differenza con la continuità ordinaria: $\delta$ non dipende dal punto $x$.
+
+**Teorema di Heine-Cantor.** Se $f$ è continua su $[a,b]$ (chiuso e limitato), allora è uniformemente continua su $[a,b]$.

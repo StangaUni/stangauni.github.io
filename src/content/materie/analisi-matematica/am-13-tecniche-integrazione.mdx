@@ -1,0 +1,107 @@
+---
+title: "Tecniche di Integrazione"
+type: "riassunto"
+section: "Serie e Integrale"
+excerpt: "Integrazione per parti (regola ILATE), integrazione per sostituzione, frazioni parziali per funzioni razionali, sostituzioni trigonometriche e iperboliche."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Tecniche di Integrazione
+
+## Integrazione per parti
+
+**Formula (indefinita):**
+$$\int f(x)\,g'(x)\,dx = f(x)\,g(x) - \int f'(x)\,g(x)\,dx$$
+
+**Formula (definita):**
+$$\int_a^b f(x)\,g'(x)\,dx = \bigl[f(x)\,g(x)\bigr]_a^b - \int_a^b f'(x)\,g(x)\,dx$$
+
+**Scelta di $f$ e $g'$:** la regola mnemonica ILATE suggerisce di scegliere $f$ nell'ordine: **I**nverse trig, **L**ogaritmi, **A**lgebriche (polinomi), **T**rigonometriche, **E**sponenziali.
+
+**Esempi tipici:**
+- $\int x e^x\,dx$: $f = x$, $g' = e^x$
+- $\int \ln x\,dx$: $f = \ln x$, $g' = 1$ → $= x\ln x - x + C$
+- $\int x^2 \arctan(2x)\,dx$: $f = \arctan(2x)$, $g' = x^2$
+- $\int \sin(2x)e^{3x}\,dx$: iterare due volte e risolvere per l'integrale
+
+**Integrazione per parti ricorsiva.** Per integrali del tipo $\int \sin^{2n} x\,dx$ o $I_n = \int x^n e^x\,dx$, si usa una formula di riduzione che esprime $I_n$ in termini di $I_{n-1}$.
+
+---
+
+## Integrazione per sostituzione
+
+**Formula (indefinita).** Con $x = \varphi(t)$, $dx = \varphi'(t)\,dt$:
+$$\int f(x)\,dx = \int f(\varphi(t))\,\varphi'(t)\,dt$$
+
+**Formula (definita).** Se $\varphi: [\alpha,\beta] \to [a,b]$ è $C^1$:
+$$\int_a^b f(x)\,dx = \int_\alpha^\beta f(\varphi(t))\,\varphi'(t)\,dt$$
+
+Gli estremi di integrazione si trasformano: $a = \varphi(\alpha)$, $b = \varphi(\beta)$.
+
+**Esempi tipici:**
+
+- $\int \dfrac{\ln^2 x}{x}\,dx$: porre $t = \ln x$ → $\int t^2\,dt = t^3/3 + C$
+
+- $\int \dfrac{x+1}{\sqrt{1-2x^2}}\,dx$: separare in $\int \dfrac{x}{\sqrt{1-2x^2}}\,dx + \int \dfrac{1}{\sqrt{1-2x^2}}\,dx$
+
+- $\int \sin^2 x\,dx$: usare $\sin^2 x = \dfrac{1-\cos(2x)}{2}$
+
+- $\int \dfrac{1}{1+\alpha^2 x^2}\,dx$: porre $t = \alpha x$ → $\dfrac{1}{\alpha}\arctan(\alpha x) + C$
+
+- $\int \dfrac{1}{1+\cos t}\,dt$: usare $1 + \cos t = 2\cos^2(t/2)$ e porre $u = t/2$
+
+- $\int (\arcsin x)^2\,dx$: porre $y = \arcsin x$ → integrale in $y^2 \cos y$
+
+---
+
+## Integrazione di funzioni razionali (frazioni parziali)
+
+Per integrare $\dfrac{P(x)}{Q(x)}$ con $\deg P < \deg Q$, si decompone in frazioni parziali.
+
+**Prerequisito:** se $\deg P \geq \deg Q$, dividere prima.
+
+**Decomposizione di $Q(x)$** in fattori irriducibili su $\mathbb{R}$:
+$$Q(x) = c \prod_i (x - r_i)^{m_i} \prod_j (x^2 + p_j x + q_j)^{k_j}$$
+
+### Caso I: $Q(x) = (x-a)(x-b)$ con $a \neq b$ (radici reali distinte)
+
+$$\frac{P(x)}{(x-a)(x-b)} = \frac{A}{x-a} + \frac{B}{x-b}$$
+
+Si trovano $A$, $B$ moltiplicando per $(x-a)$ e valutando in $x=a$, etc.
+
+$$\int \frac{A}{x-a}\,dx = A\ln|x-a| + C$$
+
+### Caso II: $Q(x) = (x-a)^2$ (radice reale doppia)
+
+$$\frac{P(x)}{(x-a)^2} = \frac{A}{x-a} + \frac{B}{(x-a)^2}$$
+
+$$\int \frac{B}{(x-a)^2}\,dx = -\frac{B}{x-a} + C$$
+
+### Caso III: $Q(x) = x^2 + px + q$ con $\Delta = p^2 - 4q < 0$ (fattore irriducibile)
+
+Completare il quadrato: $x^2+px+q = (x+p/2)^2 + (q - p^2/4)$, con $q - p^2/4 > 0$.
+
+$$\int \frac{Ax+B}{x^2+px+q}\,dx$$
+
+si risolve separando nella parte "derivata del denominatore" e nella parte costante:
+$$= \frac{A}{2}\ln(x^2+px+q) + \frac{B - Ap/2}{\sqrt{q-p^2/4}}\arctan\!\left(\frac{x+p/2}{\sqrt{q-p^2/4}}\right) + C$$
+
+---
+
+## Integrali notevoli con sostituzione trigonometrica
+
+- $\sqrt{a^2 - x^2}$: porre $x = a\sin\theta$
+- $\sqrt{a^2 + x^2}$: porre $x = a\tan\theta$ o $x = a\sinh t$
+- $\sqrt{x^2 - a^2}$: porre $x = a/\cos\theta$
+
+**Integrali risultanti da sostituzioni iperboliche:**
+$$\int \frac{1}{\sqrt{x^2-1}}\,dx = \text{arccosh}\, x + C = \ln\!\left(x+\sqrt{x^2-1}\right) + C \quad (x > 1)$$
+$$\int \frac{1}{1-x^2}\,dx = \text{arctanh}\, x + C = \frac{1}{2}\ln\!\left|\frac{1+x}{1-x}\right| + C \quad (|x| < 1)$$
+
+---
+
+## Integrale definito: calcolo con sostituzione + frazioni parziali
+
+**Procedura:** applicare la sostituzione o la decomposizione in frazioni parziali per trovare la primitiva, poi applicare il TFC valutando agli estremi (ricordare di trasformare gli estremi se si usa la sostituzione direttamente nell'integrale definito).

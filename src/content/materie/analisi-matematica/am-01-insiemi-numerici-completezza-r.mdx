@@ -1,0 +1,133 @@
+---
+title: "Insiemi Numerici e Completezza di ℝ"
+type: "riassunto"
+section: "Fondamenti"
+excerpt: "Gerarchia degli insiemi numerici, valore assoluto, intervalli, estremo superiore e inferiore, assioma di completezza, teorema di Archimede."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Insiemi Numerici e Completezza di $\mathbb{R}$
+
+## Gerarchia degli insiemi numerici
+
+$$\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$$
+
+- $\mathbb{N} = \{0, 1, 2, 3, \ldots\}$: naturali
+- $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$: interi
+- $\mathbb{Q} = \left\{\dfrac{p}{q} : p \in \mathbb{Z},\, q \in \mathbb{N} \setminus \{0\}\right\}$: razionali
+- $\mathbb{R}$: reali (contiene anche gli irrazionali, es. $\sqrt{2}$, $\pi$, $e$)
+
+**Crisi pitagorica.** $\sqrt{2} \notin \mathbb{Q}$. Dimostrazione per assurdo: supposto $\sqrt{2} = p/q$ con $\gcd(p,q)=1$, si ottiene $p^2 = 2q^2$, da cui $p$ pari, poi $q$ pari: contraddizione.
+
+---
+
+## Valore assoluto
+
+$$|x| = \begin{cases} x & x \geq 0 \\ -x & x < 0 \end{cases}$$
+
+**Proprietà:**
+- $|x| \geq 0$, con $|x| = 0 \iff x = 0$
+- $|xy| = |x|\,|y|$
+- $|x + y| \leq |x| + |y|$ (disuguaglianza triangolare)
+- $\bigl||x| - |y|\bigr| \leq |x-y|$
+- $|x - y| = $ distanza tra $x$ e $y$ su $\mathbb{R}$
+
+---
+
+## Intervalli
+
+| Notazione | Insieme |
+|-----------|---------|
+| $[a,b]$ | $\{x \in \mathbb{R} : a \leq x \leq b\}$ |
+| $]a,b[$ | $\{x \in \mathbb{R} : a < x < b\}$ |
+| $[a,b[$ | $\{x \in \mathbb{R} : a \leq x < b\}$ |
+| $]a,b]$ | $\{x \in \mathbb{R} : a < x \leq b\}$ |
+| $[a,+\infty[$ | $\{x \in \mathbb{R} : x \geq a\}$ |
+| $]-\infty,b]$ | $\{x \in \mathbb{R} : x \leq b\}$ |
+| $\mathbb{R}$ | $]-\infty,+\infty[$ |
+
+---
+
+## Insiemi limitati, estremo superiore e inferiore
+
+Sia $A \subseteq \mathbb{R}$, $A \neq \emptyset$.
+
+- $A$ è **limitato superiormente** se $\exists\, M \in \mathbb{R}$ t.c. $a \leq M$ per ogni $a \in A$; $M$ è un **maggiorante**.
+- $A$ è **limitato inferiormente** se $\exists\, m \in \mathbb{R}$ t.c. $a \geq m$ per ogni $a \in A$; $m$ è un **minorante**.
+- $A$ è **limitato** se è limitato sia superiormente che inferiormente.
+
+**Massimo e minimo.** $M = \max A$ se $M \in A$ e $M$ è maggiorante. Analogamente per $\min A$. Non sempre esistono (es. $A = ]0,1[$).
+
+**Estremo superiore (sup).** Il più piccolo dei maggioranti:
+
+$$s = \sup A \iff \begin{cases} a \leq s \quad \forall\, a \in A \\ \forall\, \varepsilon > 0\ \exists\, a \in A : a > s - \varepsilon \end{cases}$$
+
+Se $A$ non è limitato superiormente, si pone $\sup A = +\infty$.
+
+**Estremo inferiore (inf).** Il più grande dei minoranti, definito analogamente. Se $A$ non è limitato inferiormente, $\inf A = -\infty$.
+
+**Relazione con max/min.** $\max A$ esiste $\iff$ $\sup A \in A$, e in tal caso $\max A = \sup A$. Analogamente per $\min$.
+
+---
+
+## Assioma di completezza (o di Dedekind)
+
+**Assioma.** Ogni sottoinsieme non vuoto di $\mathbb{R}$ limitato superiormente ammette estremo superiore in $\mathbb{R}$.
+
+Questo assioma distingue $\mathbb{R}$ da $\mathbb{Q}$: in $\mathbb{Q}$ l'insieme $\{x \in \mathbb{Q} : x^2 < 2\}$ è limitato superiormente ma non ha sup in $\mathbb{Q}$.
+
+---
+
+## Teorema di Archimede
+
+**Teorema.** Per ogni $x \in \mathbb{R}$ esiste $n \in \mathbb{N}$ tale che $n > x$.
+
+**Corollario.** $\mathbb{N}$ non è limitato superiormente in $\mathbb{R}$.
+
+**Conseguenza.** Per ogni $\varepsilon > 0$ esiste $n \in \mathbb{N}$ con $\dfrac{1}{n} < \varepsilon$.
+
+---
+
+## Densità di $\mathbb{Q}$ in $\mathbb{R}$
+
+**Teorema.** Tra due numeri reali distinti $a < b$ esiste sempre un numero razionale $q \in \mathbb{Q}$ con $a < q < b$.
+
+In particolare, ogni intorno di un punto reale contiene infiniti razionali (e infiniti irrazionali).
+
+---
+
+## Radici e potenze
+
+**Radice $n$-esima.** Per ogni $a \geq 0$ e $n \in \mathbb{N}$, $n \geq 1$, esiste un unico $b \geq 0$ con $b^n = a$: si scrive $b = a^{1/n} = \sqrt[n]{a}$.
+
+**Potenze razionali.** Per $a > 0$, $p \in \mathbb{Z}$, $q \in \mathbb{N} \setminus \{0\}$:
+$$a^{p/q} = \bigl(a^{1/q}\bigr)^p$$
+
+**Potenze reali.** Per $a > 0$ e $\alpha \in \mathbb{R}$ si definisce $a^\alpha = e^{\alpha \ln a}$ (estensione per continuità).
+
+**Proprietà delle potenze** (con $a, b > 0$, $\alpha, \beta \in \mathbb{R}$):
+- $a^\alpha \cdot a^\beta = a^{\alpha+\beta}$
+- $(a^\alpha)^\beta = a^{\alpha\beta}$
+- $(ab)^\alpha = a^\alpha b^\alpha$
+- $a^0 = 1$, $a^1 = a$
+
+---
+
+## Numero $e$ ed esponenziale
+
+Il numero di Nepero è definito come:
+$$e = \lim_{n \to +\infty} \left(1 + \frac{1}{n}\right)^n \approx 2.71828\ldots$$
+
+La **funzione esponenziale** $e^x : \mathbb{R} \to (0,+\infty)$ è strettamente crescente, con $e^0 = 1$, $e^x \to +\infty$ per $x \to +\infty$, $e^x \to 0^+$ per $x \to -\infty$.
+
+Il **logaritmo naturale** $\ln x = \log_e x : (0,+\infty) \to \mathbb{R}$ è la sua funzione inversa: $e^{\ln x} = x$ e $\ln(e^x) = x$.
+
+**Proprietà del logaritmo** (con $x, y > 0$, $\alpha \in \mathbb{R}$):
+- $\ln(xy) = \ln x + \ln y$
+- $\ln(x/y) = \ln x - \ln y$
+- $\ln(x^\alpha) = \alpha \ln x$
+- $\ln 1 = 0$, $\ln e = 1$
+
+**Logaritmo in base $a$** ($a > 0$, $a \neq 1$): $\log_a x = \dfrac{\ln x}{\ln a}$.

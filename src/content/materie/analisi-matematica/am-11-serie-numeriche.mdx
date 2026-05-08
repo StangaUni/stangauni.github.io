@@ -1,0 +1,150 @@
+---
+title: "Serie Numeriche"
+type: "riassunto"
+section: "Serie e Integrale"
+excerpt: "Definizione e carattere di una serie, serie geometrica, convergenza assoluta, criteri del rapporto, della radice, di Leibniz, criterio integrale."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Serie Numeriche
+
+## Definizione
+
+Data una successione $\{a_n\}_{n \geq 0}$, la **serie** $\displaystyle\sum_{n=0}^{+\infty} a_n$ è definita tramite le **somme parziali**:
+$$S_N = \sum_{n=0}^N a_n$$
+
+Il **carattere** della serie è determinato dal comportamento di $\{S_N\}$:
+- **Convergente** se $S_N \to S \in \mathbb{R}$; si scrive $\sum a_n = S$
+- **Divergente** se $S_N \to \pm\infty$
+- **Indeterminata** se $\{S_N\}$ è irregolare
+
+---
+
+## Serie geometrica
+
+$$\sum_{n=0}^{+\infty} q^n = \frac{1}{1-q} \quad \text{se } |q| < 1$$
+
+Diverge per $|q| \geq 1$. Somma parziale: $S_N = \dfrac{1-q^{N+1}}{1-q}$ per $q \neq 1$.
+
+---
+
+## Proprietà generali
+
+**Linearità.** Se $\sum a_n = A$ e $\sum b_n = B$, allora $\sum (\lambda a_n + \mu b_n) = \lambda A + \mu B$.
+
+**Invarianza del carattere.** Aggiungere, rimuovere o modificare un numero finito di termini non cambia il carattere della serie (ma può cambiare la somma se convergente).
+
+**Condizione necessaria per la convergenza:**
+$$\sum a_n \text{ converge} \Rightarrow a_n \to 0$$
+
+Il viceversa è falso: la serie armonica $\sum 1/n$ diverge pur avendo $1/n \to 0$.
+
+**Criterio di Cauchy.** $\sum a_n$ converge $\iff$ $\forall\, \varepsilon > 0\ \exists\, N : \left|\displaystyle\sum_{n=N+1}^{M} a_n\right| < \varepsilon$ per ogni $M > N$.
+
+---
+
+## Convergenza assoluta
+
+**Def.** $\sum a_n$ **converge assolutamente** se $\sum |a_n|$ converge.
+
+**Teorema.** Convergenza assoluta $\Rightarrow$ convergenza.
+
+Il viceversa è falso (es. serie di Leibniz $\sum (-1)^n/n$ converge ma non assolutamente).
+
+---
+
+## Serie a termini non negativi
+
+Se $a_n \geq 0$, le somme parziali $S_N$ sono monotone crescenti: la serie o converge o diverge a $+\infty$.
+
+**Criterio del confronto.** Siano $0 \leq a_n \leq b_n$ definitivamente.
+- $\sum b_n$ converge $\Rightarrow$ $\sum a_n$ converge
+- $\sum a_n$ diverge $\Rightarrow$ $\sum b_n$ diverge
+
+**Criterio del confronto asintotico.** Se $a_n, b_n > 0$ e $a_n \sim c \cdot b_n$ (con $c > 0$), allora $\sum a_n$ e $\sum b_n$ hanno lo stesso carattere.
+
+---
+
+## Serie armonica generalizzata
+
+$$\sum_{n=1}^{+\infty} \frac{1}{n^\alpha} \begin{cases} \text{converge} & \alpha > 1 \\ \text{diverge} & \alpha \leq 1 \end{cases}$$
+
+In particolare, la **serie armonica** $\sum 1/n$ diverge.
+
+---
+
+## Criterio del rapporto
+
+**Teorema.** Sia $a_n > 0$. Se esiste $\displaystyle\lim_{n \to +\infty} \frac{a_{n+1}}{a_n} = L$:
+- $L < 1$ $\Rightarrow$ $\sum a_n$ converge
+- $L > 1$ $\Rightarrow$ $\sum a_n$ diverge
+- $L = 1$ $\Rightarrow$ il criterio è inconcludente
+
+*Dimostrazione (caso $L < 1$).* Sia $L < r < 1$. Definitivamente $a_{n+1}/a_n < r$, quindi $a_n < C r^n$ per qualche $C > 0$: confronto con la geometrica $\sum r^n$ convergente. $\square$
+
+---
+
+## Criterio della radice
+
+**Teorema.** Sia $a_n \geq 0$. Se esiste $\displaystyle\lim_{n \to +\infty} \sqrt[n]{a_n} = L$:
+- $L < 1$ $\Rightarrow$ $\sum a_n$ converge
+- $L > 1$ $\Rightarrow$ $\sum a_n$ diverge
+- $L = 1$ $\Rightarrow$ inconcludente
+
+---
+
+## Criterio di Leibniz (serie alternate)
+
+**Teorema.** Se $\{b_n\}$ è una successione decrescente con $b_n \geq 0$ e $b_n \to 0$, allora la serie alternata:
+$$\sum_{n=0}^{+\infty} (-1)^n b_n \quad \text{converge}$$
+
+Inoltre, l'errore troncando alla somma $N$-esima è maggiorato da $b_{N+1}$.
+
+---
+
+## Serie esponenziale
+
+$$e^x = \sum_{n=0}^{+\infty} \frac{x^n}{n!} \quad \forall\, x \in \mathbb{R}$$
+
+In particolare, $e = \sum_{n=0}^{+\infty} \dfrac{1}{n!}$.
+
+---
+
+## Serie logaritmica
+
+$$\ln(1+x) = \sum_{n=1}^{+\infty} (-1)^{n+1} \frac{x^n}{n} \quad \text{per } x \in (-1, 1]$$
+
+---
+
+## Criterio integrale per le serie
+
+**Teorema.** Sia $f: [1, +\infty) \to [0,+\infty)$ continua e decrescente. Allora:
+$$\sum_{n=1}^{+\infty} f(n) \text{ converge} \iff \int_1^{+\infty} f(x)\,dx < +\infty$$
+
+**Applicazione.** $\sum \dfrac{1}{n^\alpha (\ln n)^\beta}$ (per $n \geq 2$):
+- Se $\alpha > 1$: converge per ogni $\beta$
+- Se $\alpha < 1$: diverge per ogni $\beta$
+- Se $\alpha = 1$: converge $\iff$ $\beta > 1$
+
+---
+
+## Guida alla scelta del criterio
+
+| Tipo di termine $a_n$ | Criterio consigliato |
+|---|---|
+| Contiene $n!$ o prodotti iterati | Rapporto |
+| Contiene $c^n$ (esponenziale) | Rapporto |
+| Contiene $n$-esime potenze del tipo $f(n)^n$ | Radice |
+| Confronto con $1/n^\alpha$ | Confronto asintotico + serie armonica generalizzata |
+| Termine alternato $(-1)^n b_n$ | Leibniz (poi verificare se assoluta) |
+| Andamento lento per $x \to +\infty$ | Criterio integrale |
+
+---
+
+## Serie con parametro
+
+Per serie del tipo $\sum a_n(x)$ dipendenti da un parametro $x \in \mathbb{R}$, si determinano i valori del parametro per cui la serie converge, diverge o è indeterminata.
+
+**Esempio.** $\sum_{n=1}^{+\infty} \dfrac{x^n}{n}$: converge assolutamente per $|x| < 1$, converge (condizionatamente) per $x = -1$ (Leibniz), diverge per $x = 1$ (armonica) e per $|x| > 1$.

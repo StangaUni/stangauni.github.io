@@ -1,0 +1,109 @@
+---
+title: "Successioni Reali"
+type: "riassunto"
+section: "Calcolo"
+excerpt: "Definizione e classificazione, limitatezza, teoremi fondamentali, successioni monotone, Bolzano-Weierstrass e relazione con i limiti di funzioni."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Successioni Reali
+
+## Definizione e classificazione
+
+Una **successione** è una funzione $\{a_n\}_{n \in \mathbb{N}} : \mathbb{N} \to \mathbb{R}$.
+
+**Classificazione per comportamento a $+\infty$:**
+- **Convergente:** $\exists\, l \in \mathbb{R}$ t.c. $a_n \to l$
+- **Divergente a $+\infty$:** $a_n \to +\infty$
+- **Divergente a $-\infty$:** $a_n \to -\infty$
+- **Irregolare (indeterminata):** non rientra in nessuno dei casi precedenti
+
+**Definizione formale di limite.** $a_n \to l \in \mathbb{R}$ se:
+$$\forall\, \varepsilon > 0\ \exists\, N \in \mathbb{N} : n \geq N \Rightarrow |a_n - l| < \varepsilon$$
+
+---
+
+## Limitatezza
+
+- $\{a_n\}$ è **limitata superiormente** se $\exists\, M : a_n \leq M$ per ogni $n$
+- $\{a_n\}$ è **limitata inferiormente** se $\exists\, m : a_n \geq m$ per ogni $n$
+- $\{a_n\}$ è **limitata** se è limitata sia sup. che inf.
+
+**Ogni successione convergente è limitata.** (Il viceversa è falso: es. $a_n = (-1)^n$.)
+
+---
+
+## Teoremi fondamentali
+
+**Permanenza del segno.** Se $a_n \to l > 0$, allora $a_n > 0$ definitivamente.
+
+**Teorema del confronto.** Se $a_n \leq b_n$ definitivamente e $a_n \to l$, $b_n \to m$, allora $l \leq m$.
+
+**Teorema dei carabinieri.** Se $a_n \leq b_n \leq c_n$ definitivamente e $a_n \to l$, $c_n \to l$, allora $b_n \to l$.
+
+**Algebra dei limiti.** Se $a_n \to l$ e $b_n \to m$:
+$$a_n \pm b_n \to l \pm m, \quad a_n b_n \to lm, \quad \frac{a_n}{b_n} \to \frac{l}{m}\ (m \neq 0)$$
+
+---
+
+## Successioni monotone
+
+**Teorema.** Ogni successione monotona e limitata è convergente.
+
+- Monotona crescente e limitata superiormente $\Rightarrow$ converge a $\sup_n a_n$
+- Monotona decrescente e limitata inferiormente $\Rightarrow$ converge a $\inf_n a_n$
+
+**Successione di Cauchy.** $\{a_n\}$ è di Cauchy se $\forall\, \varepsilon > 0\ \exists\, N : n, m \geq N \Rightarrow |a_n - a_m| < \varepsilon$.
+
+**Teorema.** In $\mathbb{R}$: $\{a_n\}$ converge $\iff$ $\{a_n\}$ è di Cauchy (completezza di $\mathbb{R}$).
+
+---
+
+## Successioni notevoli
+
+$$\lim_{n \to +\infty} \frac{n^k}{n!} = 0 \quad (k \in \mathbb{N})$$
+
+$$\lim_{n \to +\infty} \frac{a^n}{n!} = 0 \quad (a \in \mathbb{R})$$
+
+$$\lim_{n \to +\infty} \frac{n!}{n^n} = 0$$
+
+$$\lim_{n \to +\infty} \left(1 + \frac{1}{n}\right)^n = e$$
+
+$$\lim_{n \to +\infty} n^{1/n} = 1, \qquad \lim_{n \to +\infty} a^{1/n} = 1 \quad (a > 0)$$
+
+---
+
+## Gerarchia delle successioni (per $n \to +\infty$)
+
+$$n^n \gg n! \gg a^n \gg n^\alpha \gg \log_b n \qquad (a > 1,\, \alpha > 0,\, b > 1)$$
+
+Più precisamente:
+$$\lim_{n \to +\infty} \frac{n!}{n^n} = 0, \quad \lim_{n \to +\infty} \frac{a^n}{n!} = 0, \quad \lim_{n \to +\infty} \frac{n^\alpha}{a^n} = 0, \quad \lim_{n \to +\infty} \frac{\log_b n}{n^\alpha} = 0$$
+
+---
+
+## Sottosuccessioni
+
+**Def.** Una **sottosuccessione** di $\{a_n\}$ è $\{a_{n_k}\}_{k \in \mathbb{N}}$ dove $n_0 < n_1 < n_2 < \cdots$ è una sequenza strettamente crescente di indici.
+
+**Teorema.** Se $a_n \to l$, allora ogni sottosuccessione converge allo stesso limite $l$.
+
+**Contronominale.** Se esiste una sottosuccessione che non converge a $l$, allora $a_n \not\to l$. In particolare, se due sottosuccessioni convergono a limiti diversi, $\{a_n\}$ è irregolare.
+
+---
+
+## Teorema di Bolzano–Weierstrass
+
+**Teorema.** Ogni successione limitata ammette una sottosuccessione convergente.
+
+---
+
+## Limiti di successioni e limiti di funzioni
+
+**Teorema.** $\displaystyle\lim_{x \to x_0} f(x) = l$ $\iff$ per ogni successione $\{x_n\} \subset A \setminus \{x_0\}$ con $x_n \to x_0$, si ha $f(x_n) \to l$.
+
+Questo permette di:
+- **Dimostrare** l'esistenza di un limite usando la definizione su successioni
+- **Escludere** l'esistenza del limite trovando due successioni che danno limiti diversi

@@ -1,0 +1,131 @@
+---
+title: "Equazioni Differenziali Ordinarie"
+type: "riassunto"
+section: "Equazioni Differenziali"
+excerpt: "Problema di Cauchy, equazioni lineari del 1° ordine (fattore integrante), equazioni a variabili separabili, equazioni lineari del 2° ordine a coefficienti costanti."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Equazioni Differenziali Ordinarie
+
+## Definizioni generali
+
+Un'**equazione differenziale (ED)** del 1° ordine in forma normale è:
+$$y'(t) = g(t, y(t))$$
+
+Il **Problema di Cauchy (PC)** aggiunge una condizione iniziale:
+$$\begin{cases} y'(t) = g(t, y) \\ y(t_0) = y_0 \end{cases}$$
+
+**Teorema di Cauchy–Lipschitz.** Se $g$ e $\dfrac{\partial g}{\partial y}$ sono continue in un intorno di $(t_0, y_0)$, allora il PC ha un'**unica soluzione locale** $y: \tilde{I} \to \mathbb{R}$ per qualche intorno $\tilde{I}$ di $t_0$.
+
+---
+
+## Equazioni differenziali lineari del 1° ordine
+
+Forma:
+$$y'(t) = a(t)\,y(t) + b(t) \tag{ED}$$
+
+con $a, b: I \to \mathbb{R}$ continue.
+
+### Soluzione omogenea ($b = 0$)
+
+$$y' = a(t)\,y \quad \Rightarrow \quad y(t) = C\,e^{A(t)}, \quad C \in \mathbb{R}$$
+
+dove $A(t) = \int a(t)\,dt$ è una primitiva di $a$.
+
+### Metodo del fattore integrante
+
+Si moltiplica (ED) per $e^{-A(t)}$:
+$$\left(e^{-A(t)} y\right)' = b(t)\,e^{-A(t)}$$
+
+Integrando:
+$$e^{-A(t)}\,y = \int b(t)\,e^{-A(t)}\,dt + C$$
+
+**Integrale generale:**
+$$\boxed{y(t) = e^{A(t)}\left(\int b(t)\,e^{-A(t)}\,dt + C\right), \quad C \in \mathbb{R}}$$
+
+### Formula risolutiva del Problema di Cauchy
+
+Con $A(t) = \displaystyle\int_{t_0}^t a(s)\,ds$:
+$$\boxed{y(t) = e^{A(t)}\!\left(y_0 + \int_{t_0}^t e^{-A(s)}\,b(s)\,ds\right)}$$
+
+---
+
+## Equazioni a variabili separabili
+
+Forma:
+$$y'(t) = a(t)\,b(y(t)) \tag{VS}$$
+
+**Soluzioni costanti.** Se $b(\bar{y}) = 0$, allora $y(t) = \bar{y}$ è soluzione.
+
+**Soluzioni non costanti.** Per $b(y(t)) \neq 0$, si divide e si integra:
+$$\frac{y'(t)}{b(y(t))} = a(t) \quad \Rightarrow \quad \int \frac{dy}{b(y)} = \int a(t)\,dt$$
+
+Con $\tilde{B}$ primitiva di $1/b$ e $A$ primitiva di $a$:
+$$\tilde{B}(y(t)) = A(t) + c, \quad c \in \mathbb{R}$$
+
+Se $\tilde{B}$ è invertibile, $y(t) = \tilde{B}^{-1}(A(t)+c)$.
+
+**Esempio.** $y' = ty^2$: soluz. costante $y=0$; per $y \neq 0$: $-1/y = t^2/2 + c$, quindi $y = -1/(t^2/2+c)$.
+
+**Esempio.** $y' = (1-y)y$, $y(0) = 1/2$: frazioni parziali, $y(t) = e^t/(1+e^t)$.
+
+---
+
+## Equazioni lineari del 2° ordine omogenee a coefficienti costanti
+
+Forma:
+$$y''(t) + p\,y'(t) + q\,y(t) = 0$$
+
+**Integrale generale:** $y(t) = c_1 y_1(t) + c_2 y_2(t)$, con $c_1, c_2 \in \mathbb{R}$.
+
+**Equazione caratteristica:** si cerca $y = e^{\lambda t}$, si ottiene:
+$$\lambda^2 + p\lambda + q = 0$$
+
+Discriminante: $\Delta = p^2 - 4q$.
+
+### Caso 1: $\Delta > 0$ — due radici reali distinte $\lambda_1 \neq \lambda_2$
+
+$$\boxed{y(t) = c_1 e^{\lambda_1 t} + c_2 e^{\lambda_2 t}}$$
+
+### Caso 2: $\Delta = 0$ — radice reale doppia $\tilde{\lambda} = -p/2$
+
+$$\boxed{y(t) = c_1 e^{\tilde{\lambda}t} + c_2\, t\, e^{\tilde{\lambda}t}}$$
+
+*Verifica che $te^{\tilde\lambda t}$ soddisfa l'equazione:* $(2\tilde\lambda + p) = 0$ perché $\Delta=0$ implica $p = -2\tilde\lambda$; il coefficiente di $te^{\tilde\lambda t}$ è $\tilde\lambda^2+p\tilde\lambda+q=0$ per definizione.
+
+### Caso 3: $\Delta < 0$ — radici complesse coniugate $\lambda_{1,2} = \alpha \pm i\beta$
+
+$$\alpha = -\frac{p}{2}, \qquad \beta = \frac{\sqrt{|\Delta|}}{2} > 0$$
+
+$$\boxed{y(t) = c_1\, e^{\alpha t}\cos(\beta t) + c_2\, e^{\alpha t}\sin(\beta t)}$$
+
+---
+
+## Problema di Cauchy del 2° ordine
+
+Si impongono **due** condizioni iniziali $y(t_0) = y_0$ e $y'(t_0) = v_0$, ottenendo un sistema $2 \times 2$ lineare nelle costanti $c_1, c_2$.
+
+**Esempio.** $y'' - 5y' + 6y = 0$, $y(0)=2$, $y'(0)=7$:
+
+$\lambda^2-5\lambda+6 = (\lambda-2)(\lambda-3) = 0$, $\lambda_1=2$, $\lambda_2=3$.
+
+$y(t) = c_1 e^{2t} + c_2 e^{3t}$. C.I.: $c_1+c_2=2$, $2c_1+3c_2=7$ $\Rightarrow$ $c_1=-1$, $c_2=3$.
+
+$$y(t) = -e^{2t} + 3e^{3t}$$
+
+---
+
+## Esempio fisico: oscillatore armonico
+
+$$my'' + ky = 0 \quad (k, m > 0)$$
+
+Equazione caratteristica: $\lambda^2 + k/m = 0$, $\lambda_{1,2} = \pm i\sqrt{k/m}$.
+
+$\alpha = 0$, $\beta = \sqrt{k/m}$ (Caso 3):
+
+$$y(t) = c_1 \cos\!\left(\sqrt{\tfrac{k}{m}}\,t\right) + c_2 \sin\!\left(\sqrt{\tfrac{k}{m}}\,t\right)$$
+
+Soluzione periodica (moto oscillatorio).

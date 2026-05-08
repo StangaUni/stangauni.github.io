@@ -1,0 +1,120 @@
+---
+title: "Integrale di Riemann"
+type: "riassunto"
+section: "Serie e Integrale"
+excerpt: "Costruzione dell'integrale di Riemann, classi di funzioni integrabili, proprietà, teorema della media, teorema fondamentale del calcolo e integrali indefiniti."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Integrale di Riemann
+
+## Motivazione
+
+L'integrale di Riemann formalizza il concetto di **area con segno** sotto una curva: per $f \geq 0$, $\int_a^b f(x)\,dx$ è l'area della regione delimitata da $y = f(x)$, $y = 0$, $x = a$, $x = b$.
+
+---
+
+## Costruzione
+
+**Partizione.** Una partizione di $[a,b]$ è un insieme finito di punti $\mathcal{P} = \{a = x_0 < x_1 < \cdots < x_N = b\}$.
+
+**Ampiezza della partizione:** $|\mathcal{P}| = \max_{i} (x_i - x_{i-1})$.
+
+**Partizione puntata.** $(\mathcal{P}, \xi)$ dove $\xi_i \in [x_{i-1}, x_i]$ per ogni $i$.
+
+**Somma di Cauchy–Riemann:**
+$$S(f, \mathcal{P}, \xi) = \sum_{i=1}^N f(\xi_i)(x_i - x_{i-1})$$
+
+**Definizione.** $f$ è **integrabile secondo Riemann** su $[a,b]$ se esiste finito:
+$$\int_a^b f(x)\,dx = \lim_{|\mathcal{P}| \to 0} S(f, \mathcal{P}, \xi)$$
+
+indipendentemente dalla scelta dei punti $\xi_i$.
+
+---
+
+## Classi di funzioni integrabili
+
+- Funzioni **continue** su $[a,b]$
+- Funzioni **monotone** su $[a,b]$
+- Funzioni **continue a tratti** su $[a,b]$ (continue su $[a,b]$ tranne in un numero finito di punti, con limiti laterali finiti nei punti di discontinuità)
+
+---
+
+## Proprietà dell'integrale
+
+**Linearità:**
+$$\int_a^b [\lambda f(x) + \mu g(x)]\,dx = \lambda \int_a^b f(x)\,dx + \mu \int_a^b g(x)\,dx$$
+
+**Additività rispetto all'intervallo:**
+$$\int_a^b f(x)\,dx = \int_a^c f(x)\,dx + \int_c^b f(x)\,dx \quad (a \leq c \leq b)$$
+
+**Monotonia:** se $f(x) \leq g(x)$ su $[a,b]$, allora $\int_a^b f \leq \int_a^b g$.
+
+**Valore assoluto:** $\left|\int_a^b f(x)\,dx\right| \leq \int_a^b |f(x)|\,dx$.
+
+**Integrale su intervallo degenere:** $\int_a^a f(x)\,dx = 0$.
+
+**Inversione degli estremi:** $\int_a^b f(x)\,dx = -\int_b^a f(x)\,dx$.
+
+---
+
+## Teorema della media integrale
+
+**Teorema.** Se $f$ è continua su $[a,b]$, allora:
+$$\exists\, c \in [a,b] : f(c) = \frac{1}{b-a}\int_a^b f(x)\,dx$$
+
+Il valore $\dfrac{1}{b-a}\int_a^b f(x)\,dx$ è la **media integrale** di $f$ su $[a,b]$.
+
+---
+
+## Teorema Fondamentale del Calcolo (1ª versione)
+
+**TFC (1ª versione).** Se $f$ è continua su $[a,b]$ e $G$ è una qualunque primitiva di $f$ (cioè $G' = f$), allora:
+$$\int_a^b f(x)\,dx = G(b) - G(a) = \bigl[G(x)\bigr]_a^b$$
+
+*Dimostrazione.* Per il teorema di Lagrange, per ogni intervallino $[x_{k-1},x_k]$ di una partizione esiste $\xi_k^*$ con $G(x_k)-G(x_{k-1}) = f(\xi_k^*)(x_k-x_{k-1})$. Sommando su tutti gli intervalli (somma telescopica) si ottiene $G(b)-G(a) = S(f,\mathcal{P},\xi^*)$. Passando al limite per $|\mathcal{P}|\to 0$ si conclude. $\square$
+
+---
+
+## Funzione integrale e Teorema Fondamentale del Calcolo (2ª versione)
+
+**Def.** La **funzione integrale** di $f$ con base $a$ è:
+$$F(x) = \int_a^x f(t)\,dt$$
+
+**TFC (2ª versione).** Se $f$ è continua su $[a,b]$ e $F(x) = \int_a^x f(t)\,dt$, allora $F$ è derivabile su $[a,b]$ e:
+$$F'(x) = f(x) \quad \forall\, x \in [a,b]$$
+
+*Dimostrazione.*
+$$\frac{F(x+h)-F(x)}{h} = \frac{1}{h}\int_x^{x+h} f(t)\,dt$$
+Per il teorema della media, $= f(c_h)$ con $c_h \in [x, x+h]$. Poiché $c_h \to x$ e $f$ è continua, il limite è $f(x)$. $\square$
+
+---
+
+## Integrale indefinito
+
+L'**integrale indefinito** di $f$ è la famiglia di tutte le primitive:
+$$\int f(x)\,dx = F(x) + C, \quad C \in \mathbb{R}$$
+
+dove $F'(x) = f(x)$.
+
+Due primitive differiscono per una costante additiva.
+
+---
+
+## Tavola degli integrali fondamentali
+
+$$\int x^\alpha\,dx = \frac{x^{\alpha+1}}{\alpha+1} + C \quad (\alpha \neq -1)$$
+$$\int \frac{1}{x}\,dx = \ln|x| + C$$
+$$\int e^x\,dx = e^x + C$$
+$$\int a^x\,dx = \frac{a^x}{\ln a} + C$$
+$$\int \sin x\,dx = -\cos x + C$$
+$$\int \cos x\,dx = \sin x + C$$
+$$\int \frac{1}{\cos^2 x}\,dx = \tan x + C$$
+$$\int \frac{1}{1+x^2}\,dx = \arctan x + C$$
+$$\int \frac{1}{\sqrt{1-x^2}}\,dx = \arcsin x + C$$
+$$\int \frac{1}{\sqrt{x^2+1}}\,dx = \text{arcsinh}\, x = \ln(x + \sqrt{x^2+1}) + C$$
+$$\int \frac{1}{\sin^2 x}\,dx = -\cot x + C$$
+$$\int \sinh x\,dx = \cosh x + C$$
+$$\int \cosh x\,dx = \sinh x + C$$

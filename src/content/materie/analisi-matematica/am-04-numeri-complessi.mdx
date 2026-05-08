@@ -1,0 +1,112 @@
+---
+title: "Numeri Complessi"
+type: "riassunto"
+section: "Fondamenti"
+excerpt: "Definizione, operazioni, coniugato, modulo, forma trigonometrica, formula di De Moivre, radici n-esime in ℂ."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Numeri Complessi
+
+## Definizione
+
+L'insieme dei **numeri complessi** è:
+$$\mathbb{C} = \{a + bi : a, b \in \mathbb{R}\}$$
+dove $i$ è l'**unità immaginaria** con la proprietà $i^2 = -1$.
+
+Per $z = a + bi$:
+- $\text{Re}(z) = a$: **parte reale**
+- $\text{Im}(z) = b$: **parte immaginaria**
+
+$\mathbb{R} \subset \mathbb{C}$ (identificando $a \in \mathbb{R}$ con $a + 0i$).
+
+---
+
+## Operazioni
+
+**Somma:** $(a+bi) + (c+di) = (a+c) + (b+d)i$
+
+**Prodotto:** $(a+bi)(c+di) = (ac - bd) + (ad+bc)i$
+
+**Coniugato:** $\bar{z} = a - bi$
+
+**Proprietà del coniugato:**
+- $\overline{z+w} = \bar{z} + \bar{w}$
+- $\overline{zw} = \bar{z}\,\bar{w}$
+- $z + \bar{z} = 2\,\text{Re}(z)$, $z - \bar{z} = 2i\,\text{Im}(z)$
+- $z \cdot \bar{z} = a^2 + b^2 = |z|^2$
+
+**Modulo (norma):** $|z| = \sqrt{a^2 + b^2}$
+
+**Reciproco:** $\dfrac{1}{z} = \dfrac{\bar{z}}{|z|^2} = \dfrac{a-bi}{a^2+b^2}$ (per $z \neq 0$)
+
+---
+
+## Forma trigonometrica (polare)
+
+Ogni $z = a + bi \neq 0$ si scrive:
+$$z = r(\cos\theta + i\sin\theta)$$
+dove $r = |z| > 0$ e $\theta = \arg(z)$ è l'**argomento** (angolo che $z$ forma con l'asse reale positivo).
+
+$$a = r\cos\theta, \qquad b = r\sin\theta$$
+
+**Formula di Eulero:** $e^{i\theta} = \cos\theta + i\sin\theta$, quindi $z = r e^{i\theta}$.
+
+**Prodotto in forma polare:**
+$$z_1 z_2 = r_1 r_2\, e^{i(\theta_1+\theta_2)}$$
+i moduli si moltiplicano e gli argomenti si sommano.
+
+---
+
+## Formula di De Moivre
+
+Per ogni $n \in \mathbb{Z}$:
+$$(\cos\theta + i\sin\theta)^n = \cos(n\theta) + i\sin(n\theta)$$
+
+ovvero $(e^{i\theta})^n = e^{in\theta}$.
+
+---
+
+## Radici $n$-esime in $\mathbb{C}$
+
+Dato $w \in \mathbb{C}$, $w \neq 0$, scritto $w = \rho e^{i\varphi}$, le $n$ radici $n$-esime di $w$ (soluzioni di $z^n = w$) sono:
+
+$$z_k = \rho^{1/n} \exp\!\left(i\,\frac{\varphi + 2\pi k}{n}\right), \qquad k = 0, 1, \ldots, n-1$$
+
+I loro argomenti sono equidistanziati di $2\pi/n$: formano i vertici di un poligono regolare di $n$ lati inscritto nel cerchio di raggio $\rho^{1/n}$.
+
+**Radici $n$-esime dell'unità.** Soluzioni di $z^n = 1$ ($\rho = 1$, $\varphi = 0$):
+$$\omega_k = e^{2\pi i k/n}, \qquad k = 0, 1, \ldots, n-1$$
+
+---
+
+## Equazioni di 2° grado con $\Delta < 0$
+
+L'equazione $az^2 + bz + c = 0$ (con $a, b, c \in \mathbb{R}$, $a \neq 0$) ha discriminante $\Delta = b^2 - 4ac$.
+
+Se $\Delta < 0$: le soluzioni sono complesse coniugate:
+$$z_{1,2} = \frac{-b \pm \sqrt{\Delta}}{2a} = \frac{-b \pm i\sqrt{|\Delta|}}{2a}$$
+
+**Esempio.** $z^2 + 1 = 0$: $\Delta = -4$, soluzioni $z = \pm i$.
+
+---
+
+## Angoli in radianti
+
+La misura in radianti di un angolo $\alpha$ è il rapporto tra la lunghezza dell'arco sotteso e il raggio. Conversione:
+
+$$\alpha_{\text{rad}} = \alpha_{\text{gradi}} \cdot \frac{\pi}{180}$$
+
+Casi notevoli:
+
+| Gradi | Radianti |
+|-------|----------|
+| $0°$ | $0$ |
+| $30°$ | $\pi/6$ |
+| $45°$ | $\pi/4$ |
+| $60°$ | $\pi/3$ |
+| $90°$ | $\pi/2$ |
+| $180°$ | $\pi$ |
+| $360°$ | $2\pi$ |

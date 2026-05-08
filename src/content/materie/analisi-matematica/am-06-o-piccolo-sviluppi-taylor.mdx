@@ -1,0 +1,100 @@
+---
+title: "O-piccolo e Sviluppi di Taylor"
+type: "riassunto"
+section: "Calcolo"
+excerpt: "Notazione o-piccolo, asintotico, formula di Taylor con resto di Peano, sviluppi di Maclaurin fondamentali e applicazioni al calcolo di limiti."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# O-piccolo e Sviluppi di Taylor
+
+## O-piccolo
+
+**Definizione.** Siano $f, g$ definite in un intorno di $x_0$ (escluso al più $x_0$) con $g(x) \neq 0$ vicino a $x_0$. Si scrive:
+$$f(x) = o(g(x)) \quad \text{per } x \to x_0$$
+se $\displaystyle\lim_{x \to x_0} \frac{f(x)}{g(x)} = 0$.
+
+**Notazione comune:** $o(x^n)$ indica una funzione che tende a zero più velocemente di $x^n$ per $x \to 0$.
+
+**Proprietà algebriche** (per $x \to 0$):
+- $o(x^n) + o(x^n) = o(x^n)$
+- $x^k \cdot o(x^n) = o(x^{n+k})$
+- $o(x^n) \cdot o(x^m) = o(x^{n+m})$
+- $o(o(x^n)) = o(x^n)$
+- Se $f = o(x^m)$ e $m > n$, allora $f = o(x^n)$ (si può "abbassare" l'ordine)
+
+---
+
+## Asintotico
+
+**Definizione.** $f \sim g$ per $x \to x_0$ se $\displaystyle\lim_{x \to x_0} \frac{f(x)}{g(x)} = 1$.
+
+Equivalentemente, $f(x) = g(x) + o(g(x))$.
+
+**Principio di sostituzione degli infinitesimi.** In un prodotto o rapporto di funzioni, ogni fattore può essere sostituito con una funzione asintotica ad esso (non in somme!).
+
+**Esempi** per $x \to 0$:
+$$\sin x \sim x, \quad \tan x \sim x, \quad e^x - 1 \sim x, \quad \ln(1+x) \sim x, \quad 1-\cos x \sim \frac{x^2}{2}$$
+
+---
+
+## Formula di Taylor con resto di Peano
+
+**Teorema.** Sia $f$ derivabile $n$ volte in $x_0$. Allora:
+$$f(x) = \sum_{k=0}^n \frac{f^{(k)}(x_0)}{k!}(x-x_0)^k + o\bigl((x-x_0)^n\bigr) \quad \text{per } x \to x_0$$
+
+Il **polinomio di Taylor** di ordine $n$ di $f$ centrato in $x_0$ è:
+$$T_n(x) = \sum_{k=0}^n \frac{f^{(k)}(x_0)}{k!}(x-x_0)^k$$
+
+Quando $x_0 = 0$: **sviluppo di Maclaurin**.
+
+---
+
+## Sviluppi di Maclaurin fondamentali
+
+Validi per $x \to 0$:
+
+$$e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots + \frac{x^n}{n!} + o(x^n)$$
+
+$$\sin x = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots + (-1)^n \frac{x^{2n+1}}{(2n+1)!} + o(x^{2n+2})$$
+
+$$\cos x = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots + (-1)^n \frac{x^{2n}}{(2n)!} + o(x^{2n+1})$$
+
+$$\ln(1+x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots + (-1)^{n+1}\frac{x^n}{n} + o(x^n)$$
+
+$$(1+x)^\alpha = 1 + \alpha x + \frac{\alpha(\alpha-1)}{2!}x^2 + \cdots + \binom{\alpha}{n}x^n + o(x^n) \quad (\alpha \in \mathbb{R})$$
+
+$$\tan x = x + \frac{x^3}{3} + \frac{2x^5}{15} + o(x^5)$$
+
+$$\arctan x = x - \frac{x^3}{3} + \frac{x^5}{5} - \cdots + (-1)^n\frac{x^{2n+1}}{2n+1} + o(x^{2n+2})$$
+
+$$\arcsin x = x + \frac{x^3}{6} + \frac{3x^5}{40} + o(x^5)$$
+
+$$\sinh x = x + \frac{x^3}{3!} + \frac{x^5}{5!} + o(x^5)$$
+
+$$\cosh x = 1 + \frac{x^2}{2!} + \frac{x^4}{4!} + o(x^4)$$
+
+---
+
+## Uso degli sviluppi per il calcolo di limiti
+
+**Procedura:** Sviluppare numeratore e denominatore fino all'ordine necessario per eliminare la forma indeterminata, quindi simplificare.
+
+**Esempio.** $\displaystyle\lim_{x \to 0} \frac{e^x - 1 - x}{x^2}$:
+$$e^x - 1 - x = \frac{x^2}{2} + o(x^2) \quad \Rightarrow \quad \lim = \frac{1}{2}$$
+
+**Con parametro $\alpha$.** Per limiti del tipo $\displaystyle\lim_{x \to 0} \frac{f(x)}{x^\alpha}$, conviene sviluppare e confrontare l'ordine del termine dominante di $f(x)$ con $\alpha$.
+
+---
+
+## Infinitesimi e infiniti: ordine
+
+**Infinitesimo di ordine $\alpha$** rispetto a $x \to x_0$: $f(x) = O((x-x_0)^\alpha)$ con $f(x) \not\sim c(x-x_0)^\beta$ per $\beta > \alpha$.
+
+Più precisamente, $f$ è **infinitesimo di ordine $\alpha$** rispetto a $x$ se $\displaystyle\lim \frac{f(x)}{x^\alpha} = l \neq 0$.
+
+**Gerarchia degli infinitesimi** per $x \to 0^+$:
+$$x^{\alpha_1} \ll x^{\alpha_2} \quad \text{se } \alpha_1 > \alpha_2 > 0$$
+(un infinitesimo di ordine superiore va più velocemente a zero)

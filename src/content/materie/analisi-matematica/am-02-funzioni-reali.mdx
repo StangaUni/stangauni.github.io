@@ -1,0 +1,138 @@
+---
+title: "Funzioni Reali"
+type: "riassunto"
+section: "Fondamenti"
+excerpt: "Definizione di funzione, iniettività, suriettività, composizione, dominio naturale, funzioni pari/dispari/periodiche, trigonometriche e iperboliche."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Funzioni Reali
+
+## Definizione di funzione
+
+Una **funzione** $f: A \to B$ associa a ogni elemento $x \in A$ (dominio) un unico elemento $f(x) \in B$ (codominio).
+
+- **Immagine:** $\text{Im}(f) = f(A) = \{f(x) : x \in A\} \subseteq B$
+- **Controimmagine** di $C \subseteq B$: $f^{-1}(C) = \{x \in A : f(x) \in C\}$
+- **Grafico:** $\{(x, f(x)) : x \in A\} \subseteq A \times B$
+
+---
+
+## Proprietà delle funzioni
+
+**Iniettività.** $f$ è **iniettiva** se $f(x_1) = f(x_2) \Rightarrow x_1 = x_2$ (equivalentemente: $x_1 \neq x_2 \Rightarrow f(x_1) \neq f(x_2)$).
+
+**Suriettività.** $f: A \to B$ è **suriettiva** se $\text{Im}(f) = B$, ossia $\forall\, b \in B\ \exists\, a \in A : f(a) = b$.
+
+**Biettività.** $f$ è **biiettiva** se è sia iniettiva che suriettiva.
+
+**Funzione inversa.** Se $f: A \to B$ è biiettiva, esiste $f^{-1}: B \to A$ con $f^{-1}(f(x)) = x$ e $f(f^{-1}(y)) = y$.
+
+**Composizione.** Se $f: A \to B$ e $g: B \to C$, si definisce $(g \circ f): A \to C$ con $(g \circ f)(x) = g(f(x))$.
+
+---
+
+## Dominio naturale
+
+Il **dominio naturale** (o dominio massimale) di un'espressione è il più grande sottoinsieme di $\mathbb{R}$ su cui l'espressione è ben definita.
+
+**Regole per il calcolo del dominio:**
+- $\sqrt[2n]{f(x)}$: si richiede $f(x) \geq 0$
+- $\dfrac{1}{f(x)}$: si richiede $f(x) \neq 0$
+- $\ln f(x)$: si richiede $f(x) > 0$
+- $\log_a f(x)$: si richiede $f(x) > 0$ (e $a > 0$, $a \neq 1$)
+
+---
+
+## Funzioni pari, dispari, periodiche
+
+**Funzione pari.** $f(-x) = f(x)$ per ogni $x$ nel dominio (simmetrica rispetto all'asse $y$).
+
+**Funzione dispari.** $f(-x) = -f(x)$ per ogni $x$ nel dominio (simmetrica rispetto all'origine).
+
+**Funzione periodica.** Esiste $T > 0$ t.c. $f(x+T) = f(x)$ per ogni $x$; il minimo tale $T$ è il **periodo**.
+
+---
+
+## Funzioni monotone
+
+- $f$ è **strettamente crescente** su $I$ se $x_1 < x_2 \Rightarrow f(x_1) < f(x_2)$
+- $f$ è **strettamente decrescente** su $I$ se $x_1 < x_2 \Rightarrow f(x_1) > f(x_2)$
+
+Ogni funzione strettamente monotona è iniettiva.
+
+---
+
+## Funzioni trigonometriche
+
+Definite sul cerchio unitario $x^2 + y^2 = 1$ (angoli in radianti):
+
+| $\theta$ | $0$ | $\pi/6$ | $\pi/4$ | $\pi/3$ | $\pi/2$ | $\pi$ | $3\pi/2$ | $2\pi$ |
+|----------|-----|---------|---------|---------|---------|-------|----------|--------|
+| $\sin\theta$ | $0$ | $1/2$ | $\sqrt{2}/2$ | $\sqrt{3}/2$ | $1$ | $0$ | $-1$ | $0$ |
+| $\cos\theta$ | $1$ | $\sqrt{3}/2$ | $\sqrt{2}/2$ | $1/2$ | $0$ | $-1$ | $0$ | $1$ |
+
+**Periodicità:** $\sin(x+2\pi) = \sin x$, $\cos(x+2\pi) = \cos x$. Periodo = $2\pi$.
+
+**Parità:** $\sin$ è dispari, $\cos$ è pari.
+
+**Identità fondamentale:** $\sin^2 x + \cos^2 x = 1$.
+
+**Altre funzioni:**
+$$\tan x = \frac{\sin x}{\cos x}, \quad \cot x = \frac{\cos x}{\sin x}$$
+
+---
+
+## Funzioni trigonometriche inverse
+
+**Arcoseno.** $\arcsin: [-1,1] \to [-\pi/2, \pi/2]$, inversa di $\sin\big|_{[-\pi/2,\pi/2]}$.
+
+**Arcocoseno.** $\arccos: [-1,1] \to [0, \pi]$, inversa di $\cos\big|_{[0,\pi]}$.
+
+**Arcotangente.** $\arctan: \mathbb{R} \to (-\pi/2, \pi/2)$, inversa di $\tan\big|_{(-\pi/2,\pi/2)}$.
+
+**Arcocotangente.** $\text{arccot}: \mathbb{R} \to (0, \pi)$, inversa di $\cot\big|_{(0,\pi)}$.
+
+$$\arcsin x + \arccos x = \frac{\pi}{2} \qquad \forall\, x \in [-1,1]$$
+
+---
+
+## Funzioni iperboliche e loro inverse
+
+$$\sinh x = \frac{e^x - e^{-x}}{2}, \qquad \cosh x = \frac{e^x + e^{-x}}{2}, \qquad \tanh x = \frac{\sinh x}{\cosh x}$$
+
+**Identità fondamentale:** $\cosh^2 x - \sinh^2 x = 1$.
+
+**Proprietà:** $\sinh$ è dispari e strettamente crescente; $\cosh$ è pari con minimo $\cosh(0)=1$.
+
+**Inverse:**
+$$\text{arcsinh}\, x = \ln\!\left(x + \sqrt{x^2+1}\right), \quad x \in \mathbb{R}$$
+$$\text{arccosh}\, x = \ln\!\left(x + \sqrt{x^2-1}\right), \quad x \geq 1$$
+
+---
+
+## Formule di addizione trigonometriche
+
+$$\sin(\alpha \pm \beta) = \sin\alpha\cos\beta \pm \cos\alpha\sin\beta$$
+
+$$\cos(\alpha \pm \beta) = \cos\alpha\cos\beta \mp \sin\alpha\sin\beta$$
+
+**Formule di duplicazione** (caso $\alpha = \beta$):
+
+$$\sin(2\alpha) = 2\sin\alpha\cos\alpha$$
+
+$$\cos(2\alpha) = \cos^2\alpha - \sin^2\alpha = 2\cos^2\alpha - 1 = 1 - 2\sin^2\alpha$$
+
+**Formule di prostaferesi** (usate spesso per calcolare integrali):
+
+$$\sin^2\alpha = \frac{1 - \cos(2\alpha)}{2}, \qquad \cos^2\alpha = \frac{1 + \cos(2\alpha)}{2}$$
+
+---
+
+## Parte positiva e negativa
+
+$$f^+(x) = \max\{f(x), 0\}, \qquad f^-(x) = \max\{-f(x), 0\}$$
+
+$$f = f^+ - f^-, \qquad |f| = f^+ + f^-$$
