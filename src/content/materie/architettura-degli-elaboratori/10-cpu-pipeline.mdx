@@ -1,0 +1,335 @@
+---
+title: "CPU e Pipeline"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Struttura della CPU, registri, flusso dati Fetch/Execute, pipeline a 5 e 6 stadi, hazard strutturali/dati/controllo, data forwarding, predizione dei salti e Intel 80486."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Struttura della CPU
+
+### Compiti della CPU
+
+1. Prelevare istruzioni (Fetch)
+2. Interpretare istruzioni (Decode)
+3. Prelevare dati (Operand Fetch)
+4. Elaborare dati (Execute)
+5. Scrivere risultati (Write Back)
+
+### Registri
+
+La CPU usa **registri** come spazio di lavoro (livello più alto della gerarchia di memoria).
+
+**Registri visibili all'utente:**
+- **General purpose:** dati e indirizzi (tipicamente 8–32; RISC ≥ 32)
+- **Condition codes (PSW):** segno, zero, carry, overflow, interrupt enable, modo supervisore
+
+**Registri di controllo e stato:**
+- **PC** (Program Counter): indirizzo prossima istruzione
+- **IR** (Instruction Register): istruzione in esecuzione
+- **MAR** (Memory Address Register): indirizzo corrente sul bus
+- **MBR** (Memory Buffer Register): dato corrente sul bus
+
+### Effetto del numero di registri
+
+Il numero di registri influenza il numero di accessi in memoria. Esempio:
+
+```
+mem[4] = mem[0]+mem[1]+mem[2]+mem[3]
+mem[6] = mem[5]-mem[4]
+```
+
+- **Con 4 registri:** 7 operazioni, 5 accessi in memoria (necessario ricaricare `mem[0]`)
+- **Con 6 registri:** 7 operazioni, 4 accessi in memoria (evita di ricaricare `mem[0]`)
+
+Tipicamente 8–32 registri generali; RISC usa ≥ 32.
+
+### Program Status Word (PSW)
+
+Bits del PSW:
+- Segno, Zero, Carry, Overflow dell'ultimo risultato
+- Abilitazione/disabilitazione interrupt
+- **Modo supervisore** — permette al SO di eseguire istruzioni privilegiate; non disponibile ai programmi utente
+
+---
+
+## Ciclo Fetch/Execute — Flusso dei Dati
+
+### Instruction Fetch
+
+```
+PC → MAR → bus indirizzi → Memoria
+                        → bus dati → MBR → IR
+PC ← PC + 1 (contemporaneamente)
+```
+
+### Data Fetch (indirizzamento indiretto)
+
+```
+MBR[N bit a destra] → MAR → Memoria → MBR (indirizzo dell'operando)
+```
+
+### Execute
+
+Varie forme: lettura/scrittura memoria, operazioni ALU, trasferimenti tra registri, I/O.
+
+### Interrupt
+
+```
+PC → MBR → bus dati → Memoria[SP]   (salva PC)
+PC ← indirizzo ISR                  (carica nuovo PC)
+```
+
+---
+
+## Prefetch
+
+- Fase fetch accede alla memoria; fase execute di solito no.
+- Si può prelevare la prossima istruzione **durante l'esecuzione** di quella corrente.
+- **Limite:** salti/branch invalidano l'istruzione pre-fetched → va scartata e si ricomincia.
+
+---
+
+## Pipeline
+
+La pipeline decompone il ciclo esecutivo in fasi successive, eseguite in parallelo da unità funzionali diverse.
+
+### Fasi tipiche a 6 stadi
+
+| Stadio | Nome | Descrizione |
+|---|---|---|
+| FI | Fetch Instruction | Lettura dell'istruzione |
+| DI | Decode Instruction | Decodifica |
+| CO | Calculate Operand address | Calcolo indirizzo effettivo operandi |
+| FO | Fetch Operand | Lettura degli operandi |
+| EI | Execute Instruction | Esecuzione |
+| WO | Write Operand | Scrittura del risultato |
+
+### Fasi RISC-V/MIPS (5 stadi)
+
+| Stadio | Descrizione |
+|---|---|
+| **IF** | Instruction Fetch |
+| **ID** | Instruction Decode / Register Read |
+| **EX** | Execute / Address Calculation |
+| **MEM** | Memory Access |
+| **WB** | Write Back |
+
+### Performance della Pipeline
+
+**Tempo di ciclo:**
+$$\tau = \tau_m + d \quad (\tau_m = \text{max ritardo di stadio}, \ d = \text{overhead registro})$$
+
+**Tempo totale per $n$ istruzioni, $k$ stadi:**
+$$T_k = [k + (n-1)]\,\tau$$
+
+La prima istruzione impiega $k$ cicli; le successive $n-1$ istruzioni impiegano 1 ciclo ciascuna.
+
+**Speedup:**
+$$S_k = \frac{nk}{k + (n-1)} \xrightarrow{n \to \infty} k$$
+
+Lo speedup si avvicina al numero di stadi all'aumentare delle istruzioni.
+
+---
+
+## Hazard della Pipeline
+
+Situazioni che impediscono l'esecuzione nel ciclo immediatamente successivo (→ **stallo/bolla**).
+
+### 1. Sbilanciamento delle fasi
+
+Fasi con durate diverse. Soluzione: decomporre fasi lente in sottofasi, o duplicare unità onerose (es. ALU intera + ALU virgola mobile).
+
+### 2. Hazard strutturali
+
+Due istruzioni accedono alla stessa risorsa (es. memoria) nello stesso ciclo.
+
+**Soluzioni:**
+- Stallo (nop): ritardare un'istruzione
+- Cache separate per istruzioni e dati (eliminate la contesa IF ↔ MEM)
+
+### 3. Data Hazard
+
+Un'istruzione dipende dal risultato di una precedente ancora in pipeline.
+
+| Tipo | Descrizione |
+|---|---|
+| **RAW** (Read After Write) | L'istruzione $i+1$ legge prima che $i$ scriva → il più comune |
+| **WAW** (Write After Write) | L'istruzione $i+1$ scrive prima che $i$ scriva |
+| **WAR** (Write After Read) | L'istruzione $i+1$ scrive prima che $i$ legga → raro in pipeline in-order |
+
+**Soluzioni per RAW:**
+
+1. **Stalli:** inserire cicli NOP finché il dato è disponibile
+2. **Data forwarding (bypassing):** circuiti hardware che propagano il risultato dalla fase in cui è disponibile direttamente alla fase che ne ha bisogno, **senza attendere WB**
+3. **Riordino delle istruzioni:** il compilatore sposta istruzioni indipendenti tra produttore e consumatore
+
+---
+
+## Data Forwarding — Condizioni (RISC-V/MIPS)
+
+### Hazard Detection Unit (HDU) — Stallo necessario
+
+Condizione di stallo per una `lw` seguita immediatamente da un'istruzione che usa il dato caricato (load-use hazard):
+
+```
+ID/EX.MemRead AND
+(ID/EX.RegisterRd = IF/ID.RegisterRs1 OR
+ ID/EX.RegisterRd = IF/ID.RegisterRs2)
+```
+
+Azione: inserisce bolla (NOP) in ID/EX; blocca PC e IF/ID.
+
+### Forwarding Unit — EX Hazard
+
+```
+EX/MEM.RegWrite AND (EX/MEM.RegisterRd ≠ 0) AND
+(EX/MEM.RegisterRd = ID/EX.RegisterRs1)  → ForwardA = 10
+(EX/MEM.RegisterRd = ID/EX.RegisterRs2)  → ForwardB = 10
+```
+
+Sorgente: `EX/MEM.ALUOutput`.
+
+### Forwarding Unit — MEM Hazard
+
+```
+MEM/WB.RegWrite AND (MEM/WB.RegisterRd ≠ 0) AND
+NOT (EX/MEM.RegWrite AND ...) AND   ← priorità a EX hazard
+(MEM/WB.RegisterRd = ID/EX.RegisterRs1)  → ForwardA = 01
+(MEM/WB.RegisterRd = ID/EX.RegisterRs2)  → ForwardB = 01
+```
+
+Sorgente: `MEM/WB.ALUOutput` (istruzioni aritmetiche) o `MEM/WB.LMD` (load).
+
+### Controllo multiplexer
+
+| ForwardA/B | Sorgente | Quando |
+|---|---|---|
+| 00 | Register file (ID/EX) | Nessun hazard |
+| 10 | EX/MEM.ALUOutput | EX hazard |
+| 01 | MEM/WB.ALUOutput o LMD | MEM hazard |
+
+---
+
+## Analisi dei Diagrammi di Pipeline
+
+Per tracciare l'esecuzione in pipeline è necessario:
+1. Identificare le **dipendenze RAW** tra registri produttori e consumatori
+2. Verificare i **load-use hazard** (lw seguita da istruzione che usa immediatamente il dato caricato)
+3. Inserire **stalli** (bolle) dove necessario — la HDU blocca PC e IF/ID, inserisce NOP in ID/EX
+4. Determinare i **forwarding path** attivi in ogni ciclo
+
+**Esempio — pipeline a 5 stadi con stallo load-use:**
+
+| Istruzione | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| LW $1, 0($2) | IF | ID | EX | MEM | WB | | | |
+| ADD $3, $1, $4 | | IF | **ID** | **ID** | EX | MEM | WB | |
+| SW $3, 0($2) | | | **IF** | **IF** | ID | EX | MEM | WB |
+
+Lo stallo al ciclo 4 è causato dal load-use hazard (LW→ADD su $1).
+
+---
+
+## Control Hazard — Salti
+
+I salti alterano la sequenzialità; le istruzioni pre-fetchate possono diventare invalide.
+
+### Salto condizionato
+
+- La condizione è nota solo al termine di EX
+- L'indirizzo target è noto al termine di CO
+- Le istruzioni nel frattempo prelevate potrebbero dover essere **scartate (flush)**
+
+### Soluzioni
+
+**1. Stallo:** bloccare la pipeline fino a quando l'indirizzo target è noto. Semplice ma inefficiente.
+
+**2. Flussi multipli:** duplicare la prima parte della pipeline per entrambi i rami. Costoso.
+
+**3. Loop buffer:** piccola memoria veloce con le ultime $n$ istruzioni prelevate. Efficace per i loop.
+
+**4. Delayed branch:** l'istruzione nel **branch delay slot** (subito dopo il salto) viene eseguita sempre; il compilatore cerca un'istruzione "opportuna":
+
+- **Strategia "from before":** si sposta nel delay slot un'istruzione indipendente che precede il salto.
+- **Strategia "from target":** si copia nel delay slot la prima istruzione della destinazione del salto (utile quando il salto è quasi sempre preso, es. in loop).
+
+**5. Predizione dei salti:**
+
+| Approccio | Descrizione |
+|---|---|
+| Statico (never taken) | Assume sempre che il salto non venga preso |
+| Statico (always taken) | Assume sempre che il salto venga preso |
+| **1 bit** | Memorizza l'esito dell'ultima esecuzione |
+| **2 bit** | Automa a 4 stati; 2 errori consecutivi per cambiare previsione |
+| **Branch History Table** | Tabella indicizzata dai bit bassi dell'indirizzo del salto; contiene bit di predizione + target |
+
+**Automa a 4 stati (2 bit):**
+
+| Stato | Previsione |
+|---|---|
+| 11 | Taken (forte) |
+| 10 | Taken (debole) |
+| 01 | Not Taken (debole) |
+| 00 | Not Taken (forte) |
+
+- Transizione verso "Taken" quando il salto viene preso
+- Transizione verso "Not Taken" quando il salto non viene preso
+- Occorrono **2 errori consecutivi** per cambiare la previsione → più stabile per loop
+
+---
+
+## Intel 80486 — Pipeline a 5 Stadi
+
+| Stadio | Descrizione |
+|---|---|
+| **Fetch** | Preleva istruzioni; 2 buffer prefetch da 16 byte; istruzioni a lunghezza variabile (1–11 byte) |
+| **D1** | Decodifica opcode e modi di indirizzamento (nei primi 3 byte); indica a D2 i byte restanti |
+| **D2** | Espande opcode in segnali di controllo; calcola indirizzi per modi complessi |
+| **EX** | Operazioni ALU, accesso alla cache |
+| **WB** | Aggiorna registri e flag; se scrive in memoria pone il valore in cache e nei buffer di scrittura |
+
+**Casi particolari:**
+- *Nessun ritardo:* se l'istruzione successiva usa il risultato prodotto nello stesso ciclo EX → data forwarding, nessuno stallo.
+- *Pointer load delay:* se il valore del registro serve come base per calcolare un indirizzo in D2 → 1 ciclo di stallo.
+- *Salto condizionato (preso):* in D2 di Jcc si controlla la condizione via bypass; in parallelo si fa un prefetch speculativo del target; l'istruzione sequenziale prelevata viene scartata.
+
+---
+
+## Segnali di Controllo RISC-V
+
+| Nome | Non asserito | Asserito |
+|---|---|---|
+| **RegWrite** | Nullo | Scrive nel register file |
+| **ALUSrc** | Secondo operando da registro | Secondo operando dall'immediato (sign-extended) |
+| **PCSrc** | PC ← PC + 4 | PC ← indirizzo di salto |
+| **MemRead** | Nullo | Legge dalla memoria dati |
+| **MemWrite** | Nullo | Scrive nella memoria dati |
+| **MemtoReg** | Dati al RF dall'ALU | Dati al RF dalla memoria |
+
+| Istruzione | ALUOp | ALUSrc | Branch | MemRead | MemWrite | RegWrite | MemtoReg |
+|---|---|---|---|---|---|---|---|
+| Tipo R | 10 | 0 | 0 | 0 | 0 | 1 | 0 |
+| lw | 00 | 1 | 0 | 1 | 0 | 1 | 1 |
+| sw | 00 | 1 | 0 | 0 | 1 | 0 | X |
+| beq | 01 | 0 | 1 | 0 | 0 | 0 | X |
+
+I segnali sono calcolati in ID e propagati attraverso i registri di pipeline.
+
+---
+
+## Riordino delle Istruzioni
+
+Il compilatore può riordinare le istruzioni per ridurre gli stalli, purché non alteri la semantica del programma.
+
+**Esempio:**
+```c
+a = b + e;
+c = b + f;
+```
+
+Con dipendenze load-use, il riordino inserisce `lw f` tra `lw b` e `add a`, eliminando uno stallo.
+
+**Criterio:** due istruzioni sono riordinabili se non vi sono dipendenze RAW, WAW o WAR tra loro nell'ordine riordinato.

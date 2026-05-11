@@ -1,0 +1,153 @@
+---
+title: "Calcolatori Multicore"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Organizzazioni hardware (superscalar, SMT, multicore), Regola di Pollack, Legge di Amdahl, organizzazioni della cache nei sistemi multicore, esempi Intel e ARM Cortex-A15."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Crescita delle Prestazioni Hardware
+
+Le prestazioni dei microprocessori sono cresciute grazie a:
+1. Miglioramento dell'organizzazione (pipeline, ottimizzazioni)
+2. Aumento della frequenza di clock
+3. Crescita del parallelismo: Pipeline → Pipeline parallele (superscalar) → Superscalar + replicazione banco registri (SMT)
+
+**Problemi:** complessità crescente, maggiore area sul chip, difficoltà di progettazione e verifica.
+
+---
+
+## Organizzazioni Hardware
+
+### (a) Superscalar
+- Singolo PC, singola issue logic
+- Registro file singolo
+- Unità di esecuzione e code condivise
+- Cache L1 (istruzioni e dati) e L2 condivise
+
+### (b) Simultaneous Multithreading (SMT)
+- Più PC (PC1…PCn)
+- Issue logic comune
+- Più banchi di registri (uno per thread)
+- Unità di esecuzione condivise
+- Cache L1 e L2 condivise
+
+### (c) Multicore
+- Più CPU complete (ognuna superscalar o SMT)
+- Ogni CPU ha la propria cache L1 dedicata
+- Cache L2 (o L3) condivisa tra tutti i core
+
+---
+
+## Regola di Pollack
+
+> Le prestazioni sono approssimativamente proporzionali alla **radice quadrata** dell'incremento in complessità.
+
+- Raddoppiare la complessità → **+40%** di prestazioni su un core singolo
+- Raddoppiare il numero di core → potenziale miglioramento **quasi lineare** (se il software è parallelizzabile)
+
+→ Conviene avere **più core semplici** piuttosto che un core unico molto complesso.
+
+---
+
+## Potenza e Complessità
+
+- La potenza dissipata cresce esponenzialmente con la densità e la frequenza
+- **Rimedio:** usare più spazio per la cache (meno densa → molto meno potenza)
+- Nei chip moderni, la **percentuale di area dedicata alla cache** è cresciuta dall'~1% a oltre l'80% al diminuire del feature size
+
+---
+
+## Legge di Amdahl
+
+Limita lo speedup ottenibile con più processori in presenza di codice sequenziale:
+
+$$S = \frac{1}{f_s + \frac{1-f_s}{N}}$$
+
+dove $f_s$ = frazione di codice sequenziale, $N$ = numero di processori.
+
+| Codice seriale | Speedup massimo (8 core) |
+|---|---|
+| 0% | ≈ 8,0 |
+| 2% | ≈ 5,8 |
+| 5% | ≈ 4,7 |
+| 10% | ≈ 4,0 |
+| 20% | ≈ 2,9 |
+
+**Implicazione:** anche una piccola percentuale di codice intrinsecamente seriale limita drasticamente lo speedup. I vantaggi del multicore si ottengono solo con applicazioni altamente parallelizzabili.
+
+**Overhead** che riducono lo speedup reale: comunicazione tra thread, distribuzione del lavoro, coerenza della cache.
+
+---
+
+## Parametri Progettuali Multicore
+
+- **Numero di core per chip**
+- **Numero di livelli di cache per chip**
+- **Quantità di cache condivisa**
+
+---
+
+## Organizzazioni della Cache nei Sistemi Multicore
+
+| Organizzazione | Descrizione |
+|---|---|
+| **(a) L1 dedicata** | Ogni core: propria L1; L2 condivisa |
+| **(b) L1+L2 dedicate** | Ogni core: propria L1 e L2; memoria condivisa |
+| **(c) L2 condivisa** | Ogni core: propria L1; L2 condivisa tra tutti |
+| **(d) L3 condivisa** | Ogni core: propria L1 e L2; L3 condivisa |
+
+### Vantaggi della cache L2 condivisa
+
+- **Riduzione dei miss totali:** dati condivisi da più core non vengono replicati al livello L2
+- **Allocazione dinamica:** thread con più working set usano più cache; thread con meno ne usano meno
+- **Comunicazione facilitata** via memoria condivisa
+- Problema di coerenza confinato al livello L1
+
+**Svantaggio:** cache L2 dedicata dà accesso più rapido per thread con forte località.
+
+---
+
+## Esempi di Processori Multicore Intel
+
+### Intel Core Duo (2006)
+- 2 core superscalari
+- Cache L1 dedicata: 32 KB per core
+- Cache L2 condivisa: 2 MB
+
+### Intel Core i7 (2008)
+- 4 core con SMT (8 thread logici)
+- Cache L1: 32 KB I+D per core; L2: 256 KB per core
+- Cache L3 condivisa: 8 MB
+- Controllore DDR3 on-chip; banda 25,6 GB/s
+- Interfaccia QuickPath Interconnect
+
+### Intel Core i7-5960X (2014)
+- 8 core
+- Cache L1: 32 KB/core; L2: 256 KB/core; L3: 20 MB condivisa
+- DDR4 Memory Controllers: 4×8B @ 2,133 GT/s
+- PCI Express: 40 lane @ 8 GT/s
+
+---
+
+## ARM Cortex-A15 MPCore
+
+Processore multicore omogeneo per mobile e server.
+
+**Componenti principali:**
+- **GIC (Generic Interrupt Controller):** rileva, prioritizza e distribuisce gli interrupt ai core
+- **Generic Timer:** timer privato per ogni core
+- **Core ARM Cortex-A15:** fino a 4 core
+- **Cache L1:** 32 KB dati + 32 KB istruzioni per core (dedicate)
+- **Cache L2:** condivisa, gestisce i miss L1 di tutti i core
+- **SCU (Snoop Control Unit):** mantiene la coerenza tra cache L1 e L2
+
+---
+
+## Considerazioni sul Software
+
+I vantaggi del multicore dipendono dalla **capacità del software di sfruttare il parallelismo**. Con percentuali di codice seriale ≥ 10%, lo speedup si appiattisce rapidamente e può addirittura diminuire per overhead di coordinazione.
+
+**Applicazioni che beneficiano del multicore:** rendering grafico, simulazioni fisiche, server web, database, elaborazione di flussi dati, machine learning.

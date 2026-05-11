@@ -1,0 +1,60 @@
+---
+title: "Applicazioni delle Formule"
+type: "riassunto"
+section: "Esercizi"
+excerpt: "Applicazioni numeriche delle formule principali: tempo di accesso al disco, struttura dell'indirizzo in cache set-associativa, calcolo cicli di pipeline con stalli e forwarding."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Tempo di Accesso al Disco
+
+Il tempo totale di accesso a un disco è:
+
+$$T = T_S + T_L + T_T$$
+
+dove:
+- $T_S$ = seek time (posizionamento testina sulla traccia)
+- $T_L = \dfrac{1}{2} \cdot \dfrac{60}{\text{RPM}}$ = latenza rotazionale media
+- $T_T = \dfrac{b}{r \cdot N}$ = tempo di trasferimento ($b$ = byte richiesti, $r$ = giri/s, $N$ = byte/traccia)
+
+**Applicazione numerica** (disco a 10000 RPM, $N = 1$ MB, 64 KB su cilindro a due facce):
+
+$$r = \frac{10000}{60} \text{ giri/s}, \quad T_L = \frac{60000}{20000} = 3\ \text{ms}$$
+
+Le due testine leggono in parallelo → ciascuna trasferisce 32 KB:
+
+$$T_T = \frac{32 \times 1024}{\frac{10000}{60} \times 2^{20}} \times 1000 \approx 0{,}375\ \text{ms}$$
+
+---
+
+## Cache Set Associativa — Struttura dell'Indirizzo
+
+Per una cache con $C$ byte totali, blocco di $B$ byte e $k$-way set associative:
+
+$$\text{N\_set} = \frac{C/B}{k} \qquad \text{bit\_set} = \log_2(\text{N\_set}) \qquad \text{bit\_word} = \log_2(B) \qquad \text{tag} = n - \text{bit\_set} - \text{bit\_word}$$
+
+**Applicazione** (cache 16 B, blocco 2 B, 2-way, indirizzo 12 bit):
+
+$$\text{N\_set} = \frac{8}{2} = 4 \Rightarrow \text{bit\_set}=2,\quad \text{bit\_word}=1,\quad \text{tag}=9$$
+
+Con write-back e write-allocate: un miss in scrittura carica il blocco in cache e marca la linea **dirty**; la scrittura in RAM avviene solo all'eviction del blocco sporco.
+
+---
+
+## Pipeline a 5 Stadi — Stalli e Forwarding
+
+Il numero di cicli totali per $n$ istruzioni con $s$ stalli è:
+
+$$\text{cicli} = k + (n-1) + s \qquad (k = \text{stadi pipeline})$$
+
+**Regole di risoluzione dei data hazard:**
+
+| Caso | Stallo | Path attivo |
+|---|---|---|
+| ALU → ALU (distanza 1) | Nessuno | EX/MEM.ALUOutput → ingresso ALU |
+| LW → uso (distanza 1) | 1 ciclo (HDU) | MEM/WB.LMD → ingresso ALU |
+| ALU o LW → uso (distanza 2) | Nessuno | MEM/WB → ingresso ALU |
+
+Il **control hazard** da salto preso causa il flush delle istruzioni in IF e ID: 2 cicli di perdita per ogni salto errato. La predizione a 2 bit riduce statisticamente questo costo.

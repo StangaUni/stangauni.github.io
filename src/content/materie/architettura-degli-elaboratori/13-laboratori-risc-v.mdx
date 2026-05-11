@@ -1,0 +1,201 @@
+---
+title: "Laboratori RISC-V"
+type: "riassunto"
+section: "Laboratorio"
+excerpt: "Programmazione assembly RISC-V: struttura programma, modi di indirizzamento, system call, memory-mapped I/O, stallo load-use, NOP software, riordino istruzioni, loop unrolling e data forwarding."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Struttura di un Programma Assembly RISC-V
+
+```asm
+.data
+    messaggio: .string "Hello, World!"
+    numero:    .word 42
+
+.text
+    # codice eseguibile
+```
+
+- **`.data`**: dati statici inizializzati; indirizzo base convenzionalmente in `gp` (global pointer)
+- **`.text`**: codice eseguibile
+- I dati `.word` occupano 4 byte consecutivi; accessibili con offset da `gp`
+
+---
+
+## Modi di Indirizzamento in RISC-V
+
+### Immediato
+
+L'operando è una costante codificata nell'istruzione; nessun accesso in memoria.
+
+```asm
+addi a0, a0, 40   # a0 = a0 + 40
+```
+
+### Registro
+
+L'operando è in un registro; nessun accesso in memoria.
+
+```asm
+add a2, a0, a1   # a2 = a0 + a1
+```
+
+### Diretto
+
+Indirizzo fisso realizzato con offset su `zero` (registro hardwired a 0):
+
+```asm
+sw  a0, 0x20(zero)   # M[0x20] = a0
+```
+
+### Registro Indiretto
+
+Il registro contiene l'indirizzo dell'operando in memoria; offset esplicito zero:
+
+```asm
+sw  a0, 0(a1)   # M[a1] = a0
+```
+
+### Spiazzamento (Base + Offset)
+
+$$EA = \text{Registro Base} + \text{Offset costante}$$
+
+| Registro base | Uso tipico |
+|---|---|
+| `zero` | Indirizzamento diretto assoluto |
+| `gp` | Variabili globali e dati statici |
+| `sp` | Variabili locali e frame nello stack |
+| Registro generico | Array, struct, puntatori dinamici |
+
+**Accesso sequenziale ad array:**
+
+```asm
+lw  t0, 0(gp)    # primo elemento
+lw  t1, 4(gp)    # secondo elemento (word = 4 byte)
+lw  t2, 8(gp)    # terzo elemento
+```
+
+**Gestione stack frame:**
+
+```asm
+addi sp, sp, -8   # alloca 8 byte nello stack
+sw   t0, 0(sp)    # salva t0
+sw   t1, 4(sp)    # salva t1
+addi sp, sp, 8    # dealloca
+```
+
+---
+
+## Chiamate di Sistema
+
+Le system call permettono al programma utente di richiedere servizi al sistema operativo tramite l'istruzione privilegiata `ecall`. Convenzione ABI RISC-V:
+- **`a7`**: codice della syscall
+- **`a0`–`a6`**: argomenti; `a0` anche valore di ritorno
+
+| a7 | Funzione | Argomenti |
+|---|---|---|
+| 1 | PrintInt | `a0` = intero da stampare |
+| 4 | PrintString | `a0` = indirizzo stringa null-terminated |
+| 10 | Exit | — |
+| 11 | PrintChar | `a0` = codice ASCII |
+| 63 | Read | `a0`=fd (0=stdin), `a1`=buffer, `a2`=lunghezza |
+| 93 | Exit2 | `a0` = codice di uscita |
+
+I caratteri numerici ASCII `'0'`–`'9'` hanno codice 48–57; il valore intero si ottiene sottraendo 48.
+
+---
+
+## Memory-Mapped I/O (MMIO)
+
+Le periferiche (LED, interruttori) sono mappate a **specifici indirizzi di memoria**:
+- **Scrivere** (`sw`) a quell'indirizzo → invia un comando alla periferica (es. accende un LED)
+- **Leggere** (`lw`) da quell'indirizzo → legge lo stato della periferica (es. stato di uno switch)
+
+Ogni periferica MMIO occupa un intervallo di indirizzi riservato. Gli offset all'interno dell'intervallo selezionano i singoli registri della periferica.
+
+```asm
+li  a0, BASE_ADDR    # indirizzo base del dispositivo
+li  a1, VALORE       # dato da scrivere
+sw  a1, 0(a0)        # primo registro
+sw  a1, 4(a0)        # secondo registro (offset +4 byte)
+
+li  s1, STATO_ADDR   # indirizzo registro di stato
+lw  t1, 0(s1)        # legge stato (0 = inattivo, ≠0 = attivo)
+```
+
+---
+
+## Stallo load-use
+
+In una pipeline senza forwarding, una dipendenza RAW su un registro caricato da `lw` richiede istruzioni NOP per garantire che la fase ID dell'istruzione dipendente avvenga dopo il WB del `lw`:
+
+```asm
+lw   a0, 0(gp)
+nop
+nop
+addi a0, a0, 1   # ID al ciclo 4, coincide con WB di lw al ciclo 4
+```
+
+### NOP software vs stallo hardware
+
+| Meccanismo | NOP software | Stallo hardware (HDU) |
+|---|---|---|
+| Implementazione | Istruzione `addi x0, x0, 0` reale in memoria | HDU blocca PC e IF/ID; inserisce bolla in ID/EX |
+| Occupa memoria istruzioni | Sì | No |
+| Cicli totali introdotti | Equivalenti | Equivalenti |
+
+### Riordino delle istruzioni
+
+Il compilatore elimina stalli inserendo istruzioni indipendenti tra produttore e consumatore. Criterio: nessuna dipendenza RAW, WAW o WAR nell'ordine risultante.
+
+```asm
+# Originale (2 stalli tra le somme):
+lw  a0, 0(gp)
+lw  a1, 4(gp)
+add a0, a0, a1   # stallo: attende a1 da lw
+lw  a2, 8(gp)
+add a0, a0, a2   # stallo: attende a2 da lw
+
+# Riordinato (1 stallo residuo):
+lw  a0, 0(gp)
+lw  a1, 4(gp)
+lw  a2, 8(gp)    # anticipata: funge da distanziatore per a1
+add a0, a0, a1   # nessuno stallo (2 istruzioni di distanza)
+add a0, a0, a2   # 1 stallo (a2 solo 1 istruzione fa)
+```
+
+### Comportamento della pipeline su salto preso
+
+Quando durante la fase **EX** di un'istruzione di salto la condizione risulta positiva, le istruzioni già caricate nelle fasi **IF** e **ID** vengono eliminate: si esegue il **flush** della pipeline. Ogni salto errato causa 2 cicli di perdita (le due istruzioni scartate).
+
+### Loop unrolling
+
+Tecnica che duplica il corpo del loop per ridurre il numero di salti condizionati e aumentare le opportunità di riordino. Ogni salto errato causa 2 cicli di flush; ridurre i salti ammortizza questo costo su più iterazioni.
+
+---
+
+## Data Forwarding — Riepilogo Casi
+
+| Caso | Stallo | Path di forwarding |
+|---|---|---|
+| ALU → ALU (istruzione immediatamente successiva) | Nessuno | EX/MEM.ALUOutput → ingresso ALU |
+| LW → uso (istruzione immediatamente successiva) | 1 ciclo (HDU) | MEM/WB.LMD → ingresso ALU |
+| ALU → uso (2 istruzioni di distanza) | Nessuno | MEM/WB.ALUOutput → ingresso ALU |
+| LW → uso (2 istruzioni di distanza) | Nessuno | MEM/WB.LMD → ingresso ALU |
+
+### Condizioni formali
+
+**HDU (stallo load-use):**
+
+$$ID/EX.\text{MemRead} \;\wedge\; (ID/EX.Rd = IF/ID.Rs_1 \;\vee\; ID/EX.Rd = IF/ID.Rs_2)$$
+
+**Forwarding EX (ForwardA/B = 10):**
+
+$$EX/MEM.\text{RegWrite} \;\wedge\; EX/MEM.Rd \neq 0 \;\wedge\; EX/MEM.Rd = ID/EX.Rs_{1/2}$$
+
+**Forwarding MEM (ForwardA/B = 01):**
+
+$$MEM/WB.\text{RegWrite} \;\wedge\; MEM/WB.Rd \neq 0 \;\wedge\; \neg(\text{EX hazard}) \;\wedge\; MEM/WB.Rd = ID/EX.Rs_{1/2}$$

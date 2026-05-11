@@ -20,7 +20,7 @@ Per calcolare ricorsivamente la successione occorrono **condizioni iniziali**: v
 
 ---
 
-## Esempi introduttivi
+## Motivazione
 
 **Permutazioni di $n$ oggetti.** Posto $a_n = \#$ allineamenti di $n$ oggetti:
 
@@ -67,9 +67,9 @@ $$a_n = A_1\,d_1^n + A_2\,n\,d_1^n + \cdots + A_{m_1}\,n^{m_1-1}d_1^n + A_{m_1+1
 
 ---
 
-## Esempi risolti
+## Esempi Applicativi
 
-### Grado 1 — popolazione di conigli
+### Ricorrenza di Primo Grado
 
 $$\begin{cases} a_n = 2\,a_{n-1} \\ a_0 = 6 \end{cases}$$
 
@@ -79,7 +79,7 @@ Soluzione generale: $a_n = A \cdot 2^n$. Condizione iniziale: $A = 6$.
 
 $$\boxed{a_n = 6 \cdot 2^n}$$
 
-### Grado 2 — scala (Fibonacci)
+### Ricorrenza di Secondo Grado
 
 $$\begin{cases} a_n = a_{n-1} + a_{n-2} \\ a_1 = 1,\quad a_2 = 2 \end{cases}$$
 
@@ -163,7 +163,7 @@ con $n = 2^k$, $c > 0$ costante, $f(n)$ funzione di $n$. Modellano algoritmi che
 
 La costante $A$ va determinata dalle condizioni iniziali.
 
-### Esempio 1: trovare il massimo in un insieme
+### Massimo di un Insieme
 
 **Algoritmo.** Per trovare il massimo di $n = 2^k$ numeri: si divide l'insieme a metà, si trovano ricorsivamente $M_1$ e $M_2$ (massimi delle due metà), poi si confrontano.
 
@@ -177,7 +177,7 @@ Condizione iniziale: $n = 2$ richiede 1 confronto, quindi $a_2 = 1 = 2A - 1 \Rig
 
 $$\boxed{a_n = n - 1}$$
 
-### Esempio 2: torneo di tennis ad eliminazione diretta
+### Torneo ad Eliminazione Diretta
 
 $n = 2^k$ giocatori si sfidano a turni, dimezzandosi ad ogni round. Sia $a_n$ = numero di round.
 

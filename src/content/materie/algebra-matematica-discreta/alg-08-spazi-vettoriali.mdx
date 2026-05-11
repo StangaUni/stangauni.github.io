@@ -53,25 +53,25 @@ Per ogni $\alpha\in\mathbb{K}$ e $\underline{v}\in V$:
 
 ## Esempi Principali
 
-### 1) Vettori colonna
+### Vettori colonna
 
 $$\mathbb{R}^n = \left\{\underline{u}=\begin{pmatrix}u_1\\\vdots\\u_n\end{pmatrix} \;\middle|\; u_i\in\mathbb{R}\right\}, \qquad \mathbb{C}^n \quad \text{(analogamente)}$$
 
 - $\underline{0} = (0,\ldots,0)^T$
 - $-\underline{u} = (-u_1,\ldots,-u_n)^T$
 
-### 2) Vettori riga
+### Vettori riga
 
 $$\mathbb{R}_n = \{(u_1,\ldots,u_n) \mid u_i\in\mathbb{R}\}, \qquad \mathbb{C}_n$$
 
-### 3) Matrici
+### Matrici
 
 $$M_{m,n}(\mathbb{K})$$
 
 - $\underline{0} = \mathbb{O}$ (matrice nulla)
 - $-A = (-a_{ij})$
 
-### 4) Polinomi
+### Polinomi
 
 $$\mathbb{K}[x] = \{a_0+a_1x+\cdots+a_nx^n \mid n\in\mathbb{N},\, a_i\in\mathbb{K}\}$$
 
@@ -85,7 +85,7 @@ Le operazioni sono ben definite su $\mathbb{K}_n[x]$ perché:
 
 In entrambi i casi: $\underline{0}$ = polinomio nullo $f(x)=0$, e $-f(x) = -a_0-a_1x-\cdots-a_nx^n$.
 
-### 5) Funzioni da $[a,b]$ in $\mathbb{R}$
+### Funzioni su un Intervallo
 
 Siano $a<b\in\mathbb{R}$. L'insieme $F([a,b]) = \{f:[a,b]\to\mathbb{R}\}$ è uno spazio vettoriale con:
 - $(f+g)(x) = f(x)+g(x)$
@@ -93,7 +93,7 @@ Siano $a<b\in\mathbb{R}$. L'insieme $F([a,b]) = \{f:[a,b]\to\mathbb{R}\}$ è uno
 - $\underline{0}$: funzione nulla $f(x)=0\;\forall x$
 - $(-f)(x) = -f(x)$
 
-### 6) Spazio vettoriale nullo
+### Spazio Vettoriale Nullo
 
 $$V = \{\underline{0}\}, \qquad \underline{0}+\underline{0}=\underline{0}, \quad \alpha\cdot\underline{0}=\underline{0}$$
 
@@ -191,7 +191,7 @@ $$\boxed{\langle\underline{v}\rangle = \{\alpha\cdot\underline{v}\mid\alpha\in\m
 
 ---
 
-## 4.2 Combinazioni Lineari e Insiemi di Generatori
+## Combinazioni Lineari e Generatori
 
 **Definizione.** La **combinazione lineare** dei vettori $\underline{v}_1,\ldots,\underline{v}_n\in V$ con coefficienti $\alpha_1,\ldots,\alpha_n\in\mathbb{K}$ è il vettore:
 $$\underline{v} = \alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n$$
@@ -227,7 +227,7 @@ $$\alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n=\underline{0}\;\Longrig
 
 | Spazio $V$ | Insieme $\mathcal{S}$ | Generatori? | L.I.? |
 |---|---|---|---|
-| $\mathbb{K}^n$ | $\mathcal{E}=\{\underline{e}_1,\ldots,\underline{e}_n\}$ (colonne di $\mathbb{1}_n$) | ✓ | ✓ |
+| $\mathbb{K}^n$ | $\mathcal{E}=\{\underline{e}_1,\ldots,\underline{e}_n\}$ (colonne di $\mathbb{I}_n$) | ✓ | ✓ |
 | $\mathbb{K}_n[x]$ | $\{1,x,x^2,\ldots,x^n\}$ | ✓ | ✓ |
 | $M_{m,n}(\mathbb{K})$ | $\{E_{ij}\mid 1\leq i\leq m,\,1\leq j\leq n\}$ | ✓ | ✓ |
 | $\mathbb{K}[x]$ | $\{1,x,x^2,\ldots\}$ | ✓ | ✓ |
@@ -238,7 +238,7 @@ $$\alpha_1\underline{v}_1+\cdots+\alpha_n\underline{v}_n=\underline{0}\;\Longrig
 
 ---
 
-## 4.3 Basi e Dimensione
+## Basi e Dimensione
 
 **Definizione.** Una **base** di $V$ è un insieme di vettori che sia simultaneamente:
 
@@ -305,7 +305,7 @@ Sia $V$ sp. vett. su $\mathbb{K}$, $\dim V = n$, $\mathcal{B} = (\underline{v}_1
 
 ---
 
-## 4.4 Spazi Vettoriali Associati a Matrici
+## Spazi Associati a Matrici
 
 Sia $A \in M_{m,n}(\mathbb{K})$, con colonne $\underline{c}_1,\ldots,\underline{c}_n \in \mathbb{K}^m$ e righe $r_1,\ldots,r_m$.
 
@@ -350,7 +350,7 @@ $$\dim N(A) = n - \mathrm{rk}(A) = \text{n° colonne libere di } U$$
 
 $$\dim C(A) = \dim R(A) = \mathrm{rk}(A), \qquad \dim N(A) = n - \mathrm{rk}(A)$$
 
-### Metodo per stabilire se $\mathcal{S}$ è L.I. / base di $V$
+### Metodo per stabilire se $\mathcal{S}$ è L.I. o base di $V$
 
 Dato $\mathcal{S} = \{\underline{v}_1,\ldots,\underline{v}_k\} \subseteq V$, si forma la matrice $A$ avente i vettori di $\mathcal{S}$ come colonne:
 

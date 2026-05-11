@@ -1,0 +1,132 @@
+---
+title: "Sistemi di Numerazione e Algebra di Boole"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Sistemi binario, ottale ed esadecimale, conversioni tra basi, algebra di Boole con operazioni, tavole di verità, postulati e porte logiche."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Sistemi Numerici
+
+### Binario (base 2)
+
+La sequenza $d_{n-1} d_{n-2} \ldots d_1 d_0$ rappresenta:
+
+$$\sum_{k=0}^{n-1} d_k \cdot 2^k$$
+
+- Valore minimo su $n$ bit: $0$
+- Valore massimo su $n$ bit: $2^n - 1$
+
+**Esempio:** $0101101_2 = 2^5 + 2^3 + 2^2 + 2^0 = 32 + 8 + 4 + 1 = 45_{10}$
+
+### Ottale (base 8)
+
+- 8 simboli: 0–7
+- Un simbolo per ogni gruppo di **3 cifre binarie**
+
+**Esempio:** $101\,101\,010\,011_2 = 5523_8$
+
+### Esadecimale (base 16)
+
+- 16 simboli: 0–9, A–F
+- Un simbolo per ogni gruppo di **4 cifre binarie**
+
+| Bit | Hex | | Bit | Hex |
+|---|---|---|---|---|
+| 0000 | 0 | | 1000 | 8 |
+| 0001 | 1 | | 1001 | 9 |
+| 0010 | 2 | | 1010 | A |
+| 0011 | 3 | | 1011 | B |
+| 0100 | 4 | | 1100 | C |
+| 0101 | 5 | | 1101 | D |
+| 0110 | 6 | | 1110 | E |
+| 0111 | 7 | | 1111 | F |
+
+**Esempio:** $1011\,0101\,0011_2 = B53_{16}$
+
+### Prefissi
+
+| Prefisso | Valore esatto | Approx. |
+|---|---|---|
+| Byte | 8 bit | — |
+| Kilo (K) | $2^{10} = 1024$ | $\approx 10^3$ |
+| Mega (M) | $2^{20} = 1.048.576$ | $\approx 10^6$ |
+| Giga (G) | $2^{30}$ | $\approx 10^9$ |
+| Tera (T) | $2^{40}$ | $\approx 10^{12}$ |
+| Peta (P) | $2^{50}$ | $\approx 10^{15}$ |
+
+---
+
+## Conversioni
+
+### Da decimale a base $b$ (divisioni successive)
+
+Dividere ripetutamente per $b$; i resti (letti dal basso) formano la rappresentazione.
+
+**Esempio:** $37_{10}$ in binario:
+- $37 \div 2 = 18$ resto $1$
+- $18 \div 2 = 9$ resto $0$
+- $9 \div 2 = 4$ resto $1$
+- $4 \div 2 = 2$ resto $0$
+- $2 \div 2 = 1$ resto $0$
+- $1 \div 2 = 0$ resto $1$
+
+→ $37_{10} = 100101_2$
+
+### Da base $b$ a decimale (potenze decrescenti)
+
+Moltiplicare ogni cifra per la corrispondente potenza della base e sommare.
+
+**Esempio:** $B53_{16} = 11 \cdot 16^2 + 5 \cdot 16 + 3 = 2816 + 80 + 3 = 2899_{10}$
+
+---
+
+## Algebra di Boole
+
+Proposta da George Boole (1854), applicata ai circuiti da Shannon (1938).
+
+**Variabili logiche**: valori 0 (FALSO) o 1 (VERO).
+
+### Operazioni di base
+
+| Op. | Simbolo | Output = 1 se… |
+|---|---|---|
+| AND | $A \cdot B$ | entrambi 1 |
+| OR | $A + B$ | almeno uno 1 |
+| NOT | $\bar{A}$ | ingresso è 0 |
+| NAND | $\overline{A \cdot B}$ | almeno uno 0 |
+| NOR | $\overline{A + B}$ | tutti 0 |
+| XOR | $A \oplus B$ | numero dispari di 1 |
+
+### Tavole di verità
+
+| A | B | A·B | A+B | $\bar{A}$ | A NAND B | A NOR B | A XOR B |
+|---|---|---|---|---|---|---|---|
+| 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 |
+| 0 | 1 | 0 | 1 | 1 | 1 | 0 | 1 |
+| 1 | 0 | 0 | 1 | 0 | 1 | 0 | 1 |
+| 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 |
+
+### Postulati e identità
+
+| Legge | AND | OR |
+|---|---|---|
+| Commutativa | $A \cdot B = B \cdot A$ | $A + B = B + A$ |
+| Distributiva | $A(B+C) = AB + AC$ | $A + BC = (A+B)(A+C)$ |
+| Identità | $1 \cdot A = A$ | $0 + A = A$ |
+| Inverso | $A \cdot \bar{A} = 0$ | $A + \bar{A} = 1$ |
+| Idempotenza | $A \cdot A = A$ | $A + A = A$ |
+| Annichilamento | $0 \cdot A = 0$ | $1 + A = 1$ |
+| **De Morgan** | $\overline{A \cdot B} = \bar{A} + \bar{B}$ | $\overline{A + B} = \bar{A} \cdot \bar{B}$ |
+
+**Nota sulla precedenza:** AND ha precedenza su OR in assenza di parentesi.
+
+### Porte logiche (gates)
+
+I dispositivi fisici che implementano le operazioni booleane.
+
+- **AND, OR, NOT** → insieme funzionalmente completo
+- **NAND** da solo → funzionalmente completo
+- **NOR** da solo → funzionalmente completo

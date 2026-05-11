@@ -1,0 +1,254 @@
+---
+title: "Processori RISC e RISC-V"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Principi RISC, finestre di registri, ottimizzazione compilatore (colorazione grafo), CISC vs RISC, architettura RISC-V con registri, formati istruzione e ciclo esecutivo a 5 fasi."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Principali Innovazioni nei Computer
+
+| Innovazione | Anno / Contesto |
+|---|---|
+| Concetto di famiglia | IBM System/360 (1964) — separa architettura da implementazione |
+| Unità di controllo microprogrammata | Idea di Wilkes (1951); introdotta in IBM System/360 (1964) |
+| Memoria cache | IBM System/360 model 85 (1969) |
+| RAM a semiconduttori | 1970 |
+| Microprocessori | Intel 4004 (1971) |
+| Pipeline | (vedi CPU e Pipeline) |
+| Processori multipli | (multiprocessing e multicore) |
+
+---
+
+## Architetture RISC
+
+**Reduced Instruction Set Computer** — approccio introdotto da Hennessy (Stanford) e Patterson (Berkeley), premiato con l'ACM Turing Award 2017. Oggi il 99% dei microprocessori prodotti sono RISC.
+
+### Motivazione: analisi delle istruzioni HLL
+
+Analisi dinamica di programmi Pascal e C:
+
+| Costrutto HLL | Occ. dinamica Pascal | Peso su istr. macchina | Peso su accessi memoria |
+|---|---|---|---|
+| ASSIGN | 45% | 13% | 14% |
+| **LOOP** | 5% | **42%** | 33% |
+| **CALL** | 15% | **31%** | **44%** |
+| IF | 29% | 11% | 7% |
+
+→ Loop e chiamate di procedura sono le più time-consuming: vanno ottimizzate.
+
+**Operandi:** il 55% sono variabili scalari locali → ottimizzare l'accesso ai registri.
+
+---
+
+## Principi RISC
+
+1. **Un'istruzione per ciclo di clock** → se la pipeline è piena, termina un'istruzione ogni ciclo
+2. **Operazioni registro-registro**, tranne LOAD e STORE
+3. **Pochi e semplici modi di indirizzamento** (registro, spiazzamento relativo al PC)
+4. **Formato istruzioni a lunghezza fissa** → decodifica e accesso ai registri simultanei
+5. **Unità di controllo cablata** (non microprogrammata) → più veloce
+
+---
+
+## Finestre di Registri
+
+Soluzione hardware per gestire le chiamate di procedura senza accessi in memoria.
+
+- I registri sono suddivisi in **finestre** (window) — una per ogni procedura attiva
+- Ogni chiamata sposta il **CWP (Current Window Pointer)** alla finestra successiva
+- Le finestre **adiacenti sono parzialmente sovrapposte**: i Temporary registers del chiamante coincidono fisicamente con i Parameter registers del chiamato → passaggio parametri senza copia in memoria
+
+### Struttura di ogni finestra
+
+| Sottogruppo | Descrizione |
+|---|---|
+| **Parameter registers** | Parametri ricevuti + valore da restituire al chiamante |
+| **Local registers** | Variabili locali della procedura |
+| **Temporary registers** | Parametri passati alle procedure chiamate (= Parameter registers del chiamato) |
+
+### Gestione overflow/underflow
+
+Le finestre sono organizzate a **buffer circolare** di dimensione $N$:
+
+- **CWP** (Current Window Pointer): punta alla finestra corrente
+- **SWP** (Saved Window Pointer): indica l'ultima finestra salvata in memoria
+
+**Overflow** (CWP = SWP mod N): interrupt → la finestra più vecchia viene salvata in RAM; SWP++.
+
+**Underflow** (dopo molti ritorni, CWP = SWP): interrupt → la finestra salvata viene ripristinata; SWP--.
+
+Un buffer di $N$ finestre supporta $N-1$ livelli di annidamento.
+
+---
+
+## Ottimizzazione dei Registri (approccio software)
+
+Il compilatore associa variabili a **registri simbolici** (infiniti) e li mappa ai **registri reali** (finiti).
+
+### Colorazione del grafo di interferenza
+
+- **Nodi:** registri simbolici
+- **Archi:** connettono due variabili "in vita" nello stesso intervallo temporale (non possono condividere un registro)
+- **Colori:** registri reali
+
+Nodi non colorabili vengono salvati in memoria (spilling). Il problema è NP-completo in generale, ma algoritmi euristici efficienti funzionano bene in pratica. **32–64 registri fisici** sono sufficienti.
+
+---
+
+## CISC vs. RISC
+
+| Caratteristica | CISC (es. x86) | RISC (es. RISC-V, MIPS) |
+|---|---|---|
+| N. istruzioni | Molte (200–300+) | Poche (60–100) |
+| Dimensione istruzione | Variabile (1–11+ byte) | Fissa (4 byte) |
+| Modi di indirizzamento | Molti (11–22) | Pochi (1–2) |
+| Registri generali | Pochi (8–16) | Molti (32–520) |
+| Unità di controllo | Microprogrammata | Cablata |
+| Pipeline | Complessa | Efficiente |
+
+**Il confronto è difficile** perché:
+- Non esistono architetture CISC/RISC direttamente confrontabili
+- Nessun benchmark universale
+- Difficile separare effetti HW da effetti compilatore
+- Le CPU moderne usano idee da entrambe le filosofie
+
+---
+
+## Register File vs Cache
+
+| Banco di Registri a Finestre | Cache |
+|---|---|
+| **Tutti** gli scalari locali | Scalari locali **usati di recente** |
+| Variabili individuali | Blocchi di memoria |
+| Variabili globali assegnate dal compilatore ai registri ad hoc | Variabili globali usate di recente |
+| Save/Restore basato sulla profondità di annidamento | Save/Restore basato sull'algoritmo di sostituzione |
+| Indirizzamento a registro (solo numero registro nella finestra corrente) | Indirizzamento a memoria (intero indirizzo + comparazione tag) |
+
+Per scalari locali, i **registri sono più veloci** della cache.
+
+---
+
+## Il Futuro
+
+Le **domain-specific architectures** sono l'unica opzione per migliorare le prestazioni quando i vantaggi della Legge di Moore iniziano a svanire. Esempi:
+- **GPU** (Graphic Processing Unit)
+- **TPU** (Tensor Processing Unit) — processori per reti neurali e machine learning
+
+---
+
+## RISC-V
+
+Architettura RISC open-source sviluppata alla UC Berkeley (2010). Ispirata a MIPS. Reference: Hennessy & Patterson "Computer Organization and Design RISC-V Edition".
+
+### Caratteristiche generali
+
+- Tutte le istruzioni a **32 bit**
+- **32 registri** da 32 bit (x0–x31); **x0** contiene sempre 0
+- Solo LOAD e STORE accedono alla memoria
+- Tutte le operazioni aritmetiche/logiche da registro a registro
+
+### Registri — Convenzioni ABI
+
+| Registro | Nome ABI | Uso |
+|---|---|---|
+| x0 | zero | Costante 0 (hardwired) |
+| x1 | ra | Return Address |
+| x2 | sp | Stack Pointer |
+| x3 | gp | Global Pointer |
+| x4 | tp | Thread Pointer |
+| x5–x7 | t0–t2 | Temporanei |
+| x8 | s0/fp | Saved / Frame Pointer |
+| x9 | s1 | Saved |
+| x10–x11 | a0–a1 | Argomenti / valori di ritorno |
+| x12–x17 | a2–a7 | Argomenti |
+| x18–x27 | s2–s11 | Saved |
+| x28–x31 | t3–t6 | Temporanei |
+
+---
+
+## Formati di Istruzione RISC-V
+
+| Formato | Struttura (32 bit) | Uso |
+|---|---|---|
+| **R** | funz7[7] rs2[5] rs1[5] funz3[3] rd[5] codop[7] | Istruzioni aritmetiche registro-registro |
+| **I** | imm[11:0] rs1[5] funz3[3] rd[5] codop[7] | Load, aritmetiche immediate, jalr |
+| **S** | imm[11:5] rs2[5] rs1[5] funz3[3] imm[4:0] codop[7] | Store |
+| **B** | (sotto-formato S) | Salti condizionati |
+| **U** | imm[31:12] rd[5] codop[7] | LUI, AUIPC |
+| **J** | (sotto-formato U) | JAL |
+
+---
+
+## Istruzioni Principali RISC-V
+
+| Categoria | Istruzione | Esempio | Significato |
+|---|---|---|---|
+| Aritmetiche | add, sub | `add x5, x6, x7` | x5 = x6 + x7 |
+| | addi | `addi x5, x6, 20` | x5 = x6 + 20 |
+| Memoria | lw | `lw x5, 40(x6)` | x5 = Mem[x6+40] |
+| | sw | `sw x5, 40(x6)` | Mem[x6+40] = x5 |
+| Logiche | and, or, xor | `and x5, x6, x7` | x5 = x6 & x7 |
+| Shift | sll, srl, sra | `sll x5, x6, x7` | x5 = x6 &lt;&lt; x7 |
+| Branch | beq, bne | `beq x5, x6, 100` | if x5==x6: PC += 100 |
+| | blt, bge | `blt x5, x6, 100` | if x5 &lt; x6: PC += 100 |
+| Salto | jal | `jal x1, 100` | x1=PC+4; PC += 100 |
+| | jalr | `jalr x1, 100(x5)` | x1=PC+4; PC = x5+100 |
+
+---
+
+## Ciclo Esecutivo RISC-V (5 fasi)
+
+**1. IF (Instruction Fetch):**
+```
+IR ← Mem[PC];  PC ← PC + 4
+```
+
+**2. ID (Instruction Decode / Register Read):**
+```
+Tipo R: A ← Regs[rs1];  B ← Regs[rs2]
+Tipo I: A ← Regs[rs1];  Imm ← sign_extend(immediato)
+```
+
+**3. EX (Execute / Address Calculation):**
+- Load/Store: `ALUOutput ← A + Imm`
+- ALU R-R: `ALUOutput ← A funct B`
+- Branch: `Cond ← (A == B);  Target ← NPC + (Imm << 2)`
+
+**4. MEM (Memory Access):**
+- lw: `LMD ← Mem[ALUOutput]`
+- sw: `Mem[ALUOutput] ← B`
+- Branch taken: `PC ← Target`
+
+**5. WB (Write Back):**
+- Load: `Regs[rd] ← LMD`
+- ALU: `Regs[rd] ← ALUOutput`
+
+---
+
+## Pipeline RISC-V — Registri di Pipeline
+
+Tra ogni coppia di stadi: un **registro di pipeline** (latch) che memorizza sia i dati che i segnali di controllo.
+
+| Registro | Contenuto principale |
+|---|---|
+| IF/ID | IR, NPC |
+| ID/EX | IR, A, B, Imm, NPC |
+| EX/MEM | IR, ALUOutput, B, Cond, Target |
+| MEM/WB | IR, ALUOutput, LMD |
+
+I segnali di controllo (RegWrite, ALUSrc, MemRead, MemWrite, MemtoReg, PCSrc) vengono calcolati in ID e propagati attraverso i registri di pipeline.
+
+---
+
+## Pipeline RISC-V — Data Hazard e Forwarding
+
+Vedi il riassunto CPU e Pipeline per le condizioni HDU e Forwarding Unit.
+
+**Caso load-use:** lw seguita immediatamente da istruzione che usa il registro caricato → 1 stallo obbligatorio + forwarding MEM/WB.LMD → ingresso ALU.
+
+**Caso ALU-ALU:** istruzione aritmetica seguita da istruzione che usa il risultato → forwarding EX/MEM.ALUOutput → ingresso ALU (nessuno stallo).
+
+**Caso con 1 istruzione intermedia:** lw seguita da istruzione intermedia e poi da istruzione che usa il dato → forwarding MEM/WB.LMD (nessuno stallo, la distanza è sufficiente).

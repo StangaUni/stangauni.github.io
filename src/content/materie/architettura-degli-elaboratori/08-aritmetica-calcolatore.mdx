@@ -1,0 +1,227 @@
+---
+title: "Aritmetica del Calcolatore"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Rappresentazione interi (modulo e segno, complemento a due), somma/sottrazione, moltiplicazione Shift-and-Add, virgola mobile IEEE 754 e operazioni floating point."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Rappresentazione degli Interi
+
+### Modulo e Segno
+
+- Bit più a sinistra: 0 = positivo, 1 = negativo
+- I restanti $n-1$ bit rappresentano il modulo
+- **Problemi:** due rappresentazioni dello zero (+0 e -0); circuiti aritmetici più complessi
+
+### Complemento a Due
+
+**Formula:** per una sequenza $a_{n-1} a_{n-2} \ldots a_1 a_0$:
+
+$$\text{valore} = -2^{n-1} \cdot a_{n-1} + \sum_{i=0}^{n-2} 2^i \cdot a_i$$
+
+- Range: da $-2^{n-1}$ a $+2^{n-1} - 1$
+- Una sola rappresentazione dello zero
+- Operazioni aritmetiche semplici (somma diretta)
+
+**Tabella (4 bit):**
+
+| Bit | Valore | | Bit | Valore |
+|---|---|---|---|---|
+| 0111 | +7 | | 1111 | -1 |
+| 0110 | +6 | | 1110 | -2 |
+| 0101 | +5 | | 1101 | -3 |
+| 0100 | +4 | | 1100 | -4 |
+| 0011 | +3 | | 1011 | -5 |
+| 0010 | +2 | | 1010 | -6 |
+| 0001 | +1 | | 1001 | -7 |
+| 0000 | 0 | | 1000 | -8 |
+
+### Negazione in complemento a due
+
+Dato $k$, calcolare $-k$:
+1. Complemento bit a bit di $k$
+2. Sommare 1
+
+**Metodo veloce visivo:** da destra a sinistra, copia i bit fino al primo 1 incluso, poi complementa i restanti.
+
+**Esempio:** $6 = 0110$ → $-6 = 1010$
+
+**Casi speciali:**
+- $-0 = 0$ (il carry viene ignorato)
+- $-(-2^{n-1})$ non è rappresentabile su $n$ bit (overflow)
+
+### Conversione di lunghezza
+
+Da $n$ bit a $m > n$ bit: **estensione del segno** (replica il bit MSB).
+
+| Numero | 8 bit | 16 bit |
+|---|---|---|
+| +18 | `00010010` | `00000000 00010010` |
+| -18 | `11101110` | `11111111 11101110` |
+
+---
+
+## Somma e Sottrazione
+
+**Somma:** somma binaria normale; controllare MSB per overflow.
+
+**Sottrazione:** $A - B = A + (-B)$; calcolare $-B$ con il complemento, poi sommare.
+
+| Operazione | Bit | Risultato |
+|---|---|---|
+| $3 + 2$ | $0011 + 0010$ | $0101 = 5$ ✓ |
+| $-3 + (-2)$ | $1101 + 1110$ | $1011 = -5$ ✓ |
+| $7 + (-5)$ | $0111 + 1011$ | $0010 = 2$ ✓ |
+
+### Overflow
+
+Si verifica quando la somma di due numeri dello stesso segno produce un risultato di segno opposto:
+- Due positivi → MSB risultato = 1 → overflow
+- Due negativi → MSB risultato = 0 → overflow
+
+---
+
+## Moltiplicazione
+
+### Interi senza segno — Algoritmo Shift-and-Add
+
+**Registri:** Moltiplicando M ($n$ bit), Accumulatore A ($n$ bit), Carry C (1 bit), Moltiplicatore Q ($n$ bit).
+
+**Algoritmo** (ripetere $n$ volte):
+- Se $Q_0 = 1$: $C, A \leftarrow A + M$; shift destro di $C, A, Q$
+- Se $Q_0 = 0$: shift destro di $C, A, Q$
+
+Il prodotto finale (2$n$ bit) si trova in $A, Q$.
+
+**Esempio: 13 × 11 (4 bit):**
+
+| C | A | Q | M | Azione |
+|---|---|---|---|---|
+| 0 | 0000 | 1101 | 1011 | Inizio |
+| 0 | 1011 | 1101 | 1011 | Add (Q0=1) |
+| 0 | 0101 | 1110 | 1011 | Shift |
+| 0 | 0010 | 1111 | 1011 | Shift (Q0=0) |
+| 0 | 1101 | 1111 | 1011 | Add (Q0=1) |
+| 0 | 0110 | 1111 | 1011 | Shift |
+| 1 | 0001 | 1111 | 1011 | Add (Q0=1) |
+| 0 | 1000 | 1111 | 1011 | Shift → $AQ = 10001111 = 143$ ✓ |
+
+### Moltiplicazione in complemento a due
+
+La moltiplicazione diretta non funziona se almeno un operando è negativo. Soluzioni:
+1. Convertire in positivo, moltiplicare, aggiustare il segno
+2. **Algoritmo di Booth** (più efficiente)
+
+### Divisione
+
+Più complessa della moltiplicazione; basata sugli stessi principi generali (traslazioni, somme e sottrazioni ripetute).
+
+---
+
+## Numeri Reali — Virgola Mobile (IEEE 754)
+
+### Struttura generale
+
+$$\pm 1.\text{mantissa} \times 2^{\text{esponente}}$$
+
+| Formato | Bit | Segno | Esponente | Mantissa | Bias |
+|---|---|---|---|---|---|
+| Singolo | 32 | 1 | 8 | 23 | 127 |
+| Doppio | 64 | 1 | 11 | 52 | 1023 |
+
+### Esponente polarizzato (biased)
+
+$$e_{reale} = e_{polarizzato} - \text{bias}$$
+
+Con 8 bit: bias = 127; esponente reale da -126 a +127.
+
+### Normalizzazione
+
+Il bit più significativo della mantissa è sempre 1 → non memorizzato esplicitamente (**1 implicito**).
+
+$$\text{Numero} = \pm 1{,}\text{mantissa} \times 2^{e_{polarizzato} - 127}$$
+
+### Valori speciali (formato singolo)
+
+| Esponente polarizzato | Mantissa | Significato |
+|---|---|---|
+| 0 | 0 | ±Zero |
+| 0 | ≠ 0 | Numero denormalizzato: $\pm 2^{-126} \times 0{,}f$ |
+| 1…254 | qualsiasi | Numero normalizzato: $\pm 2^{e-127} \times 1{,}f$ |
+| 255 | 0 | $\pm\infty$ (overflow) |
+| 255 | ≠ 0 | NaN (Not a Number) |
+
+### Range rappresentabile (singolo)
+
+- Positivi: da $2^{-126} \approx 1{,}18 \times 10^{-38}$ a $\approx 3{,}40 \times 10^{38}$
+- Distribuzione non uniforme: più densi vicino a 0, più radi per grandi valori
+
+### Conversione decimale → IEEE 754
+
+1. Determinare il segno (bit S)
+2. Convertire il valore assoluto in binario (parte intera e frazionaria)
+3. Normalizzare: $1{,}\ldots \times 2^e$
+4. Calcolare l'esponente polarizzato: $e_{pol} = e + 127$
+5. Estrarre i 23 bit della mantissa (parte dopo il punto)
+6. Assemblare: S | $e_{pol}$ (8 bit) | mantissa (23 bit)
+
+**Esempio:** $-7{,}28515625$
+1. Segno: 1
+2. $7{,}28515625 = 111{,}0100101_2$
+3. Normalizzato: $1{,}110100101 \times 2^2$
+4. $e_{pol} = 2 + 127 = 129 = 10000001_2$
+5. Mantissa: $11010010010000000000000$
+6. Risultato: `1 10000001 11010010010000000000000` = `C0749200` hex
+
+---
+
+## Operazioni in Virgola Mobile
+
+### Eccezioni nell'aritmetica in virgola mobile
+
+| Tipo | Descrizione |
+|---|---|
+| **Overflow esponente** | Esponente positivo supera il massimo rappresentabile |
+| **Underflow esponente** | Esponente negativo è inferiore al minimo (numero troppo piccolo per essere normalizzato) |
+| **Underflow mantissa** | La mantissa diventa 0 dopo l'allineamento (tutti gli 1 sono stati eliminati) |
+| **Overflow mantissa** | Riporto nel bit più significativo della mantissa |
+
+### Somma/Sottrazione
+
+1. **Controllo dello zero:** se un operando è 0, il risultato è l'altro
+2. **Allineamento:** rendere uguali gli esponenti (shift destro della mantissa del numero con esponente minore)
+3. **Operazione** sulle mantisse
+4. **Normalizzazione** del risultato
+5. **Arrotondamento**
+
+### Moltiplicazione
+
+1. Controllo zero
+2. Somma degli esponenti (sottrarre il bias una volta)
+3. Moltiplicazione delle mantisse
+4. Normalizzazione e arrotondamento
+
+### Divisione
+
+1. Controllo zero/divisione-per-zero
+2. Sottrazione degli esponenti (aggiungere il bias)
+3. Divisione delle mantisse
+4. Normalizzazione e arrotondamento
+
+---
+
+## Bit di Guardia e Arrotondamento
+
+I registri ALU interni hanno bit aggiuntivi (bit di guardia) per ridurre l'errore durante le operazioni intermedie.
+
+**Quattro modalità di arrotondamento (IEEE 754):**
+
+| Modalità | Descrizione |
+|---|---|
+| **Round to nearest** (default) | Al più vicino; in caso di parità, al pari |
+| **Round toward $+\infty$** | Per eccesso (ceiling) |
+| **Round toward $-\infty$** | Per difetto (floor) |
+| **Round toward 0** | Troncamento |

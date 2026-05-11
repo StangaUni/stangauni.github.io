@@ -1,0 +1,132 @@
+---
+title: "Introduzione e Storia dei Calcolatori"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Architettura vs organizzazione, macchina di Von Neumann, evoluzione hardware dalle generazioni ai microprocessori moderni, cloud computing."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Architettura vs Organizzazione
+
+- **Architettura**: caratteristiche visibili al programmatore (istruzioni, rappresentazione dati, modi di indirizzamento).
+- **Organizzazione**: come quelle caratteristiche sono implementate (circuiti, memorie, connessioni).
+
+Esempio: decidere se la CPU ha un'istruzione di moltiplicazione è una scelta **architetturale**; implementarla con un circuito dedicato o con somme ripetute è una scelta di **organizzazione**. Stessa architettura può avere organizzazioni diverse (es. IBM 370 dal 1970 a oggi).
+
+---
+
+## Struttura Gerarchica del Calcolatore
+
+Un calcolatore si descrive in modo **top-down**:
+
+| Livello | Componenti principali |
+|---|---|
+| Sistema | CPU, Memoria principale, I/O, Interconnessioni |
+| CPU | ALU, Registri, Unità di controllo, Bus interno |
+| Unità di controllo | Logica di sequenzializzazione, Registri di controllo, Memoria di controllo |
+
+**Quattro funzioni fondamentali**: elaborazione dati, memorizzazione dati, trasmissione dati, controllo.
+
+---
+
+## Macchina di Von Neumann
+
+Idea chiave (1945): **programma memorizzabile come i dati**. Proposta per EDVAC; realizzata nell'IAS (Princeton, 1952).
+
+**Componenti:**
+- Memoria (dati + istruzioni)
+- ALU
+- Unità di controllo
+- Organi di ingresso/uscita
+
+**Registri IAS:**
+
+| Registro | Funzione |
+|---|---|
+| MBR (Memory Buffer Register) | Parola da/verso memoria |
+| MAR (Memory Address Register) | Indirizzo di accesso in memoria |
+| IR (Instruction Register) | Opcode dell'istruzione corrente |
+| IBR (Instruction Buffer Register) | Istruzione destra della parola |
+| PC (Program Counter) | Indirizzo prossima coppia di istruzioni |
+| AC / MQ | Operandi e risultati della ALU |
+
+**Ciclo CPU**: Fetch → Decode → Execute (ripetuto indefinitamente).
+
+---
+
+## Evoluzione Hardware
+
+### Preistoria
+- 1801: Telaio Jacquard (schede perforate)
+- 1822: Analytic Engine di Babbage
+- 1890: Censimento USA con macchine Hollerith
+- 1941: Zuse Z3 (primo general-purpose programmabile, binario)
+- 1943: ENIAC (18.000 tubi a vuoto, 30 t, 5.000 add/s)
+- 1944: Mark I (IBM+Harvard)
+
+### Generazioni
+
+| Gen. | Periodo | Tecnologia | Transistor/chip |
+|---|---|---|---|
+| 1ª | 1946–1957 | Tubi a vuoto | — |
+| 2ª | 1958–1964 | Transistor | — |
+| 3ª (SSI) | dal 1965 | Circuiti integrati | fino a 100 |
+| — (MSI) | fino al 1971 | Media scala | 100–3.000 |
+| — (LSI) | 1971–1977 | Larga scala | 3.000–100.000 |
+| — (VLSI) | dal 1978 | Grandissima scala | 100.000–100 M |
+| — (ULSI) | oggi | Ultra larga scala | > 100 M |
+
+### Legge di Moore (1965)
+Prestazioni e numero di transistor raddoppiano ogni ~18 mesi. Conseguenze: minor costo, circuiti più vicini (→ maggiore velocità), calcolatori più piccoli.
+
+### Intel x86 (evoluzione chiave)
+
+| Anno | Processore | Note |
+|---|---|---|
+| 1971 | Intel 4004 | Primo microprocessore, 2.300 transistor, 108 kHz |
+| 1974 | Intel 8080 | Primo micro general-purpose a 8 bit |
+| 1978 | 8086 | 16 bit, cache, 29.000 transistor |
+| 1982 | 80286 | Memoria di 16 MByte |
+| 1985 | 80386 | 32 bit, multitasking |
+| 1985 | 80486 | Cache, pipeline, FPU integrata |
+| 1993 | Pentium | Più istruzioni in parallelo |
+| 1995 | Pentium Pro | Più istruzioni in parallelo (architettura P6) |
+| 1997 | Pentium II | Video, audio, grafica |
+| 1999 | Pentium III | Grafica 3D |
+| 2000 | Pentium 4 | Multimedia, 42 M transistor |
+| 2006 | Core 2 | 64 bit, 820 M transistor |
+| 2013 | Core i7 EE 4960X | 6 core, 4 GHz, 1,86 miliardi transistor |
+
+---
+
+## Perché Studiare l'Architettura dei Calcolatori
+
+- **Compromessi costo-prestazioni**: scegliere il calcolatore migliore a parità di costo (es. memoria più grande vs. frequenza di clock più alta).
+- **Supporto ai linguaggi di programmazione**: diverso a seconda delle architetture.
+
+---
+
+## Calcolatori Commerciali e Minicomputer
+
+- **UNIVAC** (Mauchly e Eckert): primo computer commerciale, primo ad avere il nastro magnetico. Poi IBM prese il predominio.
+- **1953: IBM 701** (applicazioni scientifiche) — **1955: IBM 702** (applicazioni business).
+- **1970: Mainframe** (IBM 360, IBM 7094):
+  - **Time-sharing**: tanti utenti, un po' di tempo per ciascuno.
+  - **Batch**: tutto il tempo per un utente, programma su schede perforate.
+- **1959: IBM Stretch** — 150.000 transistor; i transistor erano ancora elementi discreti separati.
+- **DEC PDP-1** (1957): primo minicomputer, caratteristica della seconda generazione.
+- **MITS Altair** (1974): primo personal computer generico, usava Intel 8080.
+
+---
+
+## Cloud Computing
+
+| Modello | Gestito dal cliente | Gestito dal CSP |
+|---|---|---|
+| **IaaS** | App, OS, DB | VM, hardware, storage, network |
+| **PaaS** | Applicazioni | Framework, runtime, OS, VM, hardware |
+| **SaaS** | Solo utilizzo | Tutto lo stack |
+
+Più si sale verso SaaS: minore complessità e personalizzazione, maggiore scalabilità.

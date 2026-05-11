@@ -156,7 +156,7 @@ Al page fault bisogna scegliere quale pagina rimuovere dalla RAM.
 | Algoritmo | Sceglie | Realizzabile | Note |
 |---|---|---|---|
 | **Optimal** | La pagina non usata per più tempo | No | Riferimento teorico |
-| **NRU** | Una pagina a caso nella classe più bassa tra {R,M} | Sì | 4 classi; R azzerato periodicamente |
+| **NRU** | Una pagina a caso nella classe più bassa tra &#123;R,M&#125; | Sì | 4 classi; R azzerato periodicamente |
 | **FIFO** | La pagina più vecchia in RAM | Sì | Soffre anomalia di Belady |
 | **Second Chance** | Come FIFO ma salta le pagine con R=1 (e azzera R) | Sì | Degenera in FIFO nel caso peggiore |
 | **Orologio (Clock)** | Come Second Chance con lista circolare | Sì | Efficiente in pratica |

@@ -2,7 +2,7 @@
 title: "Applicazioni Lineari"
 type: "riassunto"
 section: "Algebra"
-excerpt: "Definizione di applicazione lineare, proprietà, nucleo e immagine, teorema di nullità e rango."
+excerpt: "Definizione di applicazione lineare, proprietà, nucleo e immagine, teorema di nullità e rango, matrici associate."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -10,7 +10,7 @@ contributors:
 
 # Applicazioni Lineari
 
-## 4.5 Definizione
+## Definizione
 
 Un'**applicazione lineare** (o *trasformazione lineare*) è una funzione $f: V \to W$ tra spazi vettoriali sullo stesso $\mathbb{K}$ tale che:
 
@@ -103,3 +103,65 @@ Se $\dim N(f)$ è noto, si ricava $\dim\mathrm{Im}(f) = \dim V - \dim N(f)$ senz
 | iniettiva | $n$ | $0$ | $n$ | sì | solo se $n = \dim W$ |
 | suriettiva | $n$ | $n - \dim W$ | $\dim W$ | solo se $n = \dim W$ | sì |
 | isomorfismo | $n$ | $0$ | $n = \dim W$ | sì | sì |
+
+---
+
+## Applicazioni Lineari e Matrici
+
+### Applicazione lineare indotta da una matrice
+
+Data $A \in M_{m,n}(\mathbb{K})$, l'**applicazione lineare indotta da $A$** è:
+
+$$f_A : \mathbb{K}^n \to \mathbb{K}^m, \quad \underline{v} \mapsto A\underline{v}$$
+
+Le sue strutture coincidono con quelle della matrice:
+
+$$N(f_A) = N(A) \qquad \mathrm{Im}(f_A) = C(A)$$
+
+Il Teorema di Nullità + Rango diventa quindi $\dim N(A) = n - \mathrm{rk}(A)$.
+
+---
+
+### Matrice associata a un'applicazione lineare
+
+Sia $f: V \to W$ lineare, $\mathcal{B} = \{\underline{v}_1,\ldots,\underline{v}_n\}$ base di $V$ e $\mathcal{D} = \{\underline{w}_1,\ldots,\underline{w}_m\}$ base di $W$. La **matrice associata a $f$ rispetto a $\mathcal{B}$ e $\mathcal{D}$** è l'unica $A \in M_{m,n}(\mathbb{K})$ tale che:
+
+$$A \cdot C_\mathcal{B}(\underline{v}) = C_\mathcal{D}(f(\underline{v})) \quad \forall\, \underline{v} \in V$$
+
+**Strategia costruttiva.** Le colonne di $A$ sono le coordinate delle immagini dei vettori di base:
+
+$$\boxed{A = \begin{pmatrix} C_\mathcal{D}(f(\underline{v}_1)) & C_\mathcal{D}(f(\underline{v}_2)) & \cdots & C_\mathcal{D}(f(\underline{v}_n)) \end{pmatrix}}$$
+
+**Caso delle basi canoniche.** Se $\mathcal{B} = \mathcal{E}_n$ e $\mathcal{D} = \mathcal{E}_m$, allora $C_\mathcal{B}(\underline{v}) = \underline{v}$ e $C_\mathcal{D}(f(\underline{v})) = f(\underline{v})$, quindi $f_A = f$ e le colonne di $A$ sono semplicemente $f(\underline{e}_1), \ldots, f(\underline{e}_n)$.
+
+**Esempio.** $f: \mathbb{R}^3 \to \mathbb{R}^2$, $\begin{pmatrix}a\\b\\c\end{pmatrix} \mapsto \begin{pmatrix}a+b\\c\end{pmatrix}$ con basi canoniche:
+
+$$A = \begin{pmatrix}1 & 1 & 0\\0 & 0 & 1\end{pmatrix}, \qquad N(f) = \left\langle\begin{pmatrix}-1\\1\\0\end{pmatrix}\right\rangle, \quad \mathrm{Im}(f) = \mathbb{R}^2$$
+
+---
+
+### Attenzione: matrici con basi non canoniche
+
+Se $A$ è la matrice associata a $f$ rispetto a basi $\mathcal{B}, \mathcal{D}$ **non canoniche**, allora in generale:
+
+$$N(A) \neq N(f) \quad \text{e} \quad C(A) \neq \mathrm{Im}(f)$$
+
+Tuttavia le dimensioni si conservano sempre:
+
+$$\dim N(A) = \dim N(f) \quad \text{e} \quad \dim C(A) = \dim \mathrm{Im}(f)$$
+
+**Morale.** Per trovare $N(f)$ o $\mathrm{Im}(f)$ bisogna usare le basi canoniche (o lavorare direttamente su $f$); per trovarne le *dimensioni* basta qualsiasi matrice associata a $f$.
+
+---
+
+### Composizione e prodotto di matrici
+
+Siano $f: V \to W$ e $g: W \to Z$ lineari, con $\mathcal{B}, \mathcal{D}, \mathcal{F}$ basi rispettive. Se $A_1$ è la matrice di $f$ rispetto a $\mathcal{B}, \mathcal{D}$ e $A_2$ è la matrice di $g$ rispetto a $\mathcal{D}, \mathcal{F}$, allora:
+
+$$\boxed{A_2 \cdot A_1 \text{ è la matrice di } g \circ f \text{ rispetto a } \mathcal{B} \text{ e } \mathcal{F}}$$
+
+**Esempio.** $f: \mathbb{R}^2\to\mathbb{R}^3$, $\begin{pmatrix}a\\b\end{pmatrix}\mapsto\begin{pmatrix}a\\0\\b\end{pmatrix}$; $\quad g: \mathbb{R}^3\to\mathbb{R}^2$, $\begin{pmatrix}x\\y\\z\end{pmatrix}\mapsto\begin{pmatrix}x\\y\end{pmatrix}$. Con basi canoniche:
+
+$$A_1 = \begin{pmatrix}1&0\\0&0\\0&1\end{pmatrix}, \quad A_2 = \begin{pmatrix}1&0&0\\0&1&0\end{pmatrix}, \quad A_2 A_1 = \begin{pmatrix}1&0\\0&0\end{pmatrix}$$
+
+che corrisponde a $g\circ f: \begin{pmatrix}a\\b\end{pmatrix}\mapsto\begin{pmatrix}a\\0\end{pmatrix}$.

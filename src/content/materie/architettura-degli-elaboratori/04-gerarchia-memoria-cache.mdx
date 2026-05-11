@@ -1,0 +1,224 @@
+---
+title: "Gerarchia di Memoria e Cache"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Caratteristiche delle memorie, gerarchia a livelli, principio di località, tecniche di associazione (diretta, completa, a gruppi), politiche di rimpiazzo e scrittura, tipologie di miss e ottimizzazioni."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Caratteristiche delle Memorie
+
+| Parametro | Descrizione |
+|---|---|
+| Locazione | Processore (registri), interna (RAM), esterna (disco) |
+| Capacità | Dimensione parola × numero parole |
+| Unità di trasferimento | Parola (CPU ↔ cache) o blocco (cache ↔ RAM) |
+| Metodo di accesso | Sequenziale, diretto, casuale, associativo |
+| Prestazioni | Tempo di accesso, tempo di ciclo, velocità di trasferimento |
+| Volatilità | Volatile (RAM) vs. non volatile (ROM, Flash, disco) |
+
+---
+
+## Gerarchia di Memoria
+
+| Livello | Tecnologia | Velocità | Capacità | Costo |
+|---|---|---|---|---|
+| 0 | Registri CPU | massima | minima | massimo |
+| 1 | Cache L1 | molto alta | molto bassa | alto |
+| 2 | Cache L2/L3 | alta | bassa | medio-alto |
+| 3 | RAM (DRAM) | media | alta | medio |
+| 4 | Disco (HDD/SSD) | bassa | molto alta | basso |
+| 5 | Nastro | minima | massima | minimo |
+
+**Principio:** scendendo nella gerarchia, velocità decresce e capacità cresce.
+
+### Proprietà dei programmi
+
+- **Località temporale:** gli accessi recenti sono i più probabili in futuro.
+- **Località spaziale:** gli accessi ad indirizzi contigui sono più probabili.
+- **Regola 90/10:** un programma impiega il 90% del tempo su circa il 10% delle istruzioni.
+
+### Organizzazione a blocchi
+
+La memoria è divisa in **blocchi** di $K$ parole. Il blocco è l'unità minima di trasferimento tra livelli adiacenti. L'indirizzo di un dato = (numero blocco, posizione nel blocco).
+
+```
+CPU ←(parola)→ Cache ←(blocco)→ RAM
+```
+
+---
+
+## Cache: Hit e Miss
+
+- **Hit:** il blocco richiesto è già in cache → dato fornito immediatamente.
+- **Miss:** il blocco non è in cache → swap con il livello inferiore, poi fornisce il dato.
+
+### Tempo medio di accesso
+
+$$T_a = T_h \cdot P_h + T_m \cdot (1 - P_h)$$
+
+- $T_h$ = tempo di accesso con hit
+- $T_m$ = tempo di accesso con miss (funzione della dimensione del blocco)
+- $P_h$ = probabilità di hit (funzione di dimensione blocco e politica di gestione)
+
+Per guadagno prestazionale significativo occorre $P_h > 90\%$.
+
+---
+
+## Tecniche di Associazione
+
+### Associazione Diretta
+
+Ogni blocco della RAM può essere caricato **solo in una specifica linea** della cache:
+
+$$\text{ILS} = \text{ILI} \bmod N$$
+
+**Struttura dell'indirizzo:**
+
+```
+| Tag (s−r bit) | Linea (r bit) | Parola (w bit) |
+```
+
+- Il campo **Linea** seleziona la linea di cache
+- Il campo **Tag** verifica se il blocco è quello cercato
+- Il campo **Parola** seleziona la parola nel blocco
+
+**Pro:** semplice e veloce. **Contro:** swap frequenti se due blocchi usati spesso mappano sulla stessa linea.
+
+### Associazione Completa
+
+Ogni blocco può essere posto **in qualsiasi linea** della cache.
+
+**Struttura dell'indirizzo:**
+
+```
+| Tag (s bit) | Parola (w bit) |
+```
+
+Non c'è campo linea: si confronta il tag con **tutte** le linee. **Pro:** massima efficienza. **Contro:** ricerca onerosa.
+
+### Associazione a Gruppi (Set Associative)
+
+La cache è divisa in $R$ **set**, ciascuno con $K$ linee. Ogni blocco può mappare su un set specifico, ma può andare in **qualsiasi linea del set**.
+
+**Struttura dell'indirizzo:**
+
+```
+| Tag (s−d bit) | Set (d bit) | Parola (w bit) |
+```
+
+- Il campo **Set** seleziona il gruppo
+- Il campo **Tag** identifica il blocco tra gli $K$ del set
+
+**Esempio (16 MB memoria, 16K linee, K=2):**
+
+```
+| Tag (9 bit) | Set (13 bit) | Parola (2 bit) |
+```
+
+**Bilanciamento:** buona efficienza di allocazione con complessità di ricerca accettabile.
+
+### Grado di associatività e hit ratio
+
+Il hit ratio cresce all'aumentare di:
+- Dimensione della cache
+- Grado di associatività (direct &lt; 2-way &lt; 4-way &lt; 8-way &lt; …)
+
+Per cache grandi (≥ 32 KB), il guadagno aggiuntivo di associatività tende a saturare.
+
+---
+
+## Politiche di Rimpiazzo
+
+| Politica | Descrizione |
+|---|---|
+| **Casuale** | Sceglie a caso tra le linee del set |
+| **FIFO** | Rimpiazza il blocco rimasto più a lungo in cache |
+| **LFU** | Rimpiazza il blocco con meno accessi totali |
+| **LRU** | Rimpiazza il blocco non acceduto da più tempo (sfrutta la località temporale) |
+
+LRU è generalmente migliore, soprattutto per cache piccole.
+
+**Confronto P(miss) — casuale vs LRU:**
+
+| Cache | Vie | Casuale | LRU |
+|---|---|---|---|
+| 16 KB | 2 | 5,69% | 5,18% |
+| 16 KB | 8 | 4,96% | 4,39% |
+| 64 KB | 4 | 1,66% | 1,54% |
+| 256 KB | 4 | 1,13% | 1,13% |
+
+---
+
+## Politiche di Scrittura
+
+### Write-through
+
+- Scrittura **contemporanea** in cache e in RAM.
+- Dati sempre coerenti tra i due livelli.
+- Traffico più elevato; si usa spesso un **buffer di scrittura asincrono**.
+
+### Write-back
+
+- Scrittura in RAM **differita** al momento del rimpiazzo del blocco.
+- Il blocco modificato ha un **dirty bit** impostato a 1.
+- Ottimizza il traffico, ma causa **periodi di incoerenza**.
+
+### Coerenza multi-cache
+
+In sistemi multiprocessore con cache locali e RAM condivisa:
+- La modifica in una cache invalida il dato nelle altre cache e in RAM.
+- Write-through non risolve completamente il problema.
+
+**Soluzioni:**
+- Monitoraggio del bus (bus snooping) con write-through
+- Hardware aggiuntivo per propagare le modifiche
+- Porzione di RAM non cacheable per i dati condivisi
+
+---
+
+## Tipologie di Miss
+
+| Tipo | Descrizione | Riduzione |
+|---|---|---|
+| **Primo accesso (compulsory)** | Primo accesso a un blocco — inevitabile | Impossibile |
+| **Capacità** | Cache troppo piccola per contenere tutti i blocchi usati | Aumentare la dimensione |
+| **Conflitto** | Più blocchi necessari mappati sulla stessa linea | Aumentare l'associatività |
+
+---
+
+## Tecniche di Ottimizzazione
+
+### Compilatore
+
+**Fusione di vettori in strutture:** migliora la località spaziale.
+
+```c
+// Prima: val[] e key[] lontani in memoria
+int val[N], key[N];
+
+// Dopo: val e key adiacenti per ogni elemento
+struct { int val, key; } arr[N];
+```
+
+**Trasposizione di cicli annidati:** accede agli array in ordine row-major (C/C++).
+
+```c
+// Male: accesso per colonne (non contiguo)
+for (j = 0; j < 100; j++)
+    for (i = 0; i < 5000; i++)
+        x[i][j] = 2 * x[i][j];
+
+// Bene: accesso per righe (contiguo)
+for (i = 0; i < 5000; i++)
+    for (j = 0; j < 100; j++)
+        x[i][j] = 2 * x[i][j];
+```
+
+### Hardware
+
+- Cache multilivello (L1, L2, L3)
+- Cache separate per istruzioni e dati (evita conflitti strutturali in pipeline)
+- **Regola del 2:1:** una cache direct di N blocchi ha P(miss) ≈ cache 2-way di N/2 blocchi

@@ -1,0 +1,251 @@
+---
+title: "Linguaggi Macchina e Modi di Indirizzamento"
+type: "riassunto"
+section: "Teoria"
+excerpt: "ISA, numero di indirizzi, tipi di istruzioni e operandi, modi di indirizzamento (immediato, diretto, indiretto, registro, spiazzamento, pila), endianness e formati x86."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Set di Istruzioni (ISA)
+
+Il set di istruzioni è il confine tra hardware e software: definisce le operazioni che la CPU può eseguire.
+
+### Elementi di un'istruzione macchina
+
+1. **Opcode:** specifica l'operazione
+2. **Riferimento agli operandi sorgente**
+3. **Riferimento all'operando risultato**
+4. **Indirizzo istruzione successiva** (implicito nel PC)
+
+### Dove sono gli operandi?
+
+- Memoria centrale: si fornisce l'indirizzo
+- Registri CPU: identificati da un numero
+- Dato immediato: valore codificato nell'istruzione stessa
+- Dispositivi I/O: numero porta o indirizzo mappato in memoria
+
+---
+
+## Numero di Indirizzi
+
+| N. indirizzi | Esempio | Interpretazione |
+|---|---|---|
+| 3 | `OP A, B, C` | A ← B OP C |
+| 2 | `OP A, B` | A ← A OP B |
+| 1 | `OP A` | AC ← AC OP A (accumulatore implicito) |
+| 0 | `OP` | T ← (T-1) OP T (stack implicito) |
+
+**Trade-off:** meno indirizzi → istruzioni più corte e CPU meno complessa, ma più istruzioni per programma.
+
+**Esempio:** $Y = (A - B) / [C + (D \times E)]$
+
+Con 3 indirizzi (4 istruzioni):
+```
+SUB Y, A, B    ; Y ← A - B
+MPY T, D, E    ; T ← D × E
+ADD T, T, C    ; T ← T + C
+DIV Y, Y, T    ; Y ← Y ÷ T
+```
+
+Con 1 indirizzo / accumulatore (8 istruzioni):
+```
+LOAD D; MPY E; ADD C; STOR Y
+LOAD A; SUB B; DIV Y; STOR Y
+```
+
+---
+
+## Tipi di Istruzioni
+
+1. **Trasferimento dati:** tra registri e memoria (LOAD, STORE); specifica sorgente, destinazione, lunghezza
+2. **Aritmetiche:** somma, sottrazione, moltiplicazione, divisione; spesso anche incremento, decremento, negazione
+3. **Logiche:** AND, OR, NOT, XOR, EQUAL; eseguite in parallelo su tutti i bit
+4. **Conversione:** tra rappresentazioni (es. binario ↔ BCD)
+5. **I/O:** comunicazione con dispositivi di I/O
+6. **Sistema:** controllo del processore, gestione dei privilegi
+7. **Trasferimento del controllo:** salti condizionati e incondizionati, chiamate di procedura
+
+---
+
+## Tipi di Operandi
+
+### Numerici
+- **Interi** (virgola fissa): con segno in complemento a 2
+- **Virgola mobile:** IEEE 754
+
+### BCD (Binary Coded Decimal)
+- Una cifra decimale = 4 bit (0=`0000` … 9=`1001`)
+- Inefficiente (10 su 16 combinazioni usate) ma evita la conversione in I/O intensivo
+- Es.: 246 = `0010 0100 0110`
+
+### Caratteri ASCII
+- 7 bit → 128 caratteri; spesso con 8° bit per parità
+- **Parità pari:** il bit di parità è impostato affinché il numero totale di 1 sia pari
+
+### Dati logici
+- $n$ bit trattati singolarmente; operazioni logiche (AND, OR, XOR, shift) su bit separati
+
+---
+
+## Operazioni Logiche e Shift
+
+| Operazione | Descrizione |
+|---|---|
+| AND | Maschera bit (isola campi specifici); es. per estrarre il carattere destro di una parola a 16 bit: `AND registro, 0000000011111111` |
+| OR | Imposta bit |
+| XOR | Inverte bit |
+| Shift logico | Bit di riempimento = 0 |
+| Shift aritmetico | Preserva il bit di segno (shift destro) |
+| Rotazione | Il bit uscente rientra dall'altro lato |
+
+---
+
+## Istruzioni di Salto con Skip
+
+**Salto con indirizzo implicito (Skip):** scavalca la prossima istruzione; lo spazio operandi può codificare una condizione. Esempio: **ISZ** (Increment and Skip if Zero) — incrementa l'operando e salta se diventa zero.
+
+---
+
+## Chiamate di Procedura
+
+Le procedure (funzioni) permettono riuso e modularità. Due istruzioni: **CALL** e **RETURN**.
+
+L'indirizzo di ritorno viene memorizzato:
+1. In un registro (CALL X → R ← PC+D, PC ← X)
+2. All'inizio della procedura (M[X] ← PC+D, PC ← X+1)
+3. **In cima allo stack** [soluzione standard] — supporta chiamate annidate
+
+**Evoluzione stack (chiamate annidate Proc1 → Proc2):**
+
+| Evento | Stack |
+|---|---|
+| Prima di CALL Proc1 | (vuoto) |
+| Dopo CALL Proc1 | [4101] |
+| Dopo CALL Proc2 | [4601, 4101] |
+| Dopo RETURN | [4101] |
+| Dopo RETURN | (vuoto) |
+
+---
+
+## Endianness
+
+**Big endian:** byte più significativo al minore indirizzo (lettura naturale sinistra→destra).
+
+**Little endian:** byte meno significativo al minore indirizzo (Intel x86).
+
+**Esempio:** parola `12345678h` all'indirizzo 184:
+
+| Indirizzo | Big Endian | Little Endian |
+|---|---|---|
+| 184 | 12 | 78 |
+| 185 | 34 | 56 |
+| 186 | 56 | 34 |
+| 187 | 78 | 12 |
+
+---
+
+## Modi di Indirizzamento
+
+### Immediato
+- L'operando è **codificato nell'istruzione**
+- Pro: nessun accesso in memoria. Con: valore limitato dalla dimensione del campo
+
+### Diretto
+- Il campo indirizzo = indirizzo dell'operando in memoria
+- 1 accesso in memoria; spazio di indirizzamento limitato
+
+### Indiretto
+- Il campo indirizzo contiene l'indirizzo di una cella che **punta** all'operando
+- 2 accessi in memoria; spazio di indirizzamento più ampio ($2^K$)
+
+### Registro
+- L'operando è in un **registro** specificato dall'istruzione
+- Nessun accesso in memoria; istruzioni più corte
+
+### Registro Indiretto
+- Il registro contiene il **puntatore** all'operando in memoria
+- 1 accesso in memoria; grande spazio di indirizzamento ($2^n$)
+
+### Spiazzamento
+
+$$EA = A + (R)$$
+
+dove $A$ = campo immediato e $(R)$ = contenuto del registro base.
+
+**Varianti:**
+- **Relativo:** R = PC; EA = PC + A (indirizzamento relativo al contatore di programma)
+- **Registro-base:** A = spiazzamento fisso; R = puntatore alla struttura dati
+- **Indicizzazione:** A = base, R = indice (varia per accesso sequenziale ad array)
+
+**Pro:** accesso flessibile a strutture dati, variabili locali (frame pointer + offset), array.
+**Contro:** offset limitato dalla dimensione del campo; registro base da inizializzare correttamente.
+
+### Pila
+- L'operando è sulla **cima della pila** (indirizzamento registro indiretto implicito con SP)
+- Nessun campo indirizzo nell'istruzione
+
+---
+
+## Tipi di Dato x86
+
+| Tipo | Descrizione |
+|---|---|
+| General | Byte (8b), parola (16b), doppia parola (32b), quadword (64b) |
+| Integer | Intero con segno (complemento a 2) in byte/word/doubleword |
+| Ordinal | Intero senza segno in byte/word/doubleword |
+| Unpacked BCD | Una cifra decimale BCD per byte |
+| Packed BCD | Due cifre BCD per byte |
+| Near pointer | Offset da 16/32/64 bit (stesso segmento) |
+| Far pointer | Indirizzo logico: selettore di segmento + offset |
+| Bit field | Sequenza contigua di bit (fino a 32 bit) |
+| Bit/Byte string | Sequenza contigua di bit/byte |
+| Floating point | Singolo (32b), doppio (64b), esteso (80b) |
+| Packed SIMD | Dati packed da 64 e 128 bit |
+
+---
+
+## Formato delle Istruzioni
+
+### Lunghezza fissa vs. variabile
+
+| Tipo | Pro | Contro |
+|---|---|---|
+| **Fissa** | Decodifica semplice; RISC | Set di istruzioni limitato |
+| **Variabile** | Più flessibile; CISC | Decodifica complessa |
+| **Ibrida** | Bilanciamento | Complessità media |
+
+### Formato x86
+
+```
+[Prefixes 0-4B] [Opcode 1-3B] [ModR/M 0-1B] [SIB 0-1B] [Displacement 0-4B] [Immediate 0-4B]
+```
+
+- **ModR/M:** Mod (2 bit) + Reg/Opcode (3 bit) + R/M (3 bit) → specifica modo di indirizzamento
+- **SIB:** Scale (2 bit) + Index (3 bit) + Base (3 bit) → per indirizzamenti complessi
+
+### Modi di indirizzamento x86
+
+$$LA = \text{Base\_Segmento} + (B) + (I) \times S + A$$
+
+- LA = Linear Address; B = base register; I = index register; S = scaling factor (1,2,4,8); A = displacement
+
+### Formati storici
+
+- **PDP-8** (12 bit): istruzione memory reference = opcode(3) + D/I(1) + Z/C(1) + displacement(7)
+- **PDP-10** (36 bit): opcode(9) + Reg(4) + I(1) + Index(4) + Address(18)
+- **VAX** (lunghezza variabile): opcode 1-2 byte + fino a 6 specifiers da 1+ byte
+- **RISC-V:** tutti 32 bit, 6 formati (R, I, S, B, U, J)
+
+---
+
+## Progettazione ISA — Criteri
+
+| Aspetto | Decisioni progettuali |
+|---|---|
+| Repertorio | Quante e quali operazioni |
+| Tipi di dato | Su quali tipi operano le istruzioni |
+| Formato | Lunghezza, numero indirizzi, dimensione campi |
+| Registri | Numero di registri indirizzabili |
+| Indirizzamento | Modi supportati |

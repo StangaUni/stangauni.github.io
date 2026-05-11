@@ -1,0 +1,153 @@
+---
+title: "Input/Output"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Moduli I/O, tre tecniche di gestione (programmed I/O, interrupt, DMA), canali I/O, indirizzamento memory-mapped e isolated."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Moduli di I/O
+
+Il **modulo I/O** si interpone tra la CPU/memoria e le periferiche. Si interfaccia tramite:
+- **System bus** (verso CPU e memoria): linee dati, indirizzi, controllo
+- **Interfacce dedicate** (verso le periferiche)
+
+### Funzioni del modulo I/O
+
+- **Controllo e temporizzazione:** coordina il flusso tra CPU e dispositivi
+- **Comunicazione con CPU:** riceve comandi, invia stato
+- **Comunicazione con i dispositivi:** interfaccia fisica con la periferica
+- **Buffering dei dati:** compensa le differenze di velocità
+- **Rilevazione degli errori:** segnala malfunzionamenti
+
+### Dispositivi esterni
+
+| Categoria | Esempi |
+|---|---|
+| Comprensibili dall'uomo | Video, stampante, tastiera |
+| Comprensibili dalla macchina | Sensori, sistemi di controllo |
+| Comunicazione | Modem, NIC (Network Interface Card) |
+
+---
+
+## Tre Tecniche di Gestione I/O
+
+### I/O da Programma (Programmed I/O)
+
+- La CPU ha il **controllo diretto** sull'I/O.
+- Controlla periodicamente il bit di stato del modulo (**polling** o **busy-wait**).
+- Il modulo non interrompe la CPU; la CPU attende o controlla ciclicamente.
+- **Svantaggi:** spreca tempo di CPU; nessuna sovrapposizione CPU-I/O.
+
+**Passi:**
+1. CPU richiede l'operazione I/O al modulo
+2. Il modulo esegue e imposta il bit di stato
+3. La CPU controlla il bit finché non è pronto
+4. La CPU legge/scrive il dato
+
+### I/O Guidato da Interrupt
+
+- La CPU invia il comando al modulo e **continua ad eseguire altro**.
+- Quando il modulo è pronto, invia un **interrupt** alla CPU.
+- La CPU salva il contesto, esegue la routine di servizio (ISR), ripristina il contesto.
+- **Vantaggio:** sovrapposizione CPU-I/O; meglio del programmed I/O.
+
+**Elaborazione interrupt (lato hardware):**
+1. Il controllore periferica solleva l'interrupt
+2. La CPU completa l'istruzione corrente
+3. La CPU salva PSW e PC in cima allo stack
+4. La CPU carica il PC con l'indirizzo della ISR
+
+**Elaborazione interrupt (lato software):**
+1. La ISR salva i restanti registri
+2. Esegue la gestione dell'I/O (lettura/scrittura dato)
+3. Ripristina i registri salvati
+4. Istruzione RETURN ripristina PSW e PC vecchi → riprende il programma interrotto
+
+### Accesso Diretto alla Memoria (DMA)
+
+- La CPU invia il comando al **controllore DMA** (operazione, indirizzo dispositivo, indirizzo in RAM, numero di byte) e prosegue.
+- Il DMA gestisce autonomamente il trasferimento tra dispositivo e RAM.
+- Al termine, il DMA invia un **interrupt** alla CPU.
+- **Vantaggio:** la CPU è coinvolta solo all'inizio e alla fine; massima efficienza.
+
+---
+
+## DMA: Dettagli
+
+### Registri del controllore DMA
+
+- Data Register, Address Register, Data Count
+- Segnali: DMA Request, DMA Acknowledge, Interrupt, Read, Write
+
+### Modalità di trasferimento DMA
+
+| Modalità | Descrizione | Effetto su CPU |
+|---|---|---|
+| **Cycle stealing** | Una parola alla volta; DMA prende possesso del bus per un ciclo | CPU sospesa brevemente per ogni parola |
+| **Burst mode** | Prende il bus per una serie di trasferimenti consecutivi | CPU bloccata per l'intera durata del burst |
+
+Il burst mode è più efficace: l'acquisizione del bus è onerosa e viene ammortizzata su più trasferimenti.
+
+### Configurazioni DMA
+
+**(a) Bus singolo, DMA isolato:** ogni trasferimento usa il bus due volte (I/O → DMA, DMA → RAM); la CPU perde il bus due volte per dato.
+
+**(b) Bus singolo, DMA integrato con I/O:** il DMA controlla più dispositivi; ogni trasferimento usa il bus una sola volta (DMA → RAM direttamente).
+
+**(c) Bus I/O separato:** bus di sistema separato da bus I/O; il DMA trasferisce dal bus I/O al bus di sistema in un unico passaggio; la CPU perde il bus di sistema una sola volta.
+
+---
+
+## Canali I/O
+
+Evoluzione del DMA: **processori I/O specializzati** connessi alla memoria principale.
+
+| Tipo | Descrizione |
+|---|---|
+| **Selector channel** | Gestisce un singolo dispositivo ad alta velocità per volta |
+| **Multiplexor channel** | Gestisce più dispositivi lenti contemporaneamente in parallelo |
+
+---
+
+## Indirizzamento dei Dispositivi I/O
+
+### Memory-Mapped I/O
+
+- Dispositivi e memoria **condividono lo stesso spazio di indirizzi**.
+- L'I/O appare come normale lettura/scrittura di memoria.
+- Nessuna istruzione speciale per I/O.
+
+**Esempio (tastiera all'indirizzo 516–517):**
+```asm
+Load AC  "1"
+Store AC  517      ; inizia lettura tastiera
+loop:
+Load AC   517      ; leggi stato
+Branch if Sign=0 loop  ; aspetta
+Load AC   516      ; leggi dato
+```
+
+### Isolated I/O (I/O separato)
+
+- Spazi di indirizzi **separati** per I/O e memoria.
+- Necessita di linee di selezione; usa istruzioni speciali (IN, OUT, Test I/O).
+
+```asm
+Load I/O  5        ; inizia lettura
+loop:
+Test I/O  5        ; controlla completamento
+Branch Not Ready loop
+In        5        ; leggi dato
+```
+
+### Confronto
+
+| Aspetto | Memory-Mapped | Isolated |
+|---|---|---|
+| Istruzioni speciali | No (usa le istruzioni di memoria) | Sì (insieme limitato) |
+| Programmabilità | HLL (maggiore flessibilità) | Solo assembly |
+| Cache | Problematica (disabilitare selettivamente) | Non problematica |
+| Bus multipli | Richiede filtraggio degli indirizzi | Linee di selezione dedicate |

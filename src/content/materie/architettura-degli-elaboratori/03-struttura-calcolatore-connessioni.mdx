@@ -1,0 +1,163 @@
+---
+title: "Struttura del Calcolatore e Connessioni"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Architettura Von Neumann, ciclo Fetch/Execute, interruzioni, bus di sistema, temporizzazione sincrona e interconnessione QuickPath (QPI)."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Architettura di Von Neumann
+
+Principi fondamentali:
+- Dati e istruzioni in **memoria** (lettura e scrittura)
+- Memoria accessibile per **indirizzo**
+- Esecuzione **sequenziale** delle istruzioni
+
+---
+
+## Programma "Cablato" vs. Software
+
+**Programma cablato (hardware):** i circuiti implementano direttamente la funzione desiderata. Non flessibile: per cambiare funzione si riconfigura il circuito fisico.
+
+**Programma software:** hardware generico + interprete di istruzioni. L'interprete converte il codice operativo in segnali di controllo. Cambiare funzione = cambiare il programma in memoria.
+
+---
+
+## Registri della CPU
+
+| Registro | Funzione |
+|---|---|
+| **PC** (Program Counter) | Indirizzo dell'istruzione da prelevare |
+| **IR** (Instruction Register) | Istruzione in esecuzione |
+| **MAR** (Memory Address Register) | Indirizzo inviato alla memoria |
+| **MBR** (Memory Buffer Register) | Dato letto/scritto in memoria |
+| **I/O AR** | Indirizzo del dispositivo I/O |
+| **I/O BR** | Dato da/verso dispositivo I/O |
+
+---
+
+## Ciclo Fetch/Execute
+
+```
+START → [Fetch Next Instruction] → [Execute Instruction] → (ripeti) → HALT
+```
+
+**Fetch:** PC → MAR → bus indirizzi → memoria; dato → bus dati → MBR → IR; PC ← PC + 1.
+
+**Execute:** decodifica IR; attiva i circuiti per l'operazione (ALU, memoria, I/O, salto).
+
+### Quattro tipi di operazioni
+
+| Tipo | Descrizione |
+|---|---|
+| Processore-memoria | Trasferimento dati tra CPU e RAM |
+| Processore-I/O | Trasferimento tra CPU e modulo I/O |
+| Elaborazione dati | Operazione aritmetica/logica in ALU |
+| Controllo | Altera la sequenza (salti) |
+
+### Esempio: macchina a 16 bit, codice 4 bit (16 opcode, 4K celle)
+
+| Cella | Contenuto (hex) | Istruzione |
+|---|---|---|
+| 300 | 1940 | LOAD AC ← M[940] |
+| 301 | 5941 | ADD AC ← AC + M[941] |
+| 302 | 2941 | STORE M[941] ← AC |
+
+---
+
+## Interruzioni
+
+Meccanismo tramite cui moduli I/O (o altri) interrompono la normale sequenza di esecuzione.
+
+### Tipi di interruzione
+
+| Tipo | Causa tipica |
+|---|---|
+| Program | Overflow, divisione per zero |
+| Timer | Timer interno alla CPU |
+| I/O | Fine di un'operazione di I/O |
+| Guasto hardware | Mancanza di alimentazione |
+
+### Ciclo di interruzione
+
+1. CPU controlla interrupt pendenti dopo ogni istruzione
+2. Se presente: sospende il programma, salva il contesto (PC + registri), carica il PC con l'indirizzo della routine di gestione (ISR)
+3. ISR esegue la gestione
+4. Ripristina il contesto e riprende il programma interrotto
+
+### Interruzioni multiple
+
+**Sequenziale (disabilitando interrupt):** una ISR alla volta; nuovi interrupt rimangono pendenti finché la prima ISR termina.
+
+**Annidata (con priorità):** una ISR ad alta priorità può interrompere una ISR a bassa priorità.
+
+**Esempio di sequenza temporale annidata:**
+
+| t | Evento |
+|---|---|
+| 0 | User program in esecuzione |
+| 10 | Interrupt printer → Printer ISR |
+| 15 | Interrupt communication (priorità alta) → Communication ISR |
+| 25 | Communication ISR termina; interrupt disk → Disk ISR |
+| 35 | Disk ISR termina; riprende Printer ISR |
+| 40 | Printer ISR termina; riprende User program |
+
+---
+
+## Connessioni — Bus
+
+Un **bus** collega due o più dispositivi tramite linee condivise; solo un dispositivo trasmette alla volta.
+
+### Bus di sistema: tre gruppi di linee
+
+| Linee | Funzione |
+|---|---|
+| **Dati** | Trasportano dati/istruzioni; ampiezza = efficienza (più linee = meno accessi per word) |
+| **Indirizzi** | Indicano sorgente/destinazione; ampiezza = massima RAM indirizzabile |
+| **Controllo** | M write, M read, richiesta bus, bus grant, interrupt request, clock |
+
+### Temporizzazione sincrona
+
+Tutti gli eventi partono da un fronte del clock. Una linea di clock spedisce sequenza alternata 0-1; tutti i dispositivi si sincronizzano su di essa.
+
+### Bus singoli vs. multipli
+
+Un solo bus può diventare un collo di bottiglia. Le architetture moderne usano **più bus** con velocità diverse:
+- Bus locale (CPU ↔ cache)
+- Bus di sistema (cache ↔ RAM)
+- Bus ad alta velocità (SCSI, graphics, LAN)
+- Bus di espansione (modem, seriali)
+
+---
+
+## QuickPath Interconnect (QPI)
+
+Architettura di interconnessione **punto a punto** usata nei processori Intel multicore. Connessioni dirette tra coppie di componenti (CPU-CPU, CPU-IOH). I pacchetti si instradano attraverso nodi intermedi in sistemi più grandi.
+
+### Livelli QPI
+
+| Livello | Unità | Descrizione |
+|---|---|---|
+| **Fisico** | Phit (20 bit) | Cavi, LVDS, lane, trasmissione/ricezione |
+| **Link** | Flit (80 bit) | Trasmissione affidabile + controllo flusso |
+| **Routing** | — | Tabelle di instradamento (firmware) |
+| **Protocollo** | Pacchetto | Coerenza cache, esigenze applicative |
+
+### Livello Fisico
+
+- **LVDS** (Low-Voltage Differential Signaling): trasmissione differenziale su coppia di conduttori; valore binario = differenza di tensione.
+- **20 lane** in ogni direzione (4 quadranti × 5 lane); il link può operare a metà o un quarto della larghezza.
+- **Distribuzione multilinea:** i flit da 80 bit vengono distribuiti sulle 20 lane in round-robin (4 bit per lane per flit).
+
+### Livello Link
+
+- Pacchetto = **72 bit dati + 8 bit CRC** = 80 bit (1 Flit).
+- **Controllo del flusso:** sistema a crediti (il mittente decrementa i crediti a ogni flit inviato; il ricevitore li ripristina liberando buffer).
+- **Controllo errori:** CRC a 8 bit; in caso di mismatch, il ricevitore chiede la ritrasmissione.
+
+### Livello Protocollo
+
+- Supporta il **protocollo di coerenza della cache** tra core multipli e memoria principale.
+- Formato del pacchetto flessibile per coprire esigenze diverse.

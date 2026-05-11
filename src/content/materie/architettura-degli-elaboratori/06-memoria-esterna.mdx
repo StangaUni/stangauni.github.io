@@ -1,0 +1,179 @@
+---
+title: "Memoria Esterna"
+type: "riassunto"
+section: "Teoria"
+excerpt: "Dischi magnetici, prestazioni e scheduling, livelli RAID, SSD con Flash NAND, memorizzazione ottica (CD/DVD/Blu-ray) e nastro magnetico."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Dischi Magnetici
+
+Disco rivestito con materiale magnetico (ossido di ferro). Supporto: alluminio (tradizionale) o **vetro** (preferito: superficie più uniforme, meno difetti, maggiore rigidità, vicinanza testina).
+
+### Meccanismo di lettura/scrittura
+
+- **Testina (head):** bobina conduttiva stazionaria mentre il disco ruota.
+- **Scrittura:** corrente nella bobina → campo magnetico → bit 0 e 1 come campi magnetici di direzione opposta.
+- **Lettura tradizionale:** campo magnetico in movimento induce corrente nella bobina.
+- **Lettura moderna:** sensore magneto-resistivo (MR) separato; la resistenza dipende dalla direzione del campo → alta densità e velocità.
+
+### Caratteristiche fisiche dei dischi
+
+- Testina **fissa** (raro) o **mobile**
+- Disco **rimovibile** o **fisso**
+- A faccia **singola** o **doppia** (più frequente)
+- Piatto singolo o multiplo
+
+**Meccanismo della testina:**
+- Con contatto (Floppy)
+- A distanza fissa
+- **Separazione aerodinamica (Winchester):** le testine (foil) planano sulla superficie sfruttando la portanza del profilo, vicinissime alla superficie → maggiore densità
+
+### Organizzazione geometrica
+
+- **Tracce** concentriche suddivise in **settori** (gap di separazione)
+- **Settore** = unità minima di trasferimento (tipicamente 512 B)
+- Più piatti sovrapposti: le tracce alla stessa posizione radiale formano un **cilindro**
+- **CAV (Constant Angular Velocity):** stessa velocità angolare → densità lineare variabile (minore ai margini)
+- **MZR (Multiple Zone Recording):** più settori per traccia nelle zone esterne → maggiore capacità
+
+### Formato Winchester (es. Seagate ST506)
+
+Ogni traccia: 30 settori da 600 B. Struttura settore:
+
+```
+Gap1 | Synch | Track# | Head# | Sector# | CRC | Gap2 | Synch | 512B dati | CRC | Gap3
+```
+
+### Prestazioni del disco
+
+| Parametro | Formula/Valore tipico |
+|---|---|
+| **Seek time** ($T_S$) | Posizionamento testina sulla traccia corretta; tipicamente 5–20 ms |
+| **Latenza rotazionale** ($T_L$) | Attesa che il settore passi sotto la testina; = $\frac{1}{2} \cdot \frac{60}{\text{RPM}}$ in media |
+| **Tempo di trasferimento** ($T_T$) | $T_T = \frac{b}{r \cdot N}$ dove $b$ = byte da trasferire, $r$ = giri/s, $N$ = byte/traccia |
+| **Tempo di accesso totale** | $T_S + T_L + T_T$ |
+
+**Esempio (3600 RPM):** $r = 60$ giri/s → latenza media $T_L = \frac{1}{2 \cdot 60} = 8{,}33$ ms.
+
+---
+
+## RAID — Redundant Array of Independent Disks
+
+7 livelli (0–6), **non gerarchici**. Il SO vede un singolo dispositivo logico; i dati sono distribuiti sui dischi fisici.
+
+| Livello | Ridondanza | Meccanismo | Note |
+|---|---|---|---|
+| **0** | No | Striping round-robin | Solo velocità; nessuna tolleranza guasti |
+| **1** | Sì | Mirroring (2 copie) | Alta affidabilità; costoso (100% overhead) |
+| **2** | Sì | Codice Hamming | Dischi sincronizzati; non commerciale |
+| **3** | Sì | Parità bit-interleaved (1 disco parità) | Alta velocità trasferimento |
+| **4** | Sì | Parità block-level (1 disco parità dedicato) | Bottleneck sul disco di parità |
+| **5** | Sì | Parità distribuita su tutti i dischi | Standard per i server di rete |
+| **6** | Sì | Doppia parità (2 schemi distinti) | Massima affidabilità; scrittura lenta; N+2 dischi |
+
+---
+
+## SSD — Solid State Drive
+
+Basati su **memorie flash NAND**. Nessuna parte meccanica.
+
+### Struttura della cella flash
+
+Ogni cella è un transistor con un **floating gate** aggiuntivo:
+- **Stato 1:** floating gate non attivo → transistor funziona normalmente
+- **Stato 0:** alto voltaggio fa attraversare elettroni l'ossido → rimangono intrappolati → transistor bloccato
+
+### Memoria NAND
+
+Array di 16 o 32 transistor in serie. La bit line va a 0 solo se tutti i transistor della riga sono attivati. Letture e scritture per **pagine** (4 KB); cancellazione per **blocchi** (512 KB = 128 pagine).
+
+### SSD vs HDD
+
+| | SSD (NAND Flash) | HDD tipico |
+|---|---|---|
+| Velocità lettura/scrittura | 200–550 MB/s | 50–120 MB/s |
+| Consumo | ~2–3 W | ~6–7 W |
+| Latenza | &lt; 0,1 ms | ~10 ms |
+| Resistenza agli urti | Alta | Bassa |
+| Costo/GB | ~$0,50/GB | ~$0,15/GB |
+
+### Organizzazione interna dell'SSD
+
+```
+Sistema host (OS → file system → driver I/O)
+        ↕ Interfaccia (PCIe / USB)
+[Controller] [Indirizzamento] [Buffer/cache dati | Correzione errori]
+[Chip flash NAND × n]
+```
+
+- **Controller**: interfaccia a livello dispositivo + esecuzione firmware.
+- **Indirizzamento**: logica di selezione tra i chip flash.
+- **Buffer/cache dati**: RAM ad alta velocità per compensare le velocità e aumentare il throughput.
+- **Correzione degli errori**: rilevazione e correzione interna.
+
+### Problemi degli SSD
+
+**1. Performance che decadono con l'uso:** la riscrittura di una pagina richiede di leggere l'intero blocco, cancellarlo e riscriverlo → frammentazione → degrado. Soluzioni: over-provisioning, TRIM, garbage collection.
+
+**2. Numero limitato di scritture (~100.000 cicli):** soluzioni: wear leveling (distribuisce le scritture uniformemente), stima vita residua, RAID.
+
+---
+
+## Memorizzazione Ottica
+
+### CD-ROM
+
+- Disco di **policarbonato** con rivestimento riflettente (alluminio).
+- Dati come **pit** (pozzetti) e **land** (zone piane); lettura laser.
+- **CLV (Constant Linear Velocity):** velocità lineare costante → velocità angolare variabile.
+- Capacità: 650–700 MB (≈ 74 min audio).
+- Formato settore: **2352 byte** = 12B sync + 4B ID (MIN, SEC, Settore, Modo) + 2048B dati + 288B ECC.
+  - **Modo 0**: campo dati vuoto.
+  - **Modo 1**: 2048 byte dati + correzione errori.
+  - **Modo 2**: 2336 byte dati (no ECC aggiuntivo).
+- **Accesso casuale** (difficile causa CLV) — 4 passi: (1) spostare testina in posizione approssimata; (2) regolare velocità di rotazione; (3) leggere l'indirizzo del settore; (4) aggiustamenti fini per trovare il settore richiesto.
+
+### CD-R e CD-RW
+
+| Tipo | Caratteristica |
+|---|---|
+| CD-R | WORM (Write Once Read Many) |
+| CD-RW | Riscrivibile (cambiamento di fase del materiale) |
+
+### DVD
+
+- Laser più corto (650 nm vs 780 nm del CD) → tracce e pit più piccoli.
+- **4,7 GB per strato**; fino a 17 GB (doppio lato, doppio strato).
+
+### Blu-ray
+
+- Laser blu-violetto (405 nm) → pit ancora più piccoli.
+- **25 GB per strato**. Versioni: BD-ROM, BD-R, BD-RE.
+
+| Supporto | Passo tracce | Laser | Capacità/strato |
+|---|---|---|---|
+| CD | 2,11 µm | 780 nm | 682 MB |
+| DVD | 1,32 µm | 650 nm | 4,7 GB |
+| Blu-ray | 0,58 µm | 405 nm | 25 GB |
+
+---
+
+## Nastro Magnetico
+
+- **Accesso seriale** (non casuale).
+- Lento ma molto economico.
+- Usato per **backup** e **archiviazione**.
+- Scrittura/lettura a serpentina su più tracce parallele.
+
+---
+
+## Scheduling del Disco
+
+| Algoritmo | Descrizione |
+|---|---|
+| **FCFS** | Prima arrivato, primo servito. Equo ma inefficiente. |
+| **SSF** (Shortest Seek First) | Serve la traccia più vicina alla posizione corrente. Rischio di starvation. |
+| **Elevator (SCAN)** | Si muove in una direzione servendo le richieste, poi inverte. Bilanciato. |
