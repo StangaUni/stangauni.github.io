@@ -76,23 +76,19 @@ che equivale a $\dim N(A) = n - \mathrm{rk}(A)$ (già visto in §4.4).
 
 ---
 
-## Metodo per calcolare $N(f)$ e $\mathrm{Im}(f)$
+## Caratterizzazione di Nucleo e Immagine
 
-### Nucleo $N(f)$
+**Nucleo.** $N(f)$ è l'insieme delle soluzioni di $f(\underline{v}) = \underline{0}$, esprimibile come combinazione lineare di vettori che formano una sua base.
 
-Risolvere $f(\underline{v}) = \underline{0}$ imponendo le condizioni ottenute componente per componente; esprimere le soluzioni come combinazioni lineari di vettori-base.
-
-### Immagine $\mathrm{Im}(f)$
-
-Calcolare $f(\underline{v})$ per $\underline{v}$ generico, quindi estrarre i generatori raggruppando per parametri liberi:
+**Immagine.** Se $\mathcal{B} = (\underline{v}_1,\ldots,\underline{v}_n)$ è una base di $V$, allora:
 
 $$\mathrm{Im}(f) = \langle f(\underline{v}_1), \ldots, f(\underline{v}_n) \rangle$$
 
-dove $\mathcal{B} = (\underline{v}_1,\ldots,\underline{v}_n)$ è una base di $V$ (o equivalentemente: le colonne di $A$ se $f(\underline{x}) = A\underline{x}$).
+Nel caso $f(\underline{x}) = A\underline{x}$, questo coincide con $C(A)$ (spazio delle colonne di $A$).
 
-### Dimensione tramite il Teorema
+**Dimensione.** Per il Teorema di Nullità + Rango, note $\dim V$ e una delle due dimensioni, l'altra è determinata:
 
-Se $\dim N(f)$ è noto, si ricava $\dim\mathrm{Im}(f) = \dim V - \dim N(f)$ senza calcolare $\mathrm{Im}(f)$ esplicitamente.
+$$\dim\mathrm{Im}(f) = \dim V - \dim N(f)$$
 
 ---
 
@@ -165,3 +161,66 @@ $$\boxed{A_2 \cdot A_1 \text{ è la matrice di } g \circ f \text{ rispetto a } \
 $$A_1 = \begin{pmatrix}1&0\\0&0\\0&1\end{pmatrix}, \quad A_2 = \begin{pmatrix}1&0&0\\0&1&0\end{pmatrix}, \quad A_2 A_1 = \begin{pmatrix}1&0\\0&0\end{pmatrix}$$
 
 che corrisponde a $g\circ f: \begin{pmatrix}a\\b\end{pmatrix}\mapsto\begin{pmatrix}a\\0\end{pmatrix}$.
+
+---
+
+## Matrice di Passaggio di Base
+
+**Osservazione.** Un'applicazione lineare $f: V \to W$ è completamente determinata dai valori che assume su una base di $V$: se $\mathcal{B} = \{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$ è una base di $V$, allora per ogni $\mathbf{v} = \sum_i \alpha_i \mathbf{v}_i$ vale $f(\mathbf{v}) = \sum_i \alpha_i f(\mathbf{v}_i)$.
+
+**Definizione.** Sia $V$ uno spazio vettoriale su $\mathbb{K}$, $\dim V = n$. Siano $\mathcal{B}_1$ e $\mathcal{B}_2$ due basi ordinate di $V$. La **matrice di passaggio di base** da $\mathcal{B}_1$ a $\mathcal{B}_2$ è la matrice associata all'applicazione identica $\mathrm{id}_V : V \to V$ rispetto alle basi $\mathcal{B}_1$ (dominio) e $\mathcal{B}_2$ (codominio):
+
+$$M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} = \bigl(C_{\mathcal{B}_2}(\mathbf{v}_1),\; C_{\mathcal{B}_2}(\mathbf{v}_2),\; \ldots,\; C_{\mathcal{B}_2}(\mathbf{v}_n)\bigr) \in M_n(\mathbb{K})$$
+
+dove $\mathcal{B}_1 = \{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$. Vale la relazione:
+
+$$C_{\mathcal{B}_2}(\mathbf{v}) = M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} \cdot C_{\mathcal{B}_1}(\mathbf{v})$$
+
+### Proprietà
+
+1. $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} \in M_n(\mathbb{K})$ è quadrata di ordine $n = \dim V$.
+2. Se $\mathcal{B}_1 = \mathcal{B}_2$ allora $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} = \mathbb{I}_n$.
+3. $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1}$ è sempre invertibile e $\left(M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1}\right)^{-1} = M_{\mathcal{B}_1 \leftarrow \mathcal{B}_2}$.
+4. Se $V = \mathbb{K}^n$ e $\mathcal{B} = \{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$ base ordinata, $\mathcal{E}_n$ base canonica:
+
+$$M_{\mathcal{E}_n \leftarrow \mathcal{B}} = \begin{pmatrix}\mathbf{v}_1 & \mathbf{v}_2 & \cdots & \mathbf{v}_n\end{pmatrix}$$
+
+### Composizione di matrici di passaggio
+
+$$M_{\mathcal{B}_3 \leftarrow \mathcal{B}_1} = M_{\mathcal{B}_3 \leftarrow \mathcal{B}_2} \cdot M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1}$$
+
+Questo permette di calcolare $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1}$ inserendo la base canonica come passaggio intermedio:
+
+$$M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} = M_{\mathcal{B}_2 \leftarrow \mathcal{E}_n} \cdot M_{\mathcal{E}_n \leftarrow \mathcal{B}_1}$$
+
+dove $M_{\mathcal{E}_n \leftarrow \mathcal{B}_1}$ ha come colonne i vettori di $\mathcal{B}_1$ e $M_{\mathcal{B}_2 \leftarrow \mathcal{E}_n} = \left(M_{\mathcal{E}_n \leftarrow \mathcal{B}_2}\right)^{-1}$.
+
+---
+
+## Interpretazione Geometrica di $\mathbb{R}^2$
+
+| Algebra | Geometria |
+|---------|-----------|
+| $\mathbb{R}^2 = \left\{\begin{pmatrix}a\\b\end{pmatrix} : a,b \in \mathbb{R}\right\}$ | piano cartesiano |
+| coordinate rispetto a $\mathcal{E}_2$ | coordinate del punto $P(a,b)$ |
+| $\begin{pmatrix}0\\0\end{pmatrix}$ | origine $O$ |
+| $\langle \mathbf{v} \rangle = \{\alpha \mathbf{v} : \alpha \in \mathbb{R}\}$ | retta passante per $O$ e $P$ |
+| $\mathbf{v}_1 + \mathbf{v}_2$ | regola del parallelogrammo |
+
+Cambiare le coordinate rispetto a basi diverse corrisponde a cambiare il sistema di riferimento.
+
+I corrispondenti algebrici dei concetti geometrici principali sono:
+
+- **Lunghezza di un vettore** $\to$ **norma**: $P(a,b)$, $|\overrightarrow{OP}| = \sqrt{a^2 + b^2}$
+- **Angolo tra due vettori** $\to$ prodotto scalare
+- **Perpendicolarità** $\to$ **ortogonalità**
+
+---
+
+## Norme di Vettori
+
+**Definizione.** Sia $V$ uno spazio vettoriale su $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$. Una **norma** per $V$ è una funzione $\|\cdot\| : V \to \mathbb{R}_{\geq 0}$ tale che:
+
+1. $\|\mathbf{v}\| > 0 \quad \forall\, \mathbf{v} \neq \mathbf{0}$, e $\|\mathbf{0}\| = 0$ **(positività)**
+2. $\|\alpha \cdot \mathbf{v}\| = |\alpha| \cdot \|\mathbf{v}\| \quad \forall\, \alpha \in \mathbb{K},\; \forall\, \mathbf{v} \in V$ **(omogeneità)**
+3. $\|\mathbf{v} + \mathbf{w}\| \leq \|\mathbf{v}\| + \|\mathbf{w}\| \quad \forall\, \mathbf{v}, \mathbf{w} \in V$ **(disuguaglianza triangolare)**

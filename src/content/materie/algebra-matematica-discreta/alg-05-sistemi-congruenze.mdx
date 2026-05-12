@@ -27,19 +27,19 @@ $x_0$ è **soluzione del sistema** se è soluzione di ogni congruenza simultanea
 
 ---
 
-## Strategia per Sistemi Generici
+## Riduzione a Sistema in Forma Normale
 
-Per risolvere un sistema generico, si riduce a una forma standard con moduli coprimi e coefficienti 1.
+Ogni sistema generico è equivalente a un sistema con coefficienti $1$ e moduli coprimi, ottenuto tramite la seguente riduzione.
 
-**Passo 1:** Per ogni $i$, calcolare $d_i = \text{MCD}(a_i, m_i)$.
-- Se $d_i \nmid c_i$ → la congruenza $i$ non ha soluzioni → il **sistema non ha soluzioni**.
-- Se $d_i \mid c_i$ per ogni $i$: sostituire ogni congruenza con l'equivalente ridotta:
-$$a_i x \equiv c_i \pmod{m_i} \;\longrightarrow\; \frac{a_i}{d_i} x \equiv \frac{c_i}{d_i} \pmod{\underbrace{\frac{m_i}{d_i}}_{n_i}}$$
+**Teorema di riduzione.** Sia dato il sistema generico. Se per qualche $i$ si ha $d_i = \text{MCD}(a_i, m_i) \nmid c_i$, il sistema non ammette soluzioni. Se invece $d_i \mid c_i$ per ogni $i$, allora ogni congruenza è equivalente alla sua ridotta:
 
-**Passo 2:** Poiché $\text{MCD}\!\left(\tfrac{a_i}{d_i}, n_i\right) = 1$, le soluzioni della congruenza ridotta appartengono a un'**unica classe** modulo $n_i$. Trovando una soluzione particolare $b_i$, si ottiene il sistema equivalente:
+$$a_i x \equiv c_i \pmod{m_i} \;\longleftrightarrow\; \frac{a_i}{d_i} x \equiv \frac{c_i}{d_i} \pmod{n_i}, \quad n_i = \frac{m_i}{d_i}$$
+
+Poiché $\text{MCD}\!\left(\tfrac{a_i}{d_i}, n_i\right) = 1$, le soluzioni della congruenza ridotta appartengono a un'unica classe $[b_i]_{n_i}$, riducendo il sistema alla forma normale:
+
 $$\begin{cases} x \equiv b_1 \pmod{n_1} \\ \vdots \\ x \equiv b_t \pmod{n_t} \end{cases}$$
 
-**Passo 3:** Se i moduli $n_1, \ldots, n_t$ sono a 2 a 2 coprimi → applicare TCR + Newton o Lagrange. Altrimenti servono altre tecniche.
+Se i moduli $n_1, \ldots, n_t$ risultano a due a due coprimi, si applica il Teorema Cinese dei Resti con i metodi di Newton o Lagrange.
 
 > **Esempio:** $\begin{cases} 2x \equiv 8 \pmod{12} \\ 3x \equiv 4 \pmod{5} \end{cases}$
 >

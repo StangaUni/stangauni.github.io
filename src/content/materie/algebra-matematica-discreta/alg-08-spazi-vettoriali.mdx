@@ -313,13 +313,9 @@ Sia $A \in M_{m,n}(\mathbb{K})$, con colonne $\underline{c}_1,\ldots,\underline{
 
 $$\boxed{C(A) = \langle \underline{c}_1, \underline{c}_2, \ldots, \underline{c}_n \rangle \leq \mathbb{K}^m}$$
 
-**Strategia per trovare una base di $C(A)$:**
+**Teorema.** Sia $U$ una forma ridotta di $A$. Allora $\dim C(A) = \mathrm{rk}(A)$ e una base di $C(A)$ è costituita dalle colonne di $A$ nelle stesse posizioni delle colonne dominanti di $U$.
 
-1. Calcolare una forma ridotta $U$ di $A$.
-2. $\dim C(A) = \mathrm{rk}(A)$ = n° colonne dominanti di $U$.
-3. Una base di $C(A)$ è formata dalle colonne di $A$ nelle **stesse posizioni** delle colonne dominanti di $U$.
-
-> **Attenzione:** in generale $C(A) \neq C(U)$, quindi **non** si prendono le colonne dominanti di $U$.
+> **Attenzione:** in generale $C(A) \neq C(U)$, quindi le basi si prelevano dalle colonne di $A$, non di $U$.
 
 ### Spazio delle righe
 
@@ -327,33 +323,24 @@ $$\boxed{R(A) = \langle \overline{r_1}^T, \overline{r_2}^T, \ldots, \overline{r_
 
 dove $\overline{r_i}^T$ è la H-trasposta della riga $i$. Si ha $R(A) = C(A^H)$.
 
-**Strategia per trovare una base di $R(A)$:**
-
-1. Calcolare una forma ridotta $U$ di $A$.
-2. $R(A) = R(U)$: una base è data dalle H-trasposte delle **righe non nulle** di $U$.
+**Teorema.** Una base di $R(A)$ è data dalle H-trasposte delle righe non nulle di qualsiasi forma ridotta $U$ di $A$.
 
 ### Spazio nullo
 
 $$\boxed{N(A) = \{\underline{v} \in \mathbb{K}^n \mid A\underline{v} = \underline{0}\} \leq \mathbb{K}^n}$$
 
-$N(A)$ coincide con l'insieme delle soluzioni del sistema omogeneo $A\underline{x}=\underline{0}$. Si ha $N(A) = N(U)$ per ogni forma ridotta $U$ di $A$, e:
+$N(A)$ coincide con l'insieme delle soluzioni del sistema omogeneo $A\underline{x}=\underline{0}$.
 
-$$\dim N(A) = n - \mathrm{rk}(A) = \text{n° colonne libere di } U$$
-
-**Strategia per trovare una base di $N(A)$:**
-
-1. Calcolare $U$ e risolvere $U\underline{x}=\underline{0}$.
-2. La soluzione generale dipende da $k = \dim N(A)$ parametri liberi; i $k$ vettori ottenuti ponendo un parametro $=1$ e gli altri $=0$ formano una base di $N(A)$.
-3. Se tutte le colonne di $U$ sono dominanti, $N(A)=\{\underline{0}\}$ e la base è vuota.
+**Teorema.** $\dim N(A) = n - \mathrm{rk}(A)$. La soluzione generale di $U\underline{x}=\underline{0}$ dipende da $k = \dim N(A)$ parametri liberi; i $k$ vettori soluzione ottenuti ponendo un parametro uguale a $1$ e gli altri a $0$ costituiscono una base di $N(A)$.
 
 ### Riepilogo dimensioni
 
 $$\dim C(A) = \dim R(A) = \mathrm{rk}(A), \qquad \dim N(A) = n - \mathrm{rk}(A)$$
 
-### Metodo per stabilire se $\mathcal{S}$ è L.I. o base di $V$
+### Criteri di Indipendenza Lineare e Base tramite Rango
 
-Dato $\mathcal{S} = \{\underline{v}_1,\ldots,\underline{v}_k\} \subseteq V$, si forma la matrice $A$ avente i vettori di $\mathcal{S}$ come colonne:
+Sia $\mathcal{S} = \{\underline{v}_1,\ldots,\underline{v}_k\} \subseteq V$ e $A$ la matrice con i vettori di $\mathcal{S}$ come colonne.
 
-- **$\mathcal{S}$ è L.I.** $\iff$ $\mathrm{rk}(A) = k$ (= n° vettori di $\mathcal{S}$).
-- **Base contenuta in $\mathcal{S}$:** le colonne di $A$ nelle posizioni dominanti di $U$ formano una base di $\langle\mathcal{S}\rangle$.
-- **$\mathcal{S}$ è base di $\mathbb{K}^n$** $\iff$ $k = n$ e $\mathrm{rk}(A) = n$ (cioè $A$ invertibile).
+- **$\mathcal{S}$ è L.I.** $\iff$ $\mathrm{rk}(A) = k$.
+- Le colonne di $A$ nelle posizioni dominanti di una forma ridotta $U$ formano una base di $\langle\mathcal{S}\rangle$.
+- **$\mathcal{S}$ è base di $\mathbb{K}^n$** $\iff$ $k = n$ e $\mathrm{rk}(A) = n$ (equivalentemente, $A$ è invertibile).

@@ -127,11 +127,11 @@ Sia $A \in M_n(\mathbb{C})$. Sono **equivalenti**:
 3. Una forma ridotta di $A$ ha tutte le colonne dominanti.
 4. $\mathrm{rk}(A) = n$.
 
-### Algoritmo per calcolare $A^{-1}$
+### Calcolo di $A^{-1}$ tramite Gauss-Jordan
 
-1. Formare la matrice aumentata $(A \mid \mathbb{I}_n) \in M_{n,2n}(\mathbb{C})$.
-2. Applicare operazioni elementari sulle righe fino ad ottenere $(C \mid D)$.
-3. **Se** $C = \mathbb{I}_n$: $A$ è invertibile e $\boxed{A^{-1} = D}$.
+**Teorema.** Sia $A \in M_n(\mathbb{C})$. Applicando operazioni elementari sulle righe alla matrice aumentata $(A \mid \mathbb{I}_n) \in M_{n,2n}(\mathbb{C})$ fino alla forma ridotta di Gauss-Jordan $(C \mid D)$:
+
+$$C = \mathbb{I}_n \iff A \text{ è invertibile}, \quad \text{in tal caso } \boxed{A^{-1} = D}$$
 
 ---
 
