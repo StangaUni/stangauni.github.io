@@ -30,17 +30,11 @@ Nessun singolo dispositivo soddisfa tutti i requisiti → la gerarchia (registri
 
 Tre architetture storiche:
 
-```
-(a) RAM + ROM          (b) RAM + ROM (I/O)     (c) S/O in RAM
-┌────────┐             ┌────────┐              ┌────────┐
-│  ROM   │ ROM         │Drivers │ RAM           │ Prog.  │
-├────────┤             ├────────┤              │ utente │
-│Prog.   │             │Prog.   │              ├────────┤
-│utente  │ RAM         │utente  │              │  S/O   │
-├────────┤             ├────────┤              └────────┘
-│  S/O   │             │  S/O   │ ROM
-└────────┘             └────────┘
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/sistemi_monoprogrammati.svg"
+  darkSrc="/assets/sistemi-operativi/sistemi_monoprogrammati_scuro.svg"
+  alt="Architetture sistemi monoprogrammati"
+/>
 
 ---
 
@@ -93,11 +87,11 @@ dove p = probabilità che un singolo processo stia aspettando I/O.
 
 **Principio:** un processo può avere spazio virtuale più grande della RAM — il S/O carica solo le pagine necessarie.
 
-```
-CPU → [indirizzo virtuale] → MMU → [indirizzo fisico] → RAM
-                                         ↑
-                              Page table (traduzione)
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/memoria_virtuale.svg"
+  darkSrc="/assets/sistemi-operativi/memoria_virtuale_scuro.svg"
+  alt="Schema memoria virtuale con MMU"
+/>
 
 ### Paginazione
 
@@ -105,19 +99,13 @@ CPU → [indirizzo virtuale] → MMU → [indirizzo fisico] → RAM
 - RAM suddivisa in **page frame** della stessa dimensione
 - Quando una pagina mancante viene riferita → **page fault** (trap al S/O)
 
-**Traduzione dell'indirizzo (32 bit, pagina 4 KB):**
-```
-┌──────────────────────────┬────────────────┐
-│    N° pagina (20 bit)    │  Offset (12 b) │
-└──────────────────────────┴────────────────┘
-            ↓ (indice in tabella delle pagine)
-     Page frame number
-            ↓
-┌──────────────────────────┬────────────────┐
-│    N° frame (20 bit)     │  Offset (12 b) │
-└──────────────────────────┴────────────────┘
-      Indirizzo fisico
-```
+**Traduzione dell'indirizzo:**
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/traduzione_indirizzo_virtuale.svg"
+  darkSrc="/assets/sistemi-operativi/traduzione_indirizzo_virtuale_scuro.svg"
+  alt="Traduzione indirizzo virtuale in fisico"
+/>
 
 **Formato di una riga della tabella:**
 
@@ -199,22 +187,6 @@ Gli algoritmi **stack** sono immuni (LRU, Optimal). FIFO **non lo è**.
 
 ---
 
-## Gestione del page fault: sequenza completa
-
-1. L'hardware fa trap al kernel e salva il PC sullo stack
-2. Un programma assembler salva i registri e chiama il S/O
-3. Il S/O identifica la pagina mancante
-4. Verifica che l'indirizzo virtuale sia valido (altrimenti: kill del processo)
-5. Cerca un page frame libero o rimpiazzabile
-6. Se la pagina da rimuovere è **dirty** (M=1): la salva su disco (processo sospeso)
-7. Copia la pagina richiesta nel page frame (processo sospeso)
-8. Aggiorna la page table
-9. Reimposta il PC all'istruzione che ha causato il fault
-10. Riporta il processo in stato Pronto
-11. Il programma assembler ricarica i registri e torna in user space
-
----
-
 ## Politiche locali vs globali
 
 | | Locale | Globale |
@@ -268,11 +240,8 @@ Unità logica (nota al programmatore): procedura, variabili, stack.
 
 ### Intel Pentium: segmentazione + paginazione
 
-**Schema di traduzione:**
-```
-(selettore, offset)
-    ↓ LDT/GDT → base del segmento
-indirizzo lineare (32 bit)
-    ↓ tabella pagine a 2 livelli (10+10+12 bit)
-indirizzo fisico
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/traduzione_indirizzi_pentium.svg"
+  darkSrc="/assets/sistemi-operativi/traduzione_indirizzi_pentium_scuro.svg"
+  alt="Schema traduzione indirizzi Intel Pentium"
+/>

@@ -2,7 +2,7 @@
 title: "Processi e Thread"
 type: "riassunto"
 section: "Teoria"
-excerpt: "Spazio di indirizzamento di un processo, thread POSIX, fork/execve/clone, comunicazione tra processi e daemon."
+excerpt: "Spazio di indirizzamento di un processo, thread POSIX, fork/execve/clone e comunicazione tra processi."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -92,23 +92,6 @@ execve(const char *path, char *const argv[], char *const envp[]);
 - Non crea un nuovo processo: stesso PID, nuovo codice
 - I file aperti rimangono aperti (salvo flag `O_CLOEXEC`)
 
-### Esecuzione di un comando di shell (fork + exec)
-
-```c
-while (TRUE) {
-    type_prompt();
-    read_command(cmd, par);
-
-    pid = fork();
-    if (pid < 0) { /* errore */ continue; }
-    if (pid != 0) {
-        waitpid(-1, &status, 0);   // padre: attende il figlio
-    } else {
-        execve(cmd, par, 0);       // figlio: esegue il comando
-    }
-}
-```
-
 ### waitpid() e terminazione
 
 - Processo figlio che sopravvive al genitore → **orfano** (potenzialmente dannoso)
@@ -176,16 +159,3 @@ La tabella è permanentemente in RAM per tutti i processi. Contiene:
 | **Socket** | Comunicazione in rete (locale o remota) |
 | **Message passing** | `send(dest, msg)` / `receive(src, msg)` — senza memoria condivisa |
 
----
-
-## Daemon
-
-Processi di sistema attivati direttamente dal S/O per operazioni di background:
-
-| Daemon | Funzione |
-|---|---|
-| `page daemon` | Libera page frame a intervalli regolari |
-| `kswapd` | Page daemon GNU/Linux (periodo 1 s) |
-| `bdflush` | Riscrittura pagine modificate su disco |
-| `init` (PID 1) | Capostipite di tutti i processi utente |
-| `getty` | Gestione terminali e login |

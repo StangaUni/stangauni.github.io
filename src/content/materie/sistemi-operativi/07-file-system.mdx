@@ -102,9 +102,11 @@ Il S/O può mappare un file direttamente nello spazio di indirizzamento virtuale
 
 ## Struttura di partizione
 
-```
-MBR (settore 0) | Boot block | Superblocco | Lista liberi | I-node | Radice | Dati
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/struttura_partizione_disco.svg"
+  darkSrc="/assets/sistemi-operativi/struttura_partizione_disco_scuro.svg"
+  alt="Struttura di una partizione disco"
+/>
 
 - **MBR:** settore 0 del disco; tabella delle partizioni e partizione attiva
 - **Superblocco:** numero di i-node, numero di blocchi, puntatore alla lista dei blocchi liberi
@@ -139,20 +141,11 @@ MBR (settore 0) | Boot block | Superblocco | Lista liberi | I-node | Radice | Da
 
 **I-node (UNIX/Linux)** — struttura indice per file: attributi + puntatori a blocchi dati.
 
-```
-i-node:
-┌──────────────┐
-│  Attributi   │
-├──────────────┤
-│ ptr  0–11    │──► [dati diretti]       ← 12 puntatori diretti
-├──────────────┤
-│ 1a indirez.  │──► [ptr₀..ptrN] ──► [dati]
-├──────────────┤
-│ 2a indirez.  │──► [ptr→[ptr→dati]]
-├──────────────┤
-│ 3a indirez.  │──► [ptr→[ptr→[ptr→dati]]]
-└──────────────┘
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/i-node.svg"
+  darkSrc="/assets/sistemi-operativi/i-node_scuro.svg"
+  alt="Struttura i-node con puntatori diretti e indiretti"
+/>
 
 **Calcolo dimensione massima** (blocco = B, i-node = I, indirizzo = A):
 - NIB = B/A (indirizzi per blocco)
@@ -215,15 +208,3 @@ Confrontare il **contatore di hard link** nell'i-node con il numero di entry che
 | **MS-DOS / Windows** | **Write-through** (scrittura immediata) | Consistenza sicura | Alto costo I/O |
 | **UNIX / GNU/Linux** | **Write-back** (daemon `sync`) | Prestazioni elevate | Rischio perdita dati a crash |
 
----
-
-## Prospettiva storica
-
-| Sistema | Anno | Caratteristiche principali |
-|---|---|---|
-| **CP/M** | 1973–81 | Directory singola, FAT in RAM, nomi 8+3, max 16 blocchi per file |
-| **MS-DOS** | 1981–97 | FS gerarchico, FAT, nomi 8+3, entry 32 B |
-| **UNIX v7** | 1979 | Albero + grafo aciclico, nomi 14 car., max 64 K file (2¹⁶ i-node) |
-| **BSD** | 1977+ | Nomi fino a 255 car., entry a lunghezza variabile |
-| **ext2 (Linux)** | 1993+ | Gruppi di blocchi, i-node 128 B, indirizzi 4 B (→ 4 TB partizione) |
-| **NTFS (Windows)** | 1993+ | Unicode 255 car., MFT, run list, supporto hard+soft link |

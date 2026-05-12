@@ -2,7 +2,7 @@
 title: "Introduzione ai Sistemi Operativi"
 type: "riassunto"
 section: "Teoria"
-excerpt: "Definizione di S/O, storia, concetto di processo e PCB, risorse, architettura hardware, interruzioni, boot e system call."
+excerpt: "Definizione di S/O, spooling, multiprogrammazione, concetto di processo e PCB, risorse, architettura hardware, interruzioni e system call."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -16,26 +16,9 @@ Un **Sistema Operativo** è un insieme di utilità progettate per:
 
 ---
 
-## Cenni storici
+## Spooling e Multiprogrammazione
 
-| Periodo | Evento chiave |
-|---|---|
-| 1944 | Colossus per decifrare Enigma |
-| 1947 | ENIAC — primo calcolatore elettronico; operatori umani come "S/O" |
-| 1949 | EDVAC — architettura von Neumann, programma memorizzato, sistema binario |
-| Anni '50 | Esecuzione **batch** (a lotti); tutto l'elaboratore a un solo programma; input via schede perforate |
-| Anni '60 | Nuovi linguaggi (BASIC); serie PDP; gestione a lotti migliorata; operazioni I/O fino a **1000×** più lente dell'elaborazione |
-| '61–'64 | CTSS, DTSS → primi sistemi **time-sharing**; nascita di MULTICS |
-| 1969 | UNICS → **UNIX** (Ken Thompson, Bell Labs); kernel scritto in assembler |
-| 1974 | UNIX riscritto in **C** (Dennis Ritchie); enorme portabilità |
-| Anni '70 | IBM, Microsoft, Apple fondate; prima installazione commerciale UNIX |
-| Anni '80 | PC e console; plug & play; multitasking preemptive (Amiga 500 prima di Windows) |
-| Anni '90 | WWW; centinaia di milioni di PC; Windows 95 introduce preemption |
-| 2000+ | Laptop > desktop; smartphone > laptop; Cloud computing |
-
-### Spooling e multiprogrammazione
-
-**Spooling** (*Simultaneous Peripheral Operation On-Line*): emissione o ricezione di dati **in parallelo** all'esecuzione di altri lavori (es. invio richiesta di stampa, caricamento di un programma). Sfrutta la lentezza dell'I/O rispetto alla CPU.
+**Spooling** (*Simultaneous Peripheral Operation On-Line*): emissione o ricezione di dati **in parallelo** all'esecuzione di altri lavori. Sfrutta la disparità di velocità tra CPU e dispositivi I/O per sovrapporre operazioni periferiche all'elaborazione.
 
 **Multiprogrammazione:** più lavori eseguiti simultaneamente. In ambiente mono-processore il parallelismo è **simulato** — occorre controllare l'assegnazione delle risorse e garantire equità di accesso mediante quanti di tempo (*time-sharing*).
 
@@ -125,8 +108,6 @@ Ogni processo è rappresentato da un descrittore (**PCB**) nella tabella dei pro
 
 Cache: suddivisa in **line** da 64 B; write-through o copy-back. L2: condivisa (Intel) o per core (AMD).
 
-**SSD** vs **HDD:** SSD fino a 200× più veloce, silenzioso, ~2 W; HDD più capiente ed economico. Soluzioni ibride: S/O su SSD, dati su HDD.
-
 ### Dischi magnetici
 
 - **Tracce:** anelli concentrici sul piatto; suddivise in **settori**
@@ -153,22 +134,6 @@ La **MMU** (*Memory Management Unit*) interposta tra CPU e bus esegue questa tra
   darkSrc="/assets/sistemi-operativi/sequenza_gestione_interruzione_io_scuro.svg"
   alt="Sequenza di gestione di un'interruzione I/O"
 />
-
-**CMOS:** memoria volatile a batteria per ora, dispositivo di boot, configurazione BIOS.
-
-**Plug & Play** (Intel + Microsoft): il sistema assegna centralmente livelli di interrupt e indirizzi I/O per evitare conflitti.
-
----
-
-## Boot
-
-1. BIOS verifica RAM e periferiche; scannerizza bus ISA e PCI; configura Plug & Play
-2. Legge il settore 0 del disco di boot (MBR) in RAM e lo esegue
-3. L'MBR individua la partizione attiva e carica il boot loader
-4. Il boot loader carica il S/O dalla partizione attiva
-5. Il S/O interroga il BIOS, carica i driver, avvia il login / GUI
-
----
 
 ## Chiamate di sistema (System Call)
 
@@ -203,14 +168,3 @@ La **MMU** (*Memory Management Unit*) interposta tra CPU e bus esegue questa tra
 | **Microkernel** | Nucleo minimo (processi + IPC); resto in processi utente | Flessibilità, affidabilità | Prestazioni scadenti |
 | **Macchina virtuale** | Virtualizzazione hardware sotto vari S/O | Isolamento completo | Complessità |
 
----
-
-## Unità metriche
-
-| Prefisso | Valore decimale | Valore binario (IEC) |
-|---|---|---|
-| Kilo (K) | 10³ | 2¹⁰ = 1.024 |
-| Mega (M) | 10⁶ | 2²⁰ |
-| Giga (G) | 10⁹ | 2³⁰ |
-| Tera (T) | 10¹² | 2⁴⁰ |
-| Peta (P) | 10¹⁵ | 2⁵⁰ |

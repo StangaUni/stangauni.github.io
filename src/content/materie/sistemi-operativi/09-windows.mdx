@@ -2,45 +2,10 @@
 title: "Windows"
 type: "riassunto"
 section: "Teoria"
-excerpt: "Storia di Windows (MS-DOS → NT), Registry, processi e thread, scheduling, gestione memoria e NTFS con MFT e run list."
+excerpt: "Win32 API, Registry, processi e thread, scheduling, gestione memoria e NTFS con MFT e run list."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
----
-
-## Storia
-
-### Prima e seconda generazione
-
-**MS-DOS** (1981): mono-utente, command line, non multiprogrammato.
-
-| Anno | Versione | Note |
-|---|---|---|
-| 1981 | MS-DOS 1.0 (8 KB) | PC IBM 8088 (16 bit) |
-| 1990–93 | Windows 3.x | GUI sopra MS-DOS; copia dell'interfaccia Macintosh |
-| 1995 | **Windows 95** | Primo S/O multiprogrammato; mono-utente; FS FAT; semaforo globale sul nucleo; ¼ spazio condiviso R/W tra processi |
-| 1998 | Windows 98 | Modeste migliorie |
-
-### Terza generazione: Progetto NT
-
-Abbandono della base MS-DOS. Scritto in **C e C++** (~16–29 M linee di codice).
-
-| Anno | Versione | Note |
-|---|---|---|
-| 1993 | **NT 3.1** | Architettura microkernel; fiasco commerciale |
-| 1996 | **NT 4.0** | Architettura monolitica; prestazioni migliori |
-| 1999 | **Windows 2000** (NT 5.0) | Spazio privato per processo; plug-and-play |
-| 2001 | **Windows XP** | Successo commerciale |
-| 2007 | **Windows Vista** | Flop; più sicuro; Windows Aero |
-| 2009 | **Windows 7** | Risposta a Vista; multitouch |
-
-**NT 3.1 (microkernel):** servizi in processi utente; alta portabilità ma basse prestazioni.
-**NT 4.0 (monolitico):** servizi riportati nel nucleo; prestazioni migliori.
-
-**GUI — paradigma WIMP:** Windows (finestre), Icons (icone), Menus (menu), Pointing (puntamento). Può essere:
-- Programma in spazio utente (GNU/Linux con X Window)
-- Parte del S/O (Windows)
-
 ---
 
 ## Interfaccia di programmazione
@@ -135,27 +100,20 @@ Il quanto è più ampio per la finestra in **primo piano**.
 ### Spazio di indirizzamento (32 bit)
 
 4 GB per processo:
-```
-Alto
-┌──────────────────────────────────┐
-│ Codice e dati del S/O           │  2 GB (condivisi)
-├──────────────────────────────────┤
-│ Codice e dati privati            │  2 GB (modo utente)
-└──────────────────────────────────┘
-Basso
-```
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/spazio_virtuale_processo.svg"
+  darkSrc="/assets/sistemi-operativi/spazio_virtuale_processo_scuro.svg"
+  alt="Spazio di indirizzamento virtuale del processo (32 bit)"
+/>
 
 ### Traduzione degli indirizzi (2 livelli)
 
-```
-Indirizzo virtuale (32 bit):
-┌──────────┬──────────┬────────────┐
-│ PDE      │ PTE      │ Offset     │
-│ (10 bit) │ (10 bit) │ (12 bit)   │
-└──────────┴──────────┴────────────┘
-      ↓          ↓
-Page Directory  Page Table
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/traduzione_indirizzi_2_livelli.svg"
+  darkSrc="/assets/sistemi-operativi/traduzione_indirizzi_2_livelli_scuro.svg"
+  alt="Traduzione degli indirizzi a 2 livelli (Windows 32 bit)"
+/>
 
 Traduzione preferibilmente via **TLB**.
 
@@ -191,14 +149,11 @@ Per ogni processo i: $\text{Min}_i \leq \#\{I_i\} \leq \text{Max}_i$
 | **Azzerata** (*zeroed*) | D | Contenuto obliterato |
 | **Difettosa** (*bad*) | E | Settore fisico difettoso |
 
-```
-WS₁…WSₙ
-  │ rilascio
-  ▼
-B (modified) → salva su disco → A (standby) → C (free) → D (zeroed)
-  ↑
-richiamo nel WS (page fault)
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/ciclo_vita_page_frame.svg"
+  darkSrc="/assets/sistemi-operativi/ciclo_vita_page_frame_scuro.svg"
+  alt="Ciclo di vita dei page frame"
+/>
 
 ### Page frame database
 
@@ -252,9 +207,11 @@ NTFS tenta di assegnare **blocchi contigui** (*run*). Ogni run è descritto da:
 - Indirizzo del 1° blocco della sequenza
 - Ampiezza della sequenza (in blocchi)
 
-**Efficienza:** il numero di record dipende dalla contiguità, non dalla dimensione del file:
-- 20 GB in 20 run da 1 M blocchi → 21×2×8 B = **336 B** di metadati
-- 64 KB in 64 run da 1 blocco → 65×2×8 B = **1040 B** di metadati
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/run_list.svg"
+  darkSrc="/assets/sistemi-operativi/run_list_scuro.svg"
+  alt="Struttura run list NTFS"
+/>
 
 ### Record con estensioni (file grandi/frammentati)
 

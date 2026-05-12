@@ -2,42 +2,19 @@
 title: "Unix e GNU/Linux"
 type: "riassunto"
 section: "Teoria"
-excerpt: "Storia di UNIX/Linux, architettura a livelli, gestione processi e memoria, scheduling, I/O, FS ext2 e Android."
+excerpt: "Architettura a livelli di UNIX/Linux, gestione processi e memoria, scheduling, I/O, FS ext2 e Android."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
 ---
 
-## Storia
-
-| Anno | Evento |
-|---|---|
-| 1964–65 | DTSS (primo time-sharing), CTSS (MIT); nasce MULTICS con MIT, Bell Labs, GE |
-| 1969 | Bell Labs abbandona MULTICS; **Ken Thompson** scrive UNICS in assembler su PDP-7 → **UNIX** |
-| 1974 | UNIX riscritto in **C** da Thompson e **Dennis Ritchie** per PDP-11 |
-| 1979 | UNIX v7 — versione di riferimento; Microsoft la commercializza come **Xenix** |
-| 1979–86 | Diversificazione: **System V** (AT&T→Novell→SCO) e **4.x BSD** (Berkeley; introduce VM e TCP/IP) |
-| 1986+ | **POSIX** (IEEE/ISO): standard che raccoglie il meglio di System V e BSD |
-| 1987 | **MINIX** (Tanenbaum) — microkernel |
-| 1991 | **GNU/Linux v0.01** (Linus Torvalds) — nucleo monolitico, clone POSIX, open-source |
-
----
-
 ## Architettura a livelli
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Utenti 1..N                                                │
-├─────────────────────────────────────────────────────────────┤
-│  Shell, compilatori, GUI, utilità                           │
-├─────────────────────────────────────────────────────────────┤
-│  Librerie standard (fork, exec, open, close, ...)           │
-├─────────────────────────────────────────────────────────────┤
-│  Nucleo monolitico (processi, memoria, I/O, FS, ...)        │
-├─────────────────────────────────────────────────────────────┤
-│                     Hardware                                │
-└─────────────────────────────────────────────────────────────┘
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/architettura_a_livelli.svg"
+  darkSrc="/assets/sistemi-operativi/architettura_a_livelli_scuro.svg"
+  alt="Architettura a livelli di UNIX/Linux"
+/>
 
 **Shell:** interfaccia a linea di comando; stdin/stdout/stderr (redirigibili con `<` `>`); pipe `|`; background `&`.
 
@@ -45,47 +22,11 @@ contributors:
 
 ## Gestione dei processi
 
-### fork() e execve()
+- **fork():** duplica il processo; il figlio ha memoria identica al padre inizialmente, poi indipendente (copy-on-write); inserisce i dati del figlio nella tabella dei processi
+- **execve():** sostituisce il codice del processo corrente con un nuovo programma senza creare un nuovo PID
+- **clone():** variante GNU/Linux che permette di specificare il grado di condivisione (memoria, FS, file, segnali, identità), creando processi o thread con la stessa chiamata di sistema
 
-```c
-while (TRUE) {
-    type_prompt();
-    read_command(cmd, par);
-    pid = fork();
-    if (pid != 0) waitpid(-1, &status, 0);  // padre: attende
-    else execve(cmd, par, 0);               // figlio: esegue
-}
-```
-
-- **fork():** duplica il processo; memoria identica inizialmente, poi indipendente (copy-on-write)
-- **execve():** sostituisce il codice del processo corrente con un nuovo programma
-
-### clone() — GNU/Linux
-
-```c
-pid = clone(function, stack_ptr, ctrl, arg);
-```
-
-Permette di specificare il grado di condivisione → crea processi o thread con la stessa chiamata.
-
-### Thread POSIX
-
-```c
-pthread_create(&tid, attr, fun, arg);
-pthread_exit(...);
-pthread_join(tid, ...);
-pthread_mutex_lock(&m);    // P
-pthread_mutex_unlock(&m);  // V
-```
-
-### Tabella dei processi
-
-In RAM permanentemente; contiene per ogni processo:
-
-- Parametri di ordinamento (priorità, tempo cumulato, tempo sospensione)
-- Descrittore della memoria virtuale del processo
-- Lista dei segnali e il loro stato
-- Stato, identità, relazioni di parentela, gruppo di appartenenza
+Per il modello completo di processi, thread POSIX e struttura della tabella dei processi, vedere [[02. Processi e thread]].
 
 ---
 
@@ -99,9 +40,11 @@ In RAM permanentemente; contiene per ogni processo:
 | **Real-time RR** | RR a priorità, prerilascio per quanto | Ritorno in fondo alla coda |
 | **Timesharing** | Priorità dinamica (Fair Priority) | Vettori attivo/scaduto (0–99); nice –20..+19 |
 
-**Struttura vettori attivo/scaduto:**
-- Ogni task migra dall'attivo allo scaduto all'esaurimento del quanto
-- Quando il vettore attivo si svuota → i due vettori si scambiano di ruolo
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/vettori_attivo_scaduto.svg"
+  darkSrc="/assets/sistemi-operativi/vettori_attivo_scaduto_scuro.svg"
+  alt="Struttura vettori attivo/scaduto"
+/>
 
 ### Prerilascio nel nucleo (≥ 2.6)
 
@@ -109,27 +52,6 @@ In RAM permanentemente; contiene per ogni processo:
 - **Bottom half:** parte differita, non disabilita ma ha precedenza su tutto tranne le top half
 - Sezioni critiche lunghe: disabilitazione minima delle interruzioni
 - Sezioni critiche brevi: semafori convenzionali
-
----
-
-## Boot e inizializzazione
-
-1. BIOS carica l'**MBR** (512 B, settore 0) in RAM e lo esegue
-2. MBR carica il programma di boot dalla partizione attiva
-3. Il boot loader carica il **nucleo del S/O**
-4. Il controllo passa al **main del nucleo** → carica driver, inizializza **processo 0**
-
-**Processo 0 (swapper):** configura orologi, installa il FS, crea processo 1 e processo 2.
-
-**Processo 1 (init):** legge `/etc/ttys`, esegue script `/etc/rc`, lancia `getty` per ogni terminale.
-
-```
-Process 0 (swapper)
-    ├── Process 1 (init)
-    │       ├── getty(tty1) → exec(login) → exec(shell)
-    │       └── ...
-    └── Process 2 (page daemon)
-```
 
 ---
 
@@ -168,7 +90,7 @@ Page daemon verifica ogni 1/4 s che vi siano ≥ *lotsfree* pagine libere:
 
 ### GNU/Linux: spazio virtuale di 4 GB
 
-- **1 GB** riservato al kernel
+- **1 GB** riservato al nucleo (tabella delle pagine + strutture di controllo)
 - **3 GB** per il processo utente
 - Spazio suddiviso in **regioni** (sequenze contigue di pagine)
 
@@ -177,12 +99,12 @@ Page daemon verifica ogni 1/4 s che vi siano ≥ *lotsfree* pagine libere:
 - Ogni scrittura causa eccezione → nucleo duplica la pagina e la marca R/W
 
 **Tabella delle pagine a 3 livelli:**
-```
-Indirizzo virtuale → [sel. globale | sel. interm. | sel. pagina | offset]
-                          ↓             ↓              ↓
-                    Dir. globale   Dir. interm.   Tabella pagine
-                    (1/processo)   (M/processo)   (N/processo)
-```
+
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/pagine_3_livelli.svg"
+  darkSrc="/assets/sistemi-operativi/pagine_3_livelli_scuro.svg"
+  alt="Tabella delle pagine a 3 livelli"
+/>
 
 **Daemon:**
 - **kswapd:** page daemon (periodo 1 s); sposta pagine su disco
@@ -201,9 +123,10 @@ Indirizzo virtuale → [sel. globale | sel. interm. | sel. pagina | offset]
 
 - I dispositivi sono file speciali (es. `/dev/sda`) — stesso paradigma dei file normali
 - Un **device driver** è associato a ogni dispositivo; identificato dalla coppia `<major, minor>`
-- GNU/Linux: **caricamento dinamico dei moduli** (no ricompilazione del kernel)
+- GNU/Linux: **caricamento dinamico dei moduli** (no ricompilazione del nucleo)
+  - Rilocazione del modulo, allocazione risorse, configurazione del vettore delle interruzioni, inizializzazione
 
-**Socket** — file speciale per la rete:
+**Socket** — file speciale per la rete; 3 tipi:
 
 | Tipo | Descrizione |
 |---|---|
@@ -217,9 +140,11 @@ Indirizzo virtuale → [sel. globale | sel. interm. | sel. pagina | offset]
 
 ### Struttura di partizione UNIX v7
 
-```
-Blocco di boot | Superblocco | Lista liberi | Lista i-node | Blocchi dati
-```
+<ThemedImage
+  lightSrc="/assets/sistemi-operativi/partizione_unix_v7.svg"
+  darkSrc="/assets/sistemi-operativi/partizione_unix_v7_scuro.svg"
+  alt="Struttura di partizione UNIX v7"
+/>
 
 Ogni entry di directory = 16 B (14 B nome + 2 B numero i-node).
 
@@ -248,13 +173,6 @@ Ogni entry di directory = 16 B (14 B nome + 2 B numero i-node).
 
 ## Android
 
-### Storia e obiettivi
-
-- Startup acquisita da Google nel 2005; open-source (AOSP)
-- **2007:** Android 1.0, SDK; **2011–14:** schermi grandi, SELinux; **2015–21:** focus privacy
-
-**Obiettivi:** open-source, API per terze parti, competizione "fair" tra app, 200 ms di avvio.
-
 ### Architettura
 
 - **init** (PID 1): primo processo utente; avvia i processi a basso livello incluso zygote
@@ -268,11 +186,7 @@ Ogni entry di directory = 16 B (14 B nome + 2 B numero i-node).
 - **OOM Killer:** no swap su Android; uccide i processi meno importanti per liberare RAM
 - **ART** (*Android RunTime*): VM Java per-app
 
-### Struttura app (APK)
-
-Archivio ZIP contenente: manifesto, risorse, bytecode DEX, firma digitale.
-
-### 4 tipi di componenti app
+### Componenti applicativi
 
 | Tipo | Descrizione |
 |---|---|
