@@ -166,24 +166,24 @@ che corrisponde a $g\circ f: \begin{pmatrix}a\\b\end{pmatrix}\mapsto\begin{pmatr
 
 ## Matrice di Passaggio di Base
 
-**Osservazione.** Un'applicazione lineare $f: V \to W$ è completamente determinata dai valori che assume su una base di $V$: se $\mathcal{B} = \{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$ è una base di $V$, allora per ogni $\mathbf{v} = \sum_i \alpha_i \mathbf{v}_i$ vale $f(\mathbf{v}) = \sum_i \alpha_i f(\mathbf{v}_i)$.
+**Osservazione.** Un'applicazione lineare $f: V \to W$ è completamente determinata dai valori che assume su una base di $V$: se $\mathcal{B} = \{\underline{v}_1, \ldots, \underline{v}_n\}$ è una base di $V$, allora per ogni $\underline{v} = \sum_i \alpha_i \underline{v}_i$ vale $f(\underline{v}) = \sum_i \alpha_i f(\underline{v}_i)$.
 
 **Definizione.** Sia $V$ uno spazio vettoriale su $\mathbb{K}$, $\dim V = n$. Siano $\mathcal{B}_1$ e $\mathcal{B}_2$ due basi ordinate di $V$. La **matrice di passaggio di base** da $\mathcal{B}_1$ a $\mathcal{B}_2$ è la matrice associata all'applicazione identica $\mathrm{id}_V : V \to V$ rispetto alle basi $\mathcal{B}_1$ (dominio) e $\mathcal{B}_2$ (codominio):
 
-$$M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} = \bigl(C_{\mathcal{B}_2}(\mathbf{v}_1),\; C_{\mathcal{B}_2}(\mathbf{v}_2),\; \ldots,\; C_{\mathcal{B}_2}(\mathbf{v}_n)\bigr) \in M_n(\mathbb{K})$$
+$$M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} = \bigl(C_{\mathcal{B}_2}(\underline{v}_1),\; C_{\mathcal{B}_2}(\underline{v}_2),\; \ldots,\; C_{\mathcal{B}_2}(\underline{v}_n)\bigr) \in M_n(\mathbb{K})$$
 
-dove $\mathcal{B}_1 = \{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$. Vale la relazione:
+dove $\mathcal{B}_1 = \{\underline{v}_1, \ldots, \underline{v}_n\}$. Vale la relazione:
 
-$$C_{\mathcal{B}_2}(\mathbf{v}) = M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} \cdot C_{\mathcal{B}_1}(\mathbf{v})$$
+$$C_{\mathcal{B}_2}(\underline{v}) = M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} \cdot C_{\mathcal{B}_1}(\underline{v})$$
 
 ### Proprietà
 
 1. $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} \in M_n(\mathbb{K})$ è quadrata di ordine $n = \dim V$.
 2. Se $\mathcal{B}_1 = \mathcal{B}_2$ allora $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1} = \mathbb{I}_n$.
 3. $M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1}$ è sempre invertibile e $\left(M_{\mathcal{B}_2 \leftarrow \mathcal{B}_1}\right)^{-1} = M_{\mathcal{B}_1 \leftarrow \mathcal{B}_2}$.
-4. Se $V = \mathbb{K}^n$ e $\mathcal{B} = \{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$ base ordinata, $\mathcal{E}_n$ base canonica:
+4. Se $V = \mathbb{K}^n$ e $\mathcal{B} = \{\underline{v}_1, \ldots, \underline{v}_n\}$ base ordinata, $\mathcal{E}_n$ base canonica:
 
-$$M_{\mathcal{E}_n \leftarrow \mathcal{B}} = \begin{pmatrix}\mathbf{v}_1 & \mathbf{v}_2 & \cdots & \mathbf{v}_n\end{pmatrix}$$
+$$M_{\mathcal{E}_n \leftarrow \mathcal{B}} = \begin{pmatrix}\underline{v}_1 & \underline{v}_2 & \cdots & \underline{v}_n\end{pmatrix}$$
 
 ### Composizione di matrici di passaggio
 
@@ -204,8 +204,8 @@ dove $M_{\mathcal{E}_n \leftarrow \mathcal{B}_1}$ ha come colonne i vettori di $
 | $\mathbb{R}^2 = \left\{\begin{pmatrix}a\\b\end{pmatrix} : a,b \in \mathbb{R}\right\}$ | piano cartesiano |
 | coordinate rispetto a $\mathcal{E}_2$ | coordinate del punto $P(a,b)$ |
 | $\begin{pmatrix}0\\0\end{pmatrix}$ | origine $O$ |
-| $\langle \mathbf{v} \rangle = \{\alpha \mathbf{v} : \alpha \in \mathbb{R}\}$ | retta passante per $O$ e $P$ |
-| $\mathbf{v}_1 + \mathbf{v}_2$ | regola del parallelogrammo |
+| $\langle \underline{v} \rangle = \{\alpha \underline{v} : \alpha \in \mathbb{R}\}$ | retta passante per $O$ e $P$ |
+| $\underline{v}_1 + \underline{v}_2$ | regola del parallelogrammo |
 
 Cambiare le coordinate rispetto a basi diverse corrisponde a cambiare il sistema di riferimento.
 
@@ -221,6 +221,88 @@ I corrispondenti algebrici dei concetti geometrici principali sono:
 
 **Definizione.** Sia $V$ uno spazio vettoriale su $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$. Una **norma** per $V$ è una funzione $\|\cdot\| : V \to \mathbb{R}_{\geq 0}$ tale che:
 
-1. $\|\mathbf{v}\| > 0 \quad \forall\, \mathbf{v} \neq \mathbf{0}$, e $\|\mathbf{0}\| = 0$ **(positività)**
-2. $\|\alpha \cdot \mathbf{v}\| = |\alpha| \cdot \|\mathbf{v}\| \quad \forall\, \alpha \in \mathbb{K},\; \forall\, \mathbf{v} \in V$ **(omogeneità)**
-3. $\|\mathbf{v} + \mathbf{w}\| \leq \|\mathbf{v}\| + \|\mathbf{w}\| \quad \forall\, \mathbf{v}, \mathbf{w} \in V$ **(disuguaglianza triangolare)**
+1. $\|\underline{v}\| > 0 \quad \forall\, \underline{v} \neq \underline{0}$, e $\|\underline{0}\| = 0$ **(positività)**
+2. $\|\alpha \cdot \underline{v}\| = |\alpha| \cdot \|\underline{v}\| \quad \forall\, \alpha \in \mathbb{K},\; \forall\, \underline{v} \in V$ **(omogeneità)**
+3. $\|\underline{v} + \underline{w}\| \leq \|\underline{v}\| + \|\underline{w}\| \quad \forall\, \underline{v}, \underline{w} \in V$ **(disuguaglianza triangolare)**
+
+### Norme su $\mathbb{K}^m$
+
+Per $V = \mathbb{K}^m$, $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$, le norme principali sono:
+
+**Norma euclidea $\|\cdot\|_2$:**
+$$\left\|\begin{pmatrix} v_1 \\ \vdots \\ v_m \end{pmatrix}\right\|_2 = \sqrt{|v_1|^2 + \cdots + |v_m|^2} = \sqrt{\underline{v}^H \cdot \underline{v}}$$
+
+**Norma Manhattan $\|\cdot\|_1$:**
+$$\left\|\begin{pmatrix} v_1 \\ \vdots \\ v_m \end{pmatrix}\right\|_1 = |v_1| + |v_2| + \cdots + |v_m|$$
+
+**Norma infinito $\|\cdot\|_\infty$:**
+$$\left\|\begin{pmatrix} v_1 \\ \vdots \\ v_m \end{pmatrix}\right\|_\infty = \max\{|v_1|, |v_2|, \ldots, |v_m|\}$$
+
+**Relazione tra le norme:** per ogni $\underline{v} \in \mathbb{K}^m$:
+
+$$\|\underline{v}\|_\infty \leq \|\underline{v}\|_2 \leq \|\underline{v}\|_1$$
+
+---
+
+## Normalizzazione
+
+**Definizione.** Sia $\underline{v} \in \mathbb{K}^m$, $\underline{v} \neq \underline{0}$. Il **vettore normalizzato** di $\underline{v}$ è:
+
+$$\underline{v}' = \frac{1}{\|\underline{v}\|_2} \cdot \underline{v}$$
+
+$\underline{v}'$ è l'unico multiplo positivo di $\underline{v}$ con norma euclidea uguale a $1$:
+
+$$\|\underline{v}'\|_2 = \left\|\frac{1}{\|\underline{v}\|_2} \cdot \underline{v}\right\|_2 = \frac{1}{\|\underline{v}\|_2} \cdot \|\underline{v}\|_2 = 1$$
+
+---
+
+## Prodotto Interno Standard
+
+**Definizione.** Il **prodotto interno standard** di $\mathbb{K}^m$ è:
+
+$$(\cdot \mid \cdot) : \mathbb{K}^m \times \mathbb{K}^m \longrightarrow \mathbb{K}, \qquad (\underline{v} \mid \underline{w}) = \underline{v}^H \cdot \underline{w}$$
+
+**Proprietà.** Per ogni $\underline{v}, \underline{w} \in \mathbb{K}^m$ e $\alpha, \beta \in \mathbb{K}$:
+
+1. $(\underline{v} \mid \underline{0}) = (\underline{0} \mid \underline{v}) = 0$
+2. $(\underline{v} \mid \underline{v}) = \|\underline{v}\|_2^2 \in \mathbb{R}_{\geq 0}$
+3. $(\alpha\underline{v} \mid \beta\underline{w}) = \bar{\alpha} \cdot \beta \cdot (\underline{v} \mid \underline{w})$; in particolare, se $\alpha, \beta \neq 0$ allora $(\alpha\underline{v} \mid \beta\underline{w}) = 0 \iff (\underline{v} \mid \underline{w}) = 0$
+
+**Coseno dell'angolo tra vettori.** Per $\underline{v}, \underline{w} \in \mathbb{K}^m$ non nulli, il coseno dell'angolo $\alpha$ tra $\underline{v}$ e $\underline{w}$ è:
+
+$$\cos(\alpha) = \frac{(\underline{v} \mid \underline{w})}{\|\underline{v}\|_2 \cdot \|\underline{w}\|_2} = \frac{\underline{v}^H \cdot \underline{w}}{\|\underline{v}\|_2 \cdot \|\underline{w}\|_2}$$
+
+Se $\mathbb{K} = \mathbb{R}$, la formula è simmetrica: $\cos(\underline{v}, \underline{w}) = \cos(\underline{w}, \underline{v})$. Per $\mathbb{K} = \mathbb{C}$ questo non vale in generale, poiché $\underline{v}^H \cdot \underline{w} \neq \underline{w}^H \cdot \underline{v}$.
+
+---
+
+## Vettori Ortogonali e Ortonormali
+
+**Definizione.** Sia $V \leq \mathbb{K}^m$. Due vettori $\underline{v}, \underline{w} \in V$ si dicono **ortogonali**, scritto $\underline{v} \perp \underline{w}$, se:
+
+$$(\underline{v} \mid \underline{w}) = 0$$
+
+**Proprietà:**
+- $\underline{0}$ è ortogonale a ogni vettore di $\mathbb{K}^m$.
+- $(\underline{v} \mid \underline{w}) = 0 \implies (\underline{w} \mid \underline{v}) = 0$.
+- Se $\underline{v} \neq \underline{0} \neq \underline{w}$: $\underline{v} \perp \underline{w} \iff \cos(\alpha) = 0$.
+
+**Definizione.** Un insieme $\mathcal{S} = \{\underline{v}_1, \ldots, \underline{v}_k\} \subseteq V$ è un **insieme ortogonale** se:
+
+$$(\underline{v}_i \mid \underline{v}_j) = 0 \quad \forall\, i \neq j$$
+
+Una **base ortogonale** di $V$ è una base di $V$ che è anche insieme ortogonale.
+
+**Definizione.** Un insieme $\mathcal{S} = \{\underline{v}_1, \ldots, \underline{v}_k\} \subseteq V$ è un **insieme ortonormale** se è ortogonale e ogni vettore ha norma euclidea $1$:
+
+$$(\underline{v}_i \mid \underline{v}_j) = 0 \quad \forall\, i \neq j \qquad \text{e} \qquad (\underline{v}_i \mid \underline{v}_i) = 1 \quad \forall\, i$$
+
+Una **base ortonormale** di $V$ è una base di $V$ che è anche insieme ortonormale.
+
+**Esempio canonico.** La base canonica $\mathcal{E}_m = \{\underline{e}_1, \ldots, \underline{e}_m\}$ è base ortonormale di $\mathbb{K}^m$: si ha $(\underline{e}_i \mid \underline{e}_j) = 0$ per $i \neq j$ e $\|\underline{e}_i\|_2 = 1$.
+
+**Costruzione di insiemi ortonormali.** Dato un insieme ortogonale $\mathcal{S} = \{\underline{v}_1, \ldots, \underline{v}_k\}$ senza vettori nulli, normalizzando ogni elemento si ottiene l'insieme ortonormale:
+
+$$\mathcal{S}' = \left\{\frac{\underline{v}_1}{\|\underline{v}_1\|_2},\, \frac{\underline{v}_2}{\|\underline{v}_2\|_2},\, \ldots,\, \frac{\underline{v}_k}{\|\underline{v}_k\|_2}\right\}$$
+
+che genera lo stesso sottospazio di $\mathcal{S}$.
