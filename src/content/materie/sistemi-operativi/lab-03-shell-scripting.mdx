@@ -1,0 +1,197 @@
+---
+title: "Laboratorio: Shell Scripting"
+type: "riassunto"
+section: "Laboratorio"
+excerpt: "Shell scripting Bash: struttura script, parametri posizionali, variabili, aritmetica, array, strutture di controllo, funzioni, command substitution e debugging."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Shell Scripting
+
+## Struttura di uno script
+
+Uno **script Bash** è un file di testo contenente una sequenza di comandi eseguita dalla shell in modalità non interattiva.
+
+La prima riga deve essere lo **shebang** (hashbang), che specifica l'interprete:
+
+```bash
+#!/bin/bash
+```
+
+I commenti iniziano con `#`. Per eseguire uno script:
+
+```bash
+bash script.sh      # passa lo script all'interprete; richiede solo lettura
+./script.sh         # esecuzione diretta; richiede lettura ed esecuzione
+chmod +x script.sh  # aggiunge il bit di esecuzione
+```
+
+---
+
+## Parametri posizionali
+
+Gli script ricevono argomenti dalla riga di comando tramite variabili speciali:
+
+| Variabile | Significato |
+|-----------|-------------|
+| `$0` | nome dello script |
+| `$1`, `$2`, ... | i-esimo argomento posizionale |
+| `$#` | numero totale di argomenti |
+| `$*` | tutti gli argomenti come unica stringa (con double quoting) |
+| `$@` | tutti gli argomenti come stringhe separate |
+
+---
+
+## Variabili
+
+**Creazione e lettura:**
+
+```bash
+nome=valore              # nessuno spazio attorno a =
+echo "$nome"
+echo "${nome}_suffix"    # disambiguazione con graffe
+echo "${#nome}"          # lunghezza della stringa
+```
+
+**Scope:**
+
+- Le variabili di shell sono locali alla shell corrente; non visibili a sottoprocessi.
+- Le **variabili d'ambiente** (es. `HOME`, `PATH`) sono visibili ai sottoprocessi; si esportano con `export nome`.
+- All'interno delle funzioni, le variabili sono globali per default; `local` limita lo scope alla funzione.
+
+**Input interattivo con `read`:**
+
+```bash
+read VAR                     # legge una riga da stdin in VAR
+read -p "Messaggio: " VAR    # mostra un prompt prima di leggere
+read -s VAR                  # modalità silenziosa (caratteri non visualizzati)
+```
+
+---
+
+## Espansione aritmetica
+
+Bash esegue aritmetica intera tramite `$(( espressione ))`:
+
+```bash
+a=5; b=3
+somma=$(( a + b ))
+(( a++ ))           # incremento in-place; non produce output
+resto=$(( a % b ))
+```
+
+Operatori supportati: `+` `-` `*` `/` (divisione intera) `%` (modulo) `**` (potenza).
+
+---
+
+## Array
+
+Un array indicizzato raccoglie una sequenza di valori:
+
+```bash
+arr=(val0 val1 val2)     # creazione letterale
+${arr[i]}                # accesso all'elemento i (0-based)
+arr[i]=nuovo             # modifica di un elemento
+${arr[@]}                # espansione di tutti gli elementi
+${#arr[@]}               # numero di elementi
+```
+
+Generazione di un indice casuale nell'intervallo $[1, N]$:
+
+```bash
+$(( (RANDOM % N) + 1 ))
+```
+
+---
+
+## Strutture di controllo
+
+### Condizionale if-elif-else
+
+```bash
+if [ condizione ]; then
+    ...
+elif [ altra_condizione ]; then
+    ...
+else
+    ...
+fi
+```
+
+**Operatori di confronto numerici:** `-eq` `-ne` `-lt` `-le` `-gt` `-ge`
+
+**Operatori su stringhe:** `=` `!=` `-z` (stringa vuota) `-n` (stringa non vuota)
+
+**Test su file system:**
+
+| Operatore | Condizione verificata |
+|-----------|----------------------|
+| `-e file` | il percorso esiste (file o directory) |
+| `-f file` | è un file regolare |
+| `-d dir`  | è una directory |
+
+**Operatori logici:** `&&` (AND), `||` (OR); supportati sia in `[ ]` con `-a`/`-o` che tra blocchi `if`.
+
+### Condizionale case
+
+```bash
+case $variabile in
+    pattern1) comando1;;
+    pattern2) comando2;;
+    *)        default;;
+esac
+```
+
+Supporta glob pattern (es. `[1-5]*`, `*.log`).
+
+### Cicli
+
+```bash
+for i in {1..N}; do ... done             # range inclusivo
+for elem in "${array[@]}"; do ... done   # iterazione su array
+for (( i=0; i<N; i++ )); do ... done    # stile C
+
+while [ condizione ]; do ... done
+```
+
+---
+
+## Funzioni
+
+Le funzioni sono definite e invocate nella shell corrente (non in una sottoshell):
+
+```bash
+function nome_funzione () {
+    local var_locale=valore   # scope limitato alla funzione
+    echo "$1"                 # accede al primo argomento della chiamata
+}
+nome_funzione argomento       # invocazione
+```
+
+Le variabili non dichiarate `local` sono globali: rimangono visibili nello scope esterno dopo il ritorno dalla funzione.
+
+---
+
+## Command substitution
+
+Cattura lo stdout di un comando in una variabile:
+
+```bash
+var=$(comando)
+oggi=$(date +%F)
+n_file=$(ls -1 | wc -l)
+```
+
+---
+
+## Debugging
+
+| Opzione | Modalità | Attivazione |
+|---------|----------|-------------|
+| `-x` (xtrace) | stampa ogni comando espanso prima di eseguirlo | `set -x` / `bash -x script.sh` |
+| `-n` (noexec) | verifica sintattica senza esecuzione | `bash -n script.sh` |
+| `-v` (verbose) | stampa le righe sorgenti prima dell'esecuzione | `bash -v script.sh` |
+
+`set -x` e `set +x` possono essere inseriti nello script per attivare/disattivare il tracing su sezioni specifiche.

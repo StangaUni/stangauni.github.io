@@ -306,3 +306,47 @@ Una **base ortonormale** di $V$ è una base di $V$ che è anche insieme ortonorm
 $$\mathcal{S}' = \left\{\frac{\underline{v}_1}{\|\underline{v}_1\|_2},\, \frac{\underline{v}_2}{\|\underline{v}_2\|_2},\, \ldots,\, \frac{\underline{v}_k}{\|\underline{v}_k\|_2}\right\}$$
 
 che genera lo stesso sottospazio di $\mathcal{S}$.
+
+**Proprietà degli insiemi ortogonali.** Sia $\mathcal{S} = \{\underline{v}_1, \ldots, \underline{v}_k\} \subseteq \mathbb{K}^m$ un insieme ortogonale. Allora:
+
+1. Se $\mathcal{S}$ non contiene vettori nulli, allora $\mathcal{S}$ è L.I. *(tra vettori non-nulli, l'ortogonalità implica l'indipendenza lineare.)*
+2. Se $\mathcal{S}$ è un insieme di generatori di $V \leq \mathbb{K}^m$, allora rimuovendo gli eventuali vettori nulli si ottiene una base ortogonale di $V$.
+
+---
+
+## Complemento Ortogonale
+
+**Definizione.** Sia $W \leq \mathbb{K}^m$, $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$. Il **complemento ortogonale** di $W$ in $\mathbb{K}^m$ è:
+
+$$W^\perp = \{\underline{v} \in \mathbb{K}^m \mid \underline{v} \perp \underline{\omega}\ \ \forall\,\underline{\omega} \in W\}$$
+
+### Proprietà
+
+Sia $W \leq \mathbb{K}^m$.
+
+1. **$W^\perp$ è un sottospazio vettoriale di $\mathbb{K}^m$.**
+   - $\underline{0} \perp \underline{\omega}$ per ogni $\underline{\omega} \in W$, quindi $\underline{0} \in W^\perp$.
+   - Chiusura per la somma: se $\underline{v}_1, \underline{v}_2 \in W^\perp$, allora per ogni $\underline{\omega} \in W$:
+   $$(\underline{v}_1 + \underline{v}_2 \mid \underline{\omega}) = (\underline{v}_1 \mid \underline{\omega}) + (\underline{v}_2 \mid \underline{\omega}) = 0$$
+   - Chiusura per scalare: se $\underline{v} \in W^\perp$ e $\alpha \in \mathbb{K}$, allora $(\alpha\underline{v} \mid \underline{\omega}) = \bar{\alpha}(\underline{v} \mid \underline{\omega}) = 0$ per ogni $\underline{\omega} \in W$.
+
+2. $(W^\perp)^\perp = W$.
+
+3. $W \cap W^\perp = \{\underline{0}\}$.  
+   *Dimostrazione.* Se $\underline{v} \in W \cap W^\perp$, allora $\underline{v} \perp \underline{v}$, cioè $0 = (\underline{v} \mid \underline{v}) = \|\underline{v}\|_2^2$, quindi $\underline{v} = \underline{0}$.
+
+4. $\mathbb{K}^m = W + W^\perp \stackrel{(3)}{=} W \oplus W^\perp$.
+
+   **Conseguenze:**
+   - Per ogni $\underline{v} \in \mathbb{K}^m$ esistono unici $\underline{\omega} \in W$ e $\underline{u} \in W^\perp$ tali che $\underline{v} = \underline{\omega} + \underline{u}$. Si chiamano rispettivamente **proiezione ortogonale di $\underline{v}$ su $W$** e **proiezione ortogonale di $\underline{v}$ su $W^\perp$**.
+   - $\dim W^\perp = m - \dim W$.
+
+### Relazione con gli Spazi Associati a Matrici
+
+Sia $A \in M_{m,n}(\mathbb{C})$. Allora:
+
+$$N(A)^\perp = C(A^H) = R(A) \qquad C(A)^\perp = N(A^H)$$
+
+In particolare, $\mathbb{C}^n$ e $\mathbb{C}^m$ si decompongono come:
+
+$$\mathbb{C}^n = N(A) \oplus R(A) \qquad \mathbb{C}^m = C(A) \oplus N(A^H)$$
