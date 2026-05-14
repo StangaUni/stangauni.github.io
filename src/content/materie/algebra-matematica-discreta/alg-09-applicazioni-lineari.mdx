@@ -350,3 +350,37 @@ $$N(A)^\perp = C(A^H) = R(A) \qquad C(A)^\perp = N(A^H)$$
 In particolare, $\mathbb{C}^n$ e $\mathbb{C}^m$ si decompongono come:
 
 $$\mathbb{C}^n = N(A) \oplus R(A) \qquad \mathbb{C}^m = C(A) \oplus N(A^H)$$
+
+---
+
+## Algoritmo di Gram-Schmidt
+
+**Problema.** Dato $W = \langle \underline{v}_1, \ldots, \underline{v}_m \rangle \leq \mathbb{K}^n$ con $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$, trovare una base ortonormale di $W$.
+
+### Procedura
+
+Sia $\mathcal{S} = \{\underline{v}_1, \ldots, \underline{v}_m\}$ insieme di generatori di $W$.
+
+1. Applicare l'algoritmo di Gram-Schmidt a $\mathcal{S}$ per ottenere un insieme ortogonale $\mathcal{S}' = \{\underline{w}_1, \ldots, \underline{w}_m\}$ di generatori di $W$.
+2. Rimuovere da $\mathcal{S}'$ gli eventuali vettori nulli per ottenere una **base ortogonale** $\mathcal{B}$ di $W$.
+3. Normalizzare i vettori di $\mathcal{B}$: $\underline{w}_j' = \dfrac{1}{\|\underline{w}_j\|_2}\,\underline{w}_j$ per ottenere una **base ortonormale** $\mathcal{B}^*$ di $W$.
+
+### Formula ricorsiva
+
+Dato $\mathcal{S} = \{\underline{v}_1, \ldots, \underline{v}_m\}$, si definisce la successione $(\underline{w}_i)_{i=1}^m$ ponendo:
+
+$$\underline{w}_1 = \underline{v}_1$$
+
+$$\underline{w}_i = \underline{v}_i - \sum_{j=1}^{i-1} \alpha_{ji}\,\underline{w}_j, \qquad i = 2, \ldots, m$$
+
+dove i coefficienti sono:
+
+$$\alpha_{ji} = \begin{cases} 0 & \text{se } \underline{w}_j = \underline{0} \\ \dfrac{(\underline{w}_j \mid \underline{v}_i)}{\|\underline{w}_j\|^2} & \text{se } \underline{w}_j \neq \underline{0} \end{cases}$$
+
+**Motivazione.** La decomposizione $\mathbb{K}^n = \langle \underline{w}_j \rangle \oplus \langle \underline{w}_j \rangle^\perp$ garantisce che sottraendo la proiezione ortogonale di $\underline{v}_i$ su $\langle \underline{w}_1, \ldots, \underline{w}_{i-1} \rangle$ si ottenga un vettore ortogonale a tutti i precedenti. Il coefficiente $\alpha_{ji}$ è precisamente il coefficiente della proiezione ortogonale di $\underline{v}_i$ sulla retta $\langle \underline{w}_j \rangle$.
+
+**Risultato.** L'insieme $\mathcal{S}' = \{\underline{w}_1, \ldots, \underline{w}_m\}$ è un insieme ortogonale di generatori di $W$. Ogni $\underline{w}_i = \underline{0}$ indica che $\underline{v}_i$ è combinazione lineare di $\underline{v}_1, \ldots, \underline{v}_{i-1}$; rimuovendo i vettori nulli si ottiene una base ortogonale di $W$, da cui si deduce $\dim W$.
+
+### Osservazione sul 2° metodo
+
+Per evitare l'emergere di vettori nulli nell'applicazione diretta, si può prima estrarre una base $\mathcal{B}$ di $W$ da $\mathcal{S}$ (tramite riduzione per righe della matrice $A = (\underline{v}_1 \mid \cdots \mid \underline{v}_m)$ e selezione delle colonne dominanti), e applicare successivamente l'algoritmo di Gram-Schmidt ai soli vettori di $\mathcal{B}$.
