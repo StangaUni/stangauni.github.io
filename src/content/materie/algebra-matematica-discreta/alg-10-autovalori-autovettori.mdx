@@ -1,0 +1,99 @@
+---
+title: "Autovalori e Autovettori"
+type: "riassunto"
+section: "Algebra"
+excerpt: "Definizione di autovalore e autovettore, autospazio, molteplicità geometrica e algebrica, polinomio caratteristico."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Autovalori e Autovettori
+
+Sia $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$ e $A \in M_n(\mathbb{K})$ una matrice quadrata.
+
+---
+
+## Definizioni
+
+**Autovalore.** Uno scalare $\lambda \in \mathbb{C}$ è un **autovalore** di $A$ se esiste un vettore non-nullo $\underline{v} \in \mathbb{K}^n$ tale che
+
+$$A \cdot \underline{v} = \lambda \cdot \underline{v}.$$
+
+L'insieme di tutti gli autovalori di $A$ è detto **spettro** di $A$ e si indica con $\mathrm{Spec}(A)$.
+
+**Autovettore.** Un vettore $\underline{v} \in \mathbb{K}^n$, $\underline{v} \neq \underline{0}$, tale che $A\underline{v} = \lambda\underline{v}$ per qualche $\lambda \in \mathbb{C}$ è detto **autovettore** di $A$ relativo all'autovalore $\lambda$.
+
+> Il vettore $\underline{0}$ soddisfa $A\underline{0} = \lambda\underline{0}$ per ogni $\lambda$, ed è escluso dalla definizione per evitare ambiguità.
+
+---
+
+## Proprietà Elementari
+
+1. Ogni autovettore è relativo a un **unico** autovalore: se $A\underline{v} = \lambda_1\underline{v}$ e $A\underline{v} = \lambda_2\underline{v}$, allora $\lambda_1\underline{v} = \lambda_2\underline{v}$, e poiché $\underline{v} \neq \underline{0}$ si conclude $\lambda_1 = \lambda_2$.
+
+2. Se $\underline{v}$ è autovettore relativo a $\lambda$, allora ogni suo multiplo $\alpha\underline{v}$ ($\alpha \in \mathbb{C}$, $\alpha \neq 0$) è anch'esso autovettore relativo a $\lambda$:
+$$A(\alpha\underline{v}) = \alpha(A\underline{v}) = \alpha(\lambda\underline{v}) = \lambda(\alpha\underline{v}).$$
+
+3. **Matrice scalare.** Per $A = \lambda \cdot \mathbb{I}_n$, si ha $A\underline{v} = \lambda\underline{v}$ per ogni $\underline{v} \in \mathbb{K}^n$, quindi $\lambda$ è l'unico autovalore e tutti i vettori non nulli sono autovettori.
+
+---
+
+## Autospazio e Molteplicità Geometrica
+
+**Autospazio.** L'**autospazio** di $A$ relativo a $\lambda$ è:
+
+$$\boxed{E_A(\lambda) = \{\underline{v} \in \mathbb{K}^n \mid A\underline{v} = \lambda\underline{v}\} = N(A - \lambda\mathbb{I}_n) \leq \mathbb{K}^n}$$
+
+L'uguaglianza $E_A(\lambda) = N(A - \lambda\mathbb{I}_n)$ segue da:
+$$A\underline{v} = \lambda\underline{v} \iff (A - \lambda\mathbb{I}_n)\underline{v} = \underline{0}.$$
+
+**Proprietà di $E_A(\lambda)$:**
+
+1. $\underline{0} \in E_A(\lambda)$ sempre.
+2. $\lambda$ è autovalore di $A$ $\iff$ $E_A(\lambda) \neq \{\underline{0}\}$.
+3. $E_A(\lambda)$ è un sottospazio vettoriale di $\mathbb{K}^n$ (in quanto spazio nullo di una matrice).
+
+**Molteplicità geometrica.** La **molteplicità geometrica** di $\lambda$ è:
+
+$$\boxed{d_A(\lambda) = \dim E_A(\lambda) = \dim N(A - \lambda\mathbb{I}_n) = n - \mathrm{rk}(A - \lambda\mathbb{I}_n)}$$
+
+dove l'ultima uguaglianza segue dal Teorema di Nullità + Rango.
+
+---
+
+## Polinomio Caratteristico
+
+**Criterio per gli autovalori.** Dalla caratterizzazione delle matrici invertibili:
+
+$$\lambda \text{ è autovalore di } A \iff d_A(\lambda) \neq 0 \iff \mathrm{rk}(A - \lambda\mathbb{I}_n) \neq n \iff A - \lambda\mathbb{I}_n \text{ non è invertibile}$$
+
+$$\iff \det(A - \lambda\mathbb{I}_n) = 0.$$
+
+**Polinomio caratteristico.** Il **polinomio caratteristico** di $A$ è:
+
+$$\boxed{p_A(x) = \det(A - x\,\mathbb{I}_n) \in \mathbb{K}[x]}$$
+
+Gli autovalori di $A$ sono esattamente gli zeri di $p_A(x)$:
+
+$$\mathrm{Spec}(A) = \{\lambda \in \mathbb{C} \mid p_A(\lambda) = 0\}.$$
+
+---
+
+## Proprietà del Polinomio Caratteristico
+
+Sia $A \in M_n(\mathbb{K})$. Allora:
+
+1. $\deg p_A(x) = n$.
+2. Il coefficiente direttivo di $x^n$ in $p_A(x)$ è $(-1)^n$.
+3. Per il Teorema Fondamentale dell'Algebra, $p_A$ si fattorizza completamente su $\mathbb{C}$:
+$$p_A(x) = (-1)^n (x - z_1)(x - z_2)\cdots(x - z_n)$$
+dove $z_1, \ldots, z_n \in \mathbb{C}$ sono gli autovalori di $A$ contati con molteplicità.
+
+Raggruppando gli autovalori distinti $\lambda_1, \ldots, \lambda_k$ con le rispettive molteplicità:
+
+$$\boxed{p_A(x) = (-1)^n (x - \lambda_1)^{m_1}(x - \lambda_2)^{m_2} \cdots (x - \lambda_k)^{m_k}}$$
+
+**Molteplicità algebrica.** Il numero $m_i = m_A(\lambda_i)$ è detto **molteplicità algebrica** dell'autovalore $\lambda_i$.
+
+> Una matrice a coefficienti reali può avere autovalori complessi (non reali): ad esempio $A = \begin{pmatrix}0&-1\\1&0\end{pmatrix}$ ha $p_A(x) = x^2+1$ con $\mathrm{Spec}(A)=\{i,-i\}$.
