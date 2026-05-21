@@ -1,0 +1,122 @@
+---
+title: "Strutture"
+type: "riassunto"
+excerpt: "Definizione di struct, tipo dei membri, dichiarazione e inizializzazione di variabili, operatori di accesso (. e ->), assegnamento membro per membro, utilizzo di typedef per alias di tipo."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Definizione
+
+Una **struttura** (`struct`) è un tipo di dato derivato che aggrega variabili di tipi eterogenei sotto un unico nome. A differenza degli array, i membri possono avere tipi distinti.
+
+La definizione di una struttura non riserva spazio di memoria: crea esclusivamente un nuovo tipo.
+
+```c
+struct studente {
+    char cognome[20];
+    char nome[20];
+    unsigned int matricola;
+    unsigned int annoNascita;
+    char genere;
+};
+```
+
+---
+
+## Tipo dei Membri
+
+Il tipo di ciascun membro può essere:
+
+- **Scalare** — `int`, `float`, `char`, puntatori, …
+- **Aggregato** — array, stringhe, altre `struct`, `union`, …
+
+Le strutture possono quindi essere annidate:
+
+```c
+struct punto {
+    int x;
+    int y;
+};
+
+struct rettangolo {
+    struct punto altoSx;
+    struct punto bassoDx;
+};
+```
+
+---
+
+## Dichiarazione di Variabili
+
+Le variabili di tipo struttura si dichiarano come qualsiasi altra variabile. La dichiarazione può avvenire separatamente dalla definizione o contestualmente ad essa:
+
+```c
+/* separata */
+struct studente stud, inf21_22[180], *studPtr;
+
+/* contestuale */
+struct studente {
+    char cognome[20];
+    unsigned int matricola;
+} stud, *studPtr;
+```
+
+---
+
+## Inizializzazione
+
+Le strutture si inizializzano tramite **liste di inizializzatori**, analogamente agli array. I campi non specificati vengono inizializzati a `0` (o `NULL`):
+
+```c
+struct studente stud = {"Turing", "Alan", 1001110};
+```
+
+---
+
+## Accesso ai Membri
+
+Due operatori:
+
+| Operatore | Contesto | Esempio |
+|-----------|---------|---------|
+| `.` | variabile di tipo struct | `stud.cognome` |
+| `->` | puntatore a struct | `studPtr->cognome` |
+
+`studPtr->cognome` è equivalente a `(*studPtr).cognome`. L'operatore `.` ha precedenza su `*`, quindi le parentesi sono obbligatorie nella forma con dereference esplicito.
+
+---
+
+## Assegnamento
+
+L'assegnamento tra variabili struct dello stesso tipo produce una **copia membro per membro** (deep copy del contenuto, non copia del puntatore):
+
+```c
+struct studente a = {"Turing", "Alan", 1001};
+struct studente b = a;   /* b è una copia indipendente di a */
+```
+
+Questo vale anche per i membri di tipo array e stringa.
+
+---
+
+## `typedef`
+
+`typedef` assegna un nome simbolico (alias) a un tipo esistente, migliorando la leggibilità:
+
+```c
+typedef struct studente Studente;
+Studente stud;   /* equivalente a: struct studente stud; */
+```
+
+Pattern comune — definizione e alias nella stessa istruzione:
+
+```c
+typedef struct {
+    char cognome[20];
+    unsigned int matricola;
+} Studente;
+```
+
+`typedef` è processato dal compilatore (non dal preprocessore, a differenza di `#define`) ed è limitato alla definizione di alias per tipi.

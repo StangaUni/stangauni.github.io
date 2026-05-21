@@ -1,0 +1,116 @@
+---
+title: "Allocazione Dinamica della Memoria"
+type: "riassunto"
+excerpt: "Confronto tra allocazione statica, automatica e dinamica; layout di memoria di un processo (STACK, HEAP, DATA, CODE); funzioni malloc, calloc, realloc e free; dangling pointer e memory leak."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Modalità di Allocazione
+
+In C esistono tre modalità di allocazione della memoria, che differiscono per posizione, durata e responsabilità della gestione:
+
+| Tipo | Segmento | Durata | Gestore |
+|------|----------|--------|---------|
+| **Statica** | DATA | Intera esecuzione del programma | Compilatore |
+| **Automatica** | STACK | Durata del blocco (`{}`) | Compilatore |
+| **Dinamica** | HEAP | Controllata esplicitamente | Programmatore |
+
+L'allocazione statica riguarda le variabili globali e le variabili `static` locali; la loro dimensione è nota a compile-time. L'allocazione automatica riguarda le variabili locali ordinarie: vengono allocate all'ingresso nel blocco e deallocate all'uscita. L'allocazione dinamica richiede chiamate esplicite alle funzioni di libreria.
+
+---
+
+## Layout della Memoria di un Processo
+
+```
+indirizzo alto
+┌────────────────────┐
+│       STACK        │  ↓ cresce verso indirizzi bassi
+│  (blocchi di       │
+│   attivazione)     │
+│         ↓          │
+│                    │
+│         ↑          │
+│       HEAP         │  ↑ cresce verso indirizzi alti
+│  (allocazione      │
+│   dinamica)        │
+├────────────────────┤
+│       DATA         │
+│  inizializzate     │
+│  non inizializzate │  (segmento BSS)
+├────────────────────┤
+│       CODE         │
+│  (testo del prog.) │
+└────────────────────┘
+indirizzo basso
+```
+
+**STACK** — ogni chiamata di funzione aggiunge un blocco di attivazione contenente: indirizzo di ritorno, valore di ritorno, parametri, variabili locali. I blocchi vengono rimossi in ordine LIFO al ritorno. La dimensione massima è fissata dal sistema operativo: il suo superamento produce uno **stack overflow** (errore fatale). Le cause più comuni sono ricorsione illimitata e allocazione di array locali di grandi dimensioni.
+
+**HEAP** — regione di memoria per l'allocazione dinamica. Cresce verso indirizzi alti. La sua gestione è responsabilità del programmatore.
+
+---
+
+## Funzioni di Allocazione Dinamica (`<stdlib.h>`)
+
+### `malloc`
+
+```c
+void *malloc(size_t num_byte);
+```
+
+Alloca un blocco contiguo di `num_byte` byte sull'HEAP. Il contenuto è **non inizializzato**. Restituisce un puntatore `void *` al blocco, o `NULL` se l'allocazione fallisce.
+
+```c
+int *p = (int *)malloc(sizeof(int));
+if (p == NULL) { /* gestione errore */ }
+
+int *v = (int *)malloc(sizeof(int) * 20);  /* array dinamico di 20 int */
+```
+
+> `sizeof` applicato a un puntatore restituisce la dimensione del puntatore, non del blocco puntato. Non esiste modo standard per recuperare la dimensione di un blocco allocato dinamicamente tramite il solo puntatore.
+
+### `calloc`
+
+```c
+void *calloc(size_t num, size_t size);
+```
+
+Alloca `num * size` byte e **azzera** l'intero blocco. Equivale a `malloc` seguito da `memset` a zero:
+
+```c
+int *v = (int *)calloc(20, sizeof(int));  /* 20 int, tutti inizializzati a 0 */
+```
+
+### `realloc`
+
+```c
+void *realloc(void *ptr, size_t size);
+```
+
+Ridimensiona un blocco precedentemente allocato con `malloc` o `calloc`. Il contenuto viene **preservato** fino alla dimensione minore tra vecchia e nuova. Il blocco può essere spostato in una nuova zona dell'HEAP; il valore restituito (nuovo indirizzo) può differire da `ptr`.
+
+Restituisce `NULL` in caso di fallimento senza deallocare il blocco originale: usare una variabile temporanea per evitare di perdere il riferimento al blocco esistente.
+
+```c
+int *tmp = (int *)realloc(p, sizeof(int) * 40);
+if (tmp != NULL) {
+    p = tmp;
+}
+```
+
+### `free`
+
+```c
+void free(void *ptr);
+```
+
+Restituisce il blocco puntato da `ptr` all'HEAP. Dopo la chiamata, `ptr` è un **dangling pointer**: accedervi produce comportamento indefinito. Convenzione difensiva:
+
+```c
+free(p);
+p = NULL;
+```
+
+Ogni blocco allocato con `malloc`/`calloc`/`realloc` deve essere deallocato esattamente una volta. Omettere `free` produce **memory leak**; chiamare `free` su un blocco già liberato produce comportamento indefinito.

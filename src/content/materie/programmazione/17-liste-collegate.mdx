@@ -1,0 +1,171 @@
+---
+title: "Liste Collegate"
+type: "riassunto"
+excerpt: "Definizione di lista e discipline LIFO/FIFO; confronto tra rappresentazione sequenziale e collegata; struttura del nodo auto-referenziale; inserimento in testa e in coda tramite doppio puntatore; implementazione di pila (stack) con push e pop."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Definizione
+
+Una **lista** è una struttura dati che rappresenta una successione finita di elementi di un tipo, dotata delle seguenti operazioni: inserimento, cancellazione, visita, ricerca, inizializzazione.
+
+Le discipline di accesso più comuni sono:
+
+- **LIFO** (Last In, First Out) — l'ultimo elemento inserito è il primo ad essere rimosso; realizza una **pila (stack)**.
+- **FIFO** (First In, First Out) — il primo elemento inserito è il primo ad essere rimosso; realizza una **coda (queue)**.
+
+---
+
+## Rappresentazione Sequenziale vs. Collegata
+
+| Caratteristica | Sequenziale (array) | Collegata (linked list) |
+|----------------|--------------------|-----------------------|
+| Struttura in memoria | Contigua | Non contigua |
+| Accesso al k-esimo elemento | $O(1)$ — diretto tramite indice | $O(n)$ — traversal |
+| Inserimento/cancellazione | $O(n)$ — richiede spostamenti | $O(1)$ se la posizione è nota |
+| Dimensione | Fissa a compile-time | Dinamica a runtime |
+
+La rappresentazione collegata è preferibile quando la dimensione varia dinamicamente e le operazioni di inserimento/cancellazione sono frequenti.
+
+---
+
+## Struttura del Nodo
+
+L'elemento atomico di una lista collegata è il **nodo**, definito da una struttura **auto-referenziale**:
+
+```c
+struct nodo {
+    int dato;
+    struct nodo *nextPtr;
+};
+```
+
+Ogni nodo contiene il dato e un puntatore al nodo successivo. L'ultimo nodo ha `nextPtr = NULL`.
+
+```
+nodo:    [ dato | •──→ ]   punta al nodo successivo
+                  ╱        NULL (fine lista)
+
+ptrPtr:  ◇ ──→ puntatore ──→ nodo   (doppio puntatore)
+```
+
+---
+
+## Struttura di una Lista
+
+```
+listPtr ──→ [17|•] ──→ [29|•] ──→ [43|•] ──→ [93|╱]
+                                                   NULL
+```
+
+- `listPtr` è il puntatore alla testa della lista.
+- Lista vuota: `listPtr == NULL`.
+
+---
+
+## Funzioni Fondamentali
+
+### Inizializzazione
+
+```c
+struct nodo *listPtr = NULL;
+```
+
+### Visita
+
+```c
+void visit(struct nodo *ptr) {
+    while (ptr != NULL) {
+        printf("%d ", ptr->dato);
+        ptr = ptr->nextPtr;
+    }
+}
+```
+
+### Inserimento in Testa — Approccio Errato
+
+```c
+void wrong_pre_insert(struct nodo *ptr, int val) {
+    struct nodo *nuovo = (struct nodo *)malloc(sizeof(struct nodo));
+    nuovo->dato = val;
+    nuovo->nextPtr = ptr;
+    ptr = nuovo;  /* aggiorna solo la copia locale del parametro */
+}
+```
+
+`ptr` è passato per valore: l'assegnamento `ptr = nuovo` non è visibile al chiamante. Il puntatore testa nella funzione chiamante rimane invariato.
+
+### Inserimento in Testa — Approccio Corretto
+
+Per aggiornare il puntatore testa dalla funzione è necessario passare un **puntatore a puntatore**:
+
+```c
+void pre_insert(struct nodo **ptr, int val) {
+    struct nodo *tmp = *ptr;
+    *ptr = (struct nodo *)malloc(sizeof(struct nodo));
+    (*ptr)->dato = val;
+    (*ptr)->nextPtr = tmp;
+}
+```
+
+Sequenza:
+1. `tmp = *ptr` — salva il puntatore alla testa corrente
+2. `*ptr = malloc(...)` — alloca il nuovo nodo; la modifica di `*ptr` è visibile al chiamante
+3. `(*ptr)->dato = val` — inizializza il campo dato
+4. `(*ptr)->nextPtr = tmp` — collega il nuovo nodo al resto della lista
+
+```c
+struct nodo *listPtr = NULL;
+pre_insert(&listPtr, 17);
+pre_insert(&listPtr, 29);
+```
+
+### Inserimento in Coda
+
+```c
+void suf_insert(struct nodo **ptr, int val) {
+    while (*ptr != NULL) {
+        ptr = &((*ptr)->nextPtr);
+    }
+    pre_insert(ptr, val);
+}
+```
+
+Il ciclo avanza `ptr` portandolo ad essere l'indirizzo del campo `nextPtr` dell'ultimo nodo (o di `listPtr` se la lista è vuota). Quando `*ptr == NULL`, `pre_insert` inserisce il nuovo nodo aggiornando quel campo.
+
+---
+
+## Pila (Stack) come Lista LIFO
+
+La **pila** è una lista con accesso LIFO: si inserisce e rimuove sempre dalla testa.
+
+Operazioni fondamentali:
+
+- **push** — inserimento in testa (uguale a `pre_insert`)
+- **pop** — rimozione dalla testa con restituzione del valore
+
+```c
+void push(struct nodo **ptr, int val) {
+    pre_insert(ptr, val);
+}
+
+int pop(struct nodo **ptr) {
+    struct nodo *tmp = *ptr;
+    int val = tmp->dato;
+    *ptr = tmp->nextPtr;
+    free(tmp);
+    return val;
+}
+```
+
+Evoluzione con push(1), push(2), push(3), poi pop():
+
+```
+∅                      →  [1|╱]  →  [2|•]→[1|╱]  →  [3|•]→[2|•]→[1|╱]
+                                                         pop() restituisce 3
+                                                         →  [2|•]→[1|╱]
+```
+
+Il call stack del C implementa lo stesso principio LIFO con i blocchi di attivazione delle funzioni (vedi [Funzioni](./08-funzioni)).

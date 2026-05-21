@@ -1,0 +1,167 @@
+---
+title: "Elaborazione di File"
+type: "riassunto"
+excerpt: "Modello a stream sequenziale di byte, classificazione dei file (sequenziale/diretto, testo/binario), tipo FILE e fopen/fclose, modalità di apertura, I/O su file di testo, buffer di output, posizionamento con fseek, file binari con fread/fwrite, portabilità ed endianness."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Modello Astratto
+
+Il C modella ogni file come uno **stream sequenziale di byte**. Il sistema di I/O interpone un livello di astrazione tra il programma e il dispositivo fisico: il programma opera sullo stream, non direttamente sull'hardware.
+
+Tre stream standard vengono aperti automaticamente all'avvio:
+
+| Stream | Identificatore | Destinazione default |
+|--------|---------------|----------------------|
+| Standard input | `stdin` | tastiera |
+| Standard output | `stdout` | schermo |
+| Standard error | `stderr` | schermo |
+
+---
+
+## Classificazione dei File
+
+**Per modalità di accesso:**
+
+- **Sequenziale** — record di lunghezza variabile; per accedere al record $n$ occorre leggere i precedenti $n-1$.
+- **Diretto (casuale)** — record di lunghezza fissa $L$; il record $n$ si trova al byte $n \cdot L$, consentendo accesso in tempo costante.
+
+**Per formato del contenuto:**
+
+- **Testo** — sequenza di caratteri organizzata in righe terminate da `'\n'`.
+- **Binario** — sequenza grezza di byte; i dati sono rappresentati nella codifica interna della macchina.
+
+---
+
+## Il Tipo `FILE`
+
+Ogni file aperto è associato a una struttura `FILE` (definita in `<stdio.h>`) che mantiene lo stato del file, incluso il **file position pointer** (offset del prossimo byte da leggere o scrivere). L'accesso avviene tramite un puntatore a `FILE`:
+
+```c
+FILE *fp;
+fp = fopen("studenti.txt", "r");
+if (fp == NULL) {
+    fprintf(stderr, "Il file non può essere aperto\n");
+    return EXIT_FAILURE;
+}
+/* ... elaborazione ... */
+fclose(fp);
+```
+
+`fopen` restituisce `NULL` in caso di errore; il controllo è obbligatorio. `fclose` svuota il buffer e chiude il canale.
+
+---
+
+## Modalità di Apertura
+
+| Modalità | Descrizione |
+|----------|-------------|
+| `"r"` | Lettura; il file deve esistere |
+| `"w"` | Scrittura; crea o sovrascrive |
+| `"a"` | Append; crea o aggiunge in fondo |
+| `"r+"` | Lettura+scrittura; il file deve esistere |
+| `"w+"` | Lettura+scrittura; crea o sovrascrive |
+| `"a+"` | Lettura+scrittura; aggiunge in fondo |
+| `"rb"`, `"wb"`, `"ab"` | Modalità binarie equivalenti |
+| `"r+b"`, `"w+b"`, `"a+b"` | Aggiornamento binario |
+
+La differenza tra `"r+"` e `"w+"` è esclusivamente nell'apertura: `"r+"` richiede che il file esista, `"w+"` lo crea (o lo azzera se esiste).
+
+---
+
+## I/O su File di Testo
+
+Le funzioni di I/O su file di testo sono analoghe alle funzioni su stdin/stdout, con l'aggiunta del puntatore a `FILE`:
+
+```c
+fscanf(fp, "%d %s", &n, s);
+fprintf(fp, "%d %s\n", n, s);
+
+char c = fgetc(fp);
+fputc(c, fp);
+
+char riga[256];
+fgets(riga, 256, fp);   /* legge fino a '\n' o EOF, aggiunge '\0' */
+fputs(riga, fp);
+```
+
+---
+
+## Buffer di Output
+
+Le operazioni su file sono costose. Il sistema accumula i dati in un **buffer** in memoria e li scrive sul disco in blocco al riempimento del buffer o alla `fclose`. Per forzare lo svuotamento anticipato:
+
+```c
+fflush(fp);
+```
+
+---
+
+## Funzioni Utilitarie
+
+```c
+remove("nomefile");            /* cancella il file; 0 se successo */
+rename("vecchio", "nuovo");    /* rinomina; 0 se successo */
+freopen("altro.txt", "r", fp); /* riassocia fp a un altro file */
+```
+
+---
+
+## Posizionamento
+
+Il file position pointer è manipolabile esplicitamente:
+
+```c
+rewind(fp);                       /* porta l'offset a 0 */
+fseek(fp, offset, SEEK_SET);      /* da inizio file */
+fseek(fp, offset, SEEK_CURR);     /* dalla posizione corrente */
+fseek(fp, offset, SEEK_END);      /* dalla fine (offset negativo) */
+long pos = ftell(fp);             /* legge la posizione corrente */
+```
+
+`offset` è di tipo `long`; può essere negativo con `SEEK_CURR` e `SEEK_END`. `rewind(fp)` è equivalente a `fseek(fp, 0L, SEEK_SET)`.
+
+---
+
+## File Binari
+
+I file binari si aprono con le stesse modalità di quelli di testo, aggiungendo `'b'` alla stringa di modo. Le funzioni di lettura e scrittura operano su blocchi di byte:
+
+```c
+size_t fread(void *p, size_t dim_record, size_t num_record, FILE *fp);
+size_t fwrite(void *p, size_t dim_record, size_t num_record, FILE *fp);
+```
+
+Entrambe restituiscono il numero di record effettivamente letti/scritti (può essere inferiore a `num_record` in caso di EOF o errore) e avanzano il file position pointer del numero di byte trasferiti.
+
+```c
+struct studente stud;
+fread(&stud, sizeof(struct studente), 1, fp);    /* legge 1 record */
+fwrite(&stud, sizeof(struct studente), 1, fp);   /* scrive 1 record */
+
+struct studente lista[180];
+fread(lista, sizeof(struct studente), 180, fp);  /* legge 180 record */
+```
+
+`fread` e `fwrite` non interpretano il contenuto: il blocco di byte assume significato solo quando viene assegnato a una variabile del tipo appropriato.
+
+---
+
+## Portabilità dei File Binari
+
+I file binari possono non essere portabili tra architetture che usano convenzioni di memorizzazione diverse (**endianness**):
+
+| Convenzione | Ordine dei byte (es. `0x1A2B3C4D`) |
+|-------------|--------------------------------------|
+| Big-endian | `1A 2B 3C 4D` (byte più significativo prima) |
+| Little-endian | `4D 3C 2B 1A` (byte meno significativo prima) |
+
+Un file binario prodotto su un sistema big-endian verrà interpretato erroneamente su un sistema little-endian e viceversa.
+
+---
+
+## Efficienza
+
+Le operazioni di I/O su file sono ordini di grandezza più lente dell'accesso alla RAM. La strategia corretta consiste nel **minimizzare gli accessi a file**: caricare i dati in memoria all'inizio dell'elaborazione, operare esclusivamente sulle strutture in RAM, e aggiornare il file solo al termine.
