@@ -2,7 +2,7 @@
 title: "Autovalori e Autovettori"
 type: "riassunto"
 section: "Algebra"
-excerpt: "Definizione di autovalore e autovettore, autospazio, molteplicità geometrica e algebrica, polinomio caratteristico."
+excerpt: "Definizione di autovalore e autovettore, autospazio, molteplicità geometrica e algebrica, polinomio caratteristico, matrici simili e diagonalizzabili."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -96,4 +96,98 @@ $$\boxed{p_A(x) = (-1)^n (x - \lambda_1)^{m_1}(x - \lambda_2)^{m_2} \cdots (x - 
 
 **Molteplicità algebrica.** Il numero $m_i = m_A(\lambda_i)$ è detto **molteplicità algebrica** dell'autovalore $\lambda_i$.
 
+**Osservazione (somma delle molteplicità).** Poiché $p_A(x)$ ha grado $n$, la somma delle molteplicità algebriche di tutti gli autovalori distinti è $n$:
+
+$$\sum_{i=1}^{k} m_A(\lambda_i) = n.$$
+
 > Una matrice a coefficienti reali può avere autovalori complessi (non reali): ad esempio $A = \begin{pmatrix}0&-1\\1&0\end{pmatrix}$ ha $p_A(x) = x^2+1$ con $\mathrm{Spec}(A)=\{i,-i\}$.
+
+---
+
+## Spettro di Matrici Triangolari
+
+**Proposizione.** Sia $A \in M_n(\mathbb{K})$ una matrice **triangolare** (superiore o inferiore). Allora
+
+$$\mathrm{Spec}(A) = \{a_{11},\, a_{22},\, \ldots,\, a_{nn}\}$$
+
+e la molteplicità algebrica di ogni autovalore coincide con il numero di volte in cui compare nella diagonale principale.
+
+**Dimostrazione.** Per una matrice triangolare superiore, la matrice $A - x\mathbb{I}_n$ è anch'essa triangolare superiore con diagonale $(a_{11}-x, a_{22}-x, \ldots, a_{nn}-x)$, quindi
+
+$$p_A(x) = (a_{11}-x)(a_{22}-x)\cdots(a_{nn}-x) = (-1)^n(x-a_{11})(x-a_{22})\cdots(x-a_{nn}). \quad \square$$
+
+> In particolare, per $D = \operatorname{diag}(d_1,\ldots,d_n)$ si ha $\mathrm{Spec}(D)=\{d_1,\ldots,d_n\}$.
+
+---
+
+## Relazione tra Molteplicità
+
+**Teorema.** Sia $A \in M_n(\mathbb{K})$ e $\lambda \in \mathrm{Spec}(A)$. Allora:
+
+$$\boxed{1 \leq d_A(\lambda) \leq m_A(\lambda)}$$
+
+In particolare, se $m_A(\lambda) = 1$ allora necessariamente $d_A(\lambda) = 1$.
+
+---
+
+## Matrici Simili
+
+**Definizione.** Due matrici quadrate $A, B \in M_n(\mathbb{K})$ si dicono **simili** se esiste una matrice $S \in M_n(\mathbb{K})$ invertibile tale che
+
+$$\boxed{A = S \cdot B \cdot S^{-1}.}$$
+
+**Osservazione (simmetria).** La relazione di similitudine è simmetrica: se $A = SBS^{-1}$, allora $B = S^{-1}A(S^{-1})^{-1}$, quindi $B$ è simile ad $A$.
+
+**Teorema (invarianti di similitudine).** Se $A, B \in M_n(\mathbb{K})$ sono simili, allora:
+
+1. $p_A(x) = p_B(x)$; in particolare $\mathrm{Spec}(A) = \mathrm{Spec}(B)$ e $m_A(\lambda) = m_B(\lambda)$ per ogni $\lambda$.
+2. $d_A(\lambda) = d_B(\lambda)$ per ogni $\lambda \in \mathrm{Spec}(A)$.
+
+> Due matrici simili hanno quindi lo stesso spettro e le stesse molteplicità algebriche e geometriche, ma non necessariamente gli stessi autospazi.
+
+---
+
+## Matrici Diagonalizzabili
+
+**Definizione.** Una matrice $A \in M_n(\mathbb{K})$ si dice **diagonalizzabile** se è simile a una matrice diagonale, cioè se esistono una matrice diagonale $D \in M_n(\mathbb{K})$ e una matrice invertibile $S \in M_n(\mathbb{K})$ tali che
+
+$$\boxed{A = S \cdot D \cdot S^{-1}.}$$
+
+La coppia $(S, D)$ è detta **diagonalizzazione di $A$**.
+
+**Osservazione (potenze).** Se $A = SDS^{-1}$, allora per ogni $t \in \mathbb{N}$:
+
+$$A^t = S \cdot D^t \cdot S^{-1} = S \cdot \operatorname{diag}(d_1^t, \ldots, d_n^t) \cdot S^{-1},$$
+
+riducendo il calcolo di $A^t$ a un prodotto di tre matrici.
+
+**Teorema (caratterizzazione delle matrici diagonalizzabili).** Sia $A \in M_n(\mathbb{K})$ con autovalori distinti $\lambda_1, \ldots, \lambda_t$. Allora:
+
+$$\boxed{A \text{ è diagonalizzabile} \iff m_A(\lambda_i) = d_A(\lambda_i) \quad \forall\, i = 1,\ldots,t}$$
+
+cioè se e solo se per ogni autovalore le molteplicità algebrica e geometrica coincidono.
+
+**Osservazioni.**
+
+1. Se tutti gli autovalori di $A$ hanno molteplicità algebrica $1$ (polinomio caratteristico con radici semplici distinte), allora $A$ è diagonalizzabile, poiché $1 \leq d_A(\lambda_i) \leq m_A(\lambda_i) = 1$ forza $d_A(\lambda_i) = 1$.
+2. Il viceversa del punto 1 è falso: esistono matrici diagonalizzabili in cui almeno un autovalore ha molteplicità algebrica maggiore di $1$.
+
+---
+
+## Costruzione di una Diagonalizzazione
+
+Sia $A \in M_n(\mathbb{K})$ diagonalizzabile con autovalori distinti $\lambda_1, \ldots, \lambda_t$ e molteplicità algebriche $m_A(\lambda_i)$.
+
+**Matrice diagonale $D$.** Poiché $A$ è simile a $D$, gli autovalori di $D$ coincidono con quelli di $A$ ripetuti secondo la loro molteplicità algebrica:
+
+$$D = \operatorname{diag}(\underbrace{\lambda_1, \ldots, \lambda_1}_{m_A(\lambda_1)},\; \underbrace{\lambda_2, \ldots, \lambda_2}_{m_A(\lambda_2)},\; \ldots,\; \underbrace{\lambda_t, \ldots, \lambda_t}_{m_A(\lambda_t)}).$$
+
+> L'ordine degli autovalori nella diagonale è arbitrario, ma deve corrispondere all'ordine delle colonne di $S$.
+
+**Matrice $S$.** Per ogni $i = 1, \ldots, t$, sia $\mathcal{B}_i = \{\underline{b}_{i,1}, \ldots, \underline{b}_{i,m_A(\lambda_i)}\}$ una base di $E_A(\lambda_i)$. La matrice $S$ si costruisce affiancando le basi di tutti gli autospazi nell'ordine corrispondente agli autovalori in $D$:
+
+$$S = \bigl(A_1 \mid A_2 \mid \cdots \mid A_t\bigr)$$
+
+dove $A_i$ è la matrice avente come colonne i vettori di $\mathcal{B}_i$.
+
+$S$ è invertibile perché $A$ è diagonalizzabile, cioè $m_A(\lambda_i) = d_A(\lambda_i)$ per ogni $i$.
