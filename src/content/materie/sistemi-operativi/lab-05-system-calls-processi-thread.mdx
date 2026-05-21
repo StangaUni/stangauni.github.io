@@ -1,0 +1,277 @@
+---
+title: "Laboratorio: System Calls, Processi e Thread"
+type: "riassunto"
+section: "Laboratorio"
+excerpt: "System call POSIX, gestione processi con fork/exec/waitpid, zombie e processi orfani, multithreading con Pthreads, race condition e mutex, I/O di basso livello, pipe e segnali."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# System Calls, Processi e Thread
+
+## User Space e Kernel Space
+
+L'architettura del SO divide la memoria in due domini:
+
+- **User Space** — dove girano i processi utente; senza accesso diretto all'hardware
+- **Kernel Space** — dove risiede il kernel, che controlla CPU, RAM e periferiche
+
+Le **System Call** sono i punti d'ingresso sorvegliati che permettono al codice in User Space di richiedere servizi al kernel. Ogni system call ha una funzione di libreria corrispondente in C, che può aggiungere comportamenti (es. `printf` formatta il testo e poi invoca `write`).
+
+### Standard POSIX
+
+**POSIX (Portable Operating System Interface)** definisce un'interfaccia standard per le system call, garantendo portabilità del codice tra Linux, Unix, BSD e macOS.
+
+Header principali:
+
+| Header | Contenuto |
+|--------|-----------|
+| `<unistd.h>` | Primitive standard (`fork`, `pipe`, `close`, `read`, `write`) |
+| `<sys/wait.h>` | Gestione terminazione processi (`waitpid`) |
+| `<pthread.h>` | Interfaccia POSIX per i thread |
+| `<signal.h>` | Gestione dei segnali |
+| `<fcntl.h>` | Controllo file descriptor (`open`, flags) |
+
+---
+
+## Gestione dei Processi
+
+### `fork()`
+
+`fork()` crea un duplicato esatto del processo chiamante. Il figlio nasce come copia dell'address space del padre; entrambi riprendono l'esecuzione dalla riga successiva alla `fork`.
+
+```c
+pid_t pid = fork();
+if (pid == 0)     { /* figlio: pid ricevuto = 0 */ }
+else if (pid > 0) { /* padre: pid ricevuto = PID del figlio */ }
+else              { /* errore */ }
+```
+
+Il valore di ritorno distingue padre da figlio. L'ordine di esecuzione tra i due processi è **indeterminato**.
+
+#### Copy-on-Write
+
+Per efficienza, il kernel non copia fisicamente la memoria al momento della `fork`. Padre e figlio condividono le stesse pagine fisiche in sola lettura. La copia fisica avviene solo quando uno dei due tenta una scrittura.
+
+### `exec()`
+
+La famiglia `exec` sostituisce l'immagine del processo corrente con un nuovo eseguibile. Il processo mantiene il suo PID ma codice, dati e stack vengono rimpiazzati. Se `exec` ha successo, le istruzioni successive non vengono mai eseguite:
+
+```c
+execl("/bin/ls", "ls", "-l", NULL);
+// raggiunto solo in caso di errore
+```
+
+Il pattern idiomatico è `fork` + `exec`: il padre crea un figlio con `fork`, il figlio carica un nuovo programma con `exec`.
+
+### `_exit()` e `exit()`
+
+- `_exit(status)` — system call diretta; termina il processo, chiude tutti i file descriptor, libera l'address space, invia `SIGCHLD` al padre, salva il byte meno significativo di `status` nella tabella dei processi
+- `exit(status)` — funzione di libreria; esegue i cleanup registrati con `atexit`, poi chiama `_exit`
+
+I figli rimasti orfani (padre terminato) vengono adottati da `init` (PID 1).
+
+### `waitpid()`
+
+```c
+#include <sys/wait.h>
+pid_t waitpid(pid_t pid, int *statusp, int options);
+```
+
+Attende che un figlio cambi stato (terminato, sospeso, riattivato). Parametro `pid`:
+
+| Valore | Semantica |
+|--------|-----------|
+| `> 0` | Attende il figlio con PID esatto |
+| `-1` | Attende qualsiasi figlio |
+| `0` | Attende qualsiasi figlio nello stesso process group |
+| `< -1` | Attende qualsiasi figlio nel gruppo `|pid|` |
+
+**Macro di ispezione dello stato:**
+
+| Macro | Significato |
+|-------|-------------|
+| `WIFEXITED(s)` | Vero se il processo è terminato con `exit()` / `_exit()` |
+| `WEXITSTATUS(s)` | Exit status (valido solo se `WIFEXITED`) |
+| `WIFSIGNALED(s)` | Vero se il processo è terminato per un segnale |
+| `WTERMSIG(s)` | Numero del segnale (valido solo se `WIFSIGNALED`) |
+
+Flag principali per `options`: `WNOHANG` — non si blocca; ritorna `0` se nessun figlio ha cambiato stato.
+
+### Processi Zombie
+
+Quando un figlio termina ma il padre non ha ancora chiamato `waitpid`, il processo rimane nella tabella dei processi in stato **zombie** (`Z`). Occupa una riga nella tabella ma nessuna memoria reale. Viene rimosso solo quando il padre raccoglie il suo stato.
+
+### Pattern N-worker
+
+Per lanciare N figli ed attendere tutti senza che i figli eseguano ulteriori `fork` (effetto valanga):
+
+```c
+for (int i = 0; i < N; i++) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // lavoro del figlio
+        exit(0);   // FONDAMENTALE: interrompe il ciclo nel figlio
+    }
+}
+for (int i = 0; i < N; i++)
+    wait(NULL);
+```
+
+L'`exit(0)` nel ramo del figlio impedisce che i figli proseguano il ciclo ed eseguano a loro volta la `fork`.
+
+---
+
+## Multithreading con Pthreads
+
+### Processi vs Thread
+
+| Caratteristica | Processo | Thread |
+|----------------|----------|--------|
+| Memoria | Isolata | Condivisa |
+| Costo di creazione | Alto | Basso |
+| Comunicazione | IPC (pipe, socket…) | Variabili condivise |
+| Fallimento | Isolato | Può terminare l'intero processo |
+
+Compilazione con Pthreads: aggiungere il flag `-lpthread`.
+
+### Creazione e sincronizzazione
+
+```c
+pthread_t tid;
+pthread_create(&tid, NULL, thread_func, arg);   // crea il thread
+pthread_join(tid, NULL);                         // attende la terminazione
+```
+
+La funzione del thread ha firma `void *f(void *arg)`. `pthread_exit(retval)` termina il thread corrente e restituisce un valore raccoglibile con `pthread_join`.
+
+Se un thread termina senza `pthread_join`, il suo stack non viene completamente liberato (resource leak).
+
+### Race Condition e Mutex
+
+Una **race condition** si verifica quando due thread accedono concorrentemente alla stessa variabile e almeno uno scrive, producendo risultati non deterministici.
+
+Il **mutex** garantisce che la sezione critica sia eseguita da un solo thread alla volta:
+
+```c
+pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_mutex_lock(&mtx);
+// sezione critica
+variabile_condivisa++;
+pthread_mutex_unlock(&mtx);
+```
+
+---
+
+## I/O di Basso Livello e File Descriptor
+
+### File Descriptor
+
+Nel kernel Linux ogni risorsa I/O aperta è identificata da un intero non negativo: il **file descriptor (FD)**. I tre FD standard ereditati da ogni processo:
+
+| FD | Nome | Costante |
+|----|------|----------|
+| 0 | Standard Input | `STDIN_FILENO` |
+| 1 | Standard Output | `STDOUT_FILENO` |
+| 2 | Standard Error | `STDERR_FILENO` |
+
+Ogni nuovo `open` riceve il primo FD libero disponibile (tipicamente 3 in poi).
+
+### System call di I/O
+
+```c
+#include <fcntl.h>
+#include <unistd.h>
+
+int fd = open(path, flags, mode);    // apre/crea un file
+ssize_t n = read(fd, buf, count);    // legge fino a count byte
+ssize_t n = write(fd, buf, count);   // scrive count byte
+int r = close(fd);                   // rilascia il FD
+```
+
+Flag comuni per `open`: `O_RDONLY`, `O_WRONLY`, `O_RDWR`, `O_CREAT`, `O_TRUNC`, `O_APPEND`.
+
+### `dup2()` — ridirezione di stream
+
+`dup2(oldfd, newfd)` fa sì che `newfd` diventi un duplicato di `oldfd`. Se `newfd` era già aperto viene chiuso prima.
+
+Pattern di ridirezione di `stderr` su file:
+
+```c
+int err_fd = open("error.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+dup2(err_fd, STDERR_FILENO);
+close(err_fd);   // il FD originale non è più necessario
+// da qui, stderr scrive nel file
+```
+
+---
+
+## Pipe e IPC
+
+### `pipe()`
+
+Una pipe è un canale di comunicazione **unidirezionale** in memoria (FIFO), gestito dal kernel:
+
+```c
+int fd[2];
+pipe(fd);
+// fd[0] → estremità di LETTURA
+// fd[1] → estremità di SCRITTURA
+```
+
+La pipe deve essere creata **prima** di `fork()` affinché padre e figlio ereditino gli stessi FD.
+
+### Semantica delle pipe
+
+- **Blocking:** `read` si blocca finché non ci sono dati; `write` si blocca se il buffer è pieno
+- **Atomicità:** scritture ≤ `PIPE_BUF` (4 KB) sono indivisibili
+- **EOF:** `read` ritorna 0 solo quando **tutti** i descrittori di scrittura sono stati chiusi
+
+> **Regola fondamentale:** ogni processo deve chiudere l'estremità della pipe che non usa, altrimenti l'EOF non viene mai generato.
+
+### Pattern di comunicazione padre–figlio
+
+```c
+pipe(fd);
+if (fork() == 0) {
+    close(fd[1]);                       // figlio chiude scrittura
+    read(fd[0], buf, sizeof(buf));
+    close(fd[0]);
+} else {
+    close(fd[0]);                       // padre chiude lettura
+    write(fd[1], msg, len);
+    close(fd[1]);                       // invia EOF al figlio
+    wait(NULL);
+}
+```
+
+---
+
+## Segnali
+
+I segnali sono **interruzioni software** inviate ai processi dal kernel o da altri processi. Rappresentano il meccanismo base per la gestione di eventi asincroni.
+
+### Segnali fondamentali
+
+| Segnale | N. | Evento |
+|---------|----|--------|
+| `SIGINT` | 2 | Interruzione da tastiera (CTRL+C) |
+| `SIGTERM` | 15 | Richiesta di terminazione (`kill`) |
+| `SIGKILL` | 9 | Terminazione forzata (non catturabile né ignorabile) |
+| `SIGCHLD` | 17 | Un figlio è terminato o si è fermato |
+
+### `sigaction()`
+
+`sigaction` registra un handler per un segnale specifico:
+
+```c
+struct sigaction sa;
+sa.sa_handler = my_handler;    // funzione handler: void f(int signum)
+sigemptyset(&sa.sa_mask);       // nessun segnale bloccato durante l'handler
+sa.sa_flags = 0;
+sigaction(SIGINT, &sa, NULL);
+```
+
+Non tutte le funzioni di libreria sono *async-signal-safe*; all'interno di un handler è sicuro usare solo le funzioni elencate in `man 7 signal-safety` (es. `write`, ma non `printf`).

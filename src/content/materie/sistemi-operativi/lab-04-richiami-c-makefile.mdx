@@ -1,0 +1,289 @@
+---
+title: "Laboratorio: Richiami di C e Makefile"
+type: "riassunto"
+section: "Laboratorio"
+excerpt: "Richiami di C: compilazione con gcc, puntatori, stringhe, struct, gestione della memoria, variadics, puntatori a funzione, preprocessore. Introduzione a Makefile e grafo delle dipendenze."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Richiami di C e Makefile
+
+## Compilazione con gcc
+
+Sintassi: `gcc [opzioni] sorgenti`
+
+| Opzione | Effetto |
+|---------|---------|
+| `-o nome` | Nome del file prodotto |
+| `-c` | Solo compilazione, produce `.o` (no linking) |
+| `-E` | Solo preprocessing |
+| `-Wall` | Abilita i principali warning |
+| `-Werror` | Tratta i warning come errori |
+| `-pedantic` | Richiede conformità ISO C |
+| `-g` | Informazioni di debug (per `gdb`) |
+| `-std=c99` | Standard ISO C99 |
+| `-I percorso` | Aggiunge una directory di ricerca degli include |
+| `-O`*level* | Ottimizzazione (`s,g,0,1,2,3`) |
+| `-D nome[=val]` | Definisce una macro a riga di comando |
+
+---
+
+## Argomenti di `main()`
+
+La firma canonica è:
+
+```c
+int main(int argc, char *argv[])
+```
+
+- `argc` — numero di argomenti dalla riga di comando (sempre ≥ 1)
+- `argv` — array di puntatori a stringa; `argv[0]` è il nome del programma, `argv[argc] == NULL`
+- Il valore di ritorno è lo *exit status*: `0` indica successo, `!= 0` indica errore
+
+---
+
+## Puntatori
+
+Un puntatore memorizza l'indirizzo di una variabile:
+
+```c
+int a = 10;
+int *p = &a;   // p contiene l'indirizzo di a
+*p = *p + 4;   // dereferenziazione: modifica a tramite p
+```
+
+- `NULL` — puntatore nullo (costante in `stdio.h`)
+- I puntatori sono tipizzati: `int*`, `char*`, `struct T*`, ecc.
+
+### Aritmetica dei puntatori
+
+Sommare `n` a un puntatore di tipo `T*` lo avanza di `n * sizeof(T)` byte. Gli array sono implicitamente puntatori al primo elemento:
+
+```c
+int a[3];
+int *p = a;    // equivalente a &a[0]
+p++;           // p punta ad a[1]
+// a[2] == *(a+2)
+```
+
+---
+
+## Stringhe
+
+Le stringhe C sono array di `char` terminati da `'\0'`. La lunghezza logica esclude il terminatore:
+
+```c
+char s[5] = "ciao";   // strlen(s) == 4
+```
+
+Funzioni principali di `<string.h>`:
+
+| Funzione | Comportamento |
+|----------|--------------|
+| `strcpy(dst, src)` | Copia `src` in `dst` |
+| `strncpy(dst, src, n)` | Copia al più `n` byte, padding con `'\0'` |
+| `strcmp(s, t)` | Confronto lessicografico (< 0, 0, > 0) |
+| `strcat(s, t)` | Concatena `t` a `s` (modifica `s`) |
+| `strstr(s, t)` | Puntatore alla prima occorrenza di `t` in `s` |
+
+> **Buffer overrun:** `strcpy` non controlla la dimensione del buffer destinazione. Usare `strncpy` per evitare scritture fuori dai limiti.
+
+---
+
+## Struct e Union
+
+Le `struct` aggregano variabili eterogenee in una struttura contigua in memoria:
+
+```c
+struct studente {
+    char nome[64];
+    int matricola;
+};
+
+struct studente s = {"Mario", 1234};
+struct studente *p = &s;
+p->matricola = 5678;   // equivalente a (*p).matricola
+```
+
+Le `union` condividono la stessa area di memoria tra tutti i campi — un solo membro è valido per volta. La dimensione è quella del membro più grande:
+
+```c
+union Job { float salary; int workerNo; };
+// salary e workerNo occupano gli stessi byte
+```
+
+---
+
+## Gestione della Memoria
+
+### Modelli di allocazione
+
+| Tipo | Dove | Durata | Gestione |
+|------|------|--------|---------|
+| Statica | Segmento dati | Vita del programma | Automatica |
+| Automatica | Stack | Scope della funzione | Automatica (LIFO) |
+| Dinamica | Heap | Esplicita | Manuale |
+
+### Allocazione heap (`<stdlib.h>`)
+
+```c
+void *malloc(size_t size)             // alloca size byte (contenuto indeterminato)
+void *calloc(size_t n, size_t size)   // alloca n*size byte, inizializzati a 0
+void *realloc(void *ptr, size_t size) // ridimensiona un blocco esistente
+void  free(void *ptr)                 // dealloca
+```
+
+- `malloc` e `calloc` ritornano `NULL` se l'allocazione fallisce
+- In Linux, l'allocazione fisica avviene al **primo accesso** (*optimistic memory allocation*)
+- Invocare `free` su un puntatore non valido o già deallocato produce comportamento indefinito
+- In C non esiste garbage collection: ogni allocazione deve avere una `free` corrispondente
+
+---
+
+## Funzioni con Numero Variabile di Argomenti
+
+L'ellissi `...` nella firma indica argomenti aggiuntivi non specificati (almeno un parametro fisso obbligatorio):
+
+```c
+int somma(int count, ...);
+```
+
+Gestione tramite `<stdarg.h>`:
+
+```c
+va_list ap;
+va_start(ap, count);      // inizializza ap partendo dall'ultimo parametro fisso
+int v = va_arg(ap, int);  // legge il prossimo argomento con cast al tipo dato
+va_end(ap);               // cleanup obbligatorio prima del return
+```
+
+---
+
+## Puntatori a Funzioni
+
+Un puntatore a funzione consente di passare comportamenti come argomenti (funzioni di ordine superiore):
+
+```c
+int (*fn)(int, int);   // puntatore a funzione (int, int) → int
+fn = somma;
+fn(3, 5);              // invocazione tramite puntatore
+```
+
+Caso d'uso canonico — `qsort` da `<stdlib.h>`:
+
+```c
+void qsort(void *base, size_t n, size_t size, int (*cmp)(const void*, const void*));
+```
+
+Il comparatore ritorna un intero negativo, zero o positivo se il primo argomento è rispettivamente minore, uguale o maggiore del secondo. `void*` è il tipo puntatore generico usato per scrivere funzioni polimorfe.
+
+---
+
+## Preprocessore C
+
+Il preprocessore opera **prima** della compilazione eseguendo manipolazioni testuali sul sorgente (visibile con `gcc -E`).
+
+### Direttive principali
+
+- `#include <file>` — sostituisce la riga con il contenuto del file di sistema
+- `#include "file"` — cerca il file nel percorso specificato o nella directory corrente
+- `#define NOME` — definisce un simbolo senza valore (per compilazione condizionale)
+- `#define NOME testo` — macro con sostituzione testuale
+- `#define NOME(params) testo` — macro parametrica
+
+### Compilazione condizionale
+
+```c
+#ifdef NOME    // includi se NOME è definito
+#ifndef NOME   // includi se NOME non è definito
+#if expr       // includi se l'espressione è vera
+#endif
+```
+
+**Idioma include guard** (previene inclusioni multiple dello stesso header):
+
+```c
+#ifndef _MYHEADER_H
+#define _MYHEADER_H
+// contenuto dell'header
+#endif
+```
+
+**Idioma debug** (abilitato con `gcc -DDEBUG=1`, assente in produzione):
+
+```c
+#if defined(DEBUG)
+// codice di diagnostica
+#endif
+```
+
+Le `assert(cond)` vengono rimosse dal compilatore con `-DNDEBUG`.
+
+---
+
+## Makefile
+
+### Modello concettuale
+
+Un Makefile descrive un **grafo delle dipendenze** tra file-target e file-prerequisito. `make` visita il grafo bottom-up e riesegue una regola solo se il target è assente o più vecchio di almeno un prerequisito.
+
+Avviato senza parametri, `make` cerca `GNUmakefile`, `makefile` o `Makefile` nella directory corrente ed esegue il target della prima regola.
+
+### Sintassi delle regole
+
+```makefile
+target_list : dependency_list
+	comando 1   # TAB obbligatoria
+	comando 2
+```
+
+### Variabili
+
+| Operatore | Semantica |
+|-----------|-----------|
+| `=` | Recursive expansion |
+| `:=` | Simple expansion |
+| `+=` | Append |
+| `?=` | Conditional (assegna solo se non definita) |
+
+Variabili predefinite di interesse: `CC` (compilatore C), `CFLAGS` (opzioni di compilazione).
+
+Variabili automatiche nelle regole:
+
+| Variabile | Valore |
+|-----------|--------|
+| `$@` | Nome del target corrente |
+| `$^` | Intera dependency list |
+| `$<` | Prima dipendenza |
+| `$*` | Stem del target (senza suffisso) |
+
+### Regole implicite
+
+`make` conosce regole predefinite basate sulle estensioni. Per C: `file.c` → `file.o` via `$(CC) $(CFLAGS) -c`. È sufficiente dichiarare le dipendenze extra senza ripetere il comando:
+
+```makefile
+fileA.o: fileA.c fileC.h fileB.h
+```
+
+### Pattern rule
+
+```makefile
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
+```
+
+`%` è un wildcard che corrisponde a qualsiasi stringa non vuota (uno solo per target).
+
+### Phony target
+
+Un target fittizio non corrisponde a un file. Si dichiara con `.PHONY` per evitare conflitti con file omonimi e bypassare la ricerca di regole implicite:
+
+```makefile
+.PHONY: clean
+clean:
+	-rm $(objects)   # -: continua anche se rm ritorna errore
+```
+
+Il prefisso `@` su un comando sopprime l'echo di quel comando da parte di `make`.
