@@ -1,0 +1,166 @@
+---
+title: "Matrici Unitariamente Diagonalizzabili"
+type: "riassunto"
+section: "Algebra"
+excerpt: "Matrici unitarie e ortogonali; matrici normali; Teorema Spettrale (versione moltiplicativa e additiva); costruzione della diagonalizzazione unitaria; proprietà delle matrici hermitiane; matrice di proiezione ortogonale; diagonalizzabilità unitaria di matrici 2×2."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+# Matrici Unitariamente Diagonalizzabili
+
+Sia $\mathbb{K} \in \{\mathbb{R}, \mathbb{C}\}$ e $n \in \mathbb{N}$.
+
+---
+
+## Matrici Unitarie e Ortogonali
+
+**Definizione.** Una matrice quadrata $U \in M_n(\mathbb{K})$ invertibile si dice:
+
+- **unitaria** se $U^{-1} = U^H$, cioè $U \cdot U^H = \mathbb{1}_n = U^H \cdot U$;
+- **ortogonale** se $U^{-1} = U^T$, cioè $U \cdot U^T = \mathbb{1}_n = U^T \cdot U$.
+
+> Se $U \in M_n(\mathbb{R})$, allora $U^H = U^T$: ogni matrice unitaria reale è anche ortogonale. Per $U \in M_n(\mathbb{C})$ le due nozioni differiscono: $U = \begin{pmatrix}0&i\\i&0\end{pmatrix}$ è unitaria ma non ortogonale.
+
+**Caratterizzazione tramite colonne.** $U \in M_n(\mathbb{K})$ è unitaria se e solo se le sue colonne $\mathbf{u}_1, \ldots, \mathbf{u}_n$ formano un insieme **ortonormale** di $\mathbb{K}^n$, cioè:
+
+$$(\mathbf{u}_i \mid \mathbf{u}_j) = \delta_{ij} \qquad \forall\, i, j$$
+
+*Dimostrazione.* $U^H \cdot U = \mathbb{1}_n$ equivale a $(\mathbf{u}_i \mid \mathbf{u}_j) = \delta_{ij}$ per ogni $i, j$. $\square$
+
+---
+
+## Matrici Normali
+
+**Definizione.** Una matrice $A \in M_n(\mathbb{K})$ si dice **normale** se commuta con la propria h-trasposta:
+
+$$\boxed{A \cdot A^H = A^H \cdot A}$$
+
+### Esempi di matrici normali
+
+| Tipo | Condizione | Giustificazione |
+|------|-----------|-----------------|
+| Diagonale | $A = \mathrm{diag}(a_1,\ldots,a_n)$ | $A A^H = \mathrm{diag}(\lvert a_i \rvert^2) = A^H A$ |
+| Unitaria | $U^{-1} = U^H$ | $U U^H = \mathbb{1}_n = U^H U$ |
+| Hermitiana | $A = A^H$ | $A A^H = A^2 = A^H A$ |
+| Anti-hermitiana | $A = -A^H$ | $A A^H = -A^2 = A^H A$ |
+
+---
+
+## Matrici Unitariamente Diagonalizzabili
+
+**Definizione.** $A \in M_n(\mathbb{K})$ si dice **unitariamente diagonalizzabile** se è simile a una matrice diagonale tramite una matrice unitaria $U$:
+
+$$\boxed{A = U \cdot D \cdot U^{-1} = U \cdot D \cdot U^H}$$
+
+> Ogni matrice unitariamente diagonalizzabile è diagonalizzabile (prendendo $S = U$). Il viceversa è falso in generale.
+
+### Teorema Spettrale (versione moltiplicativa)
+
+Sia $A \in M_n(\mathbb{K})$. Allora:
+
+$$\boxed{A \text{ è unitariamente diagonalizzabile} \iff A \text{ è normale}}$$
+
+---
+
+## Costruzione della Diagonalizzazione Unitaria
+
+Sia $A \in M_n(\mathbb{K})$ unitariamente diagonalizzabile con $\mathrm{Spec}(A) = \{\lambda_1, \ldots, \lambda_t\}$.
+
+**Matrice diagonale.** La matrice $D$ ha sulla diagonale gli autovalori ripetuti secondo la loro molteplicità algebrica:
+
+$$D = \mathrm{diag}(\underbrace{\lambda_1, \ldots, \lambda_1}_{m_A(\lambda_1)},\; \ldots,\; \underbrace{\lambda_t, \ldots, \lambda_t}_{m_A(\lambda_t)})$$
+
+**Matrice unitaria.** Per ogni $\lambda_i$, si sceglie una base **ortonormale** $\mathcal{B}^*_{\lambda_i}$ di $E_A(\lambda_i)$ e si forma la matrice $Q_i$ con tali vettori come colonne. La matrice unitaria è:
+
+$$U = \begin{pmatrix} Q_1 & Q_2 & \cdots & Q_t \end{pmatrix}$$
+
+> La base ortonormale $\mathcal{B}^*_{\lambda_i}$ si ottiene applicando l'algoritmo di Gram-Schmidt a una qualsiasi base di $E_A(\lambda_i)$ (cfr. [Applicazioni Lineari — Algoritmo di Gram-Schmidt](./alg-09-applicazioni-lineari)).
+
+---
+
+## Proprietà delle Matrici Hermitiane
+
+**Proposizione.** Se $A \in M_n(\mathbb{K})$ è hermitiana ($A = A^H$), allora tutti gli autovalori di $A$ sono **reali**.
+
+**Dimostrazione.** $A$ è normale, quindi è unitariamente diagonalizzabile: $A = U D U^H$. Dall'hermitianità:
+
+$$A = A^H \implies U D U^H = U D^H U^H \implies D = D^H$$
+
+cioè $d_i = \overline{d_i}$ per ogni $i$, dunque $d_i \in \mathbb{R}$. I numeri sulla diagonale di $D$ sono esattamente gli autovalori di $A$. $\square$
+
+---
+
+## Matrice di Proiezione Ortogonale
+
+**Definizione.** Sia $V \leq \mathbb{K}^n$ un sottospazio di dimensione $m$ e sia $\mathcal{B}^* = \{\mathbf{v}_1, \ldots, \mathbf{v}_m\}$ una base ortonormale di $V$. Poniamo:
+
+$$Q = \begin{pmatrix} \mathbf{v}_1 & \cdots & \mathbf{v}_m \end{pmatrix} \in M_{n,m}(\mathbb{K})$$
+
+La **matrice di proiezione ortogonale** di $\mathbb{K}^n$ su $V$ è:
+
+$$\boxed{P = Q \cdot Q^H \in M_n(\mathbb{K})}$$
+
+Per ogni $\mathbf{w} \in \mathbb{K}^n$, il vettore $P\mathbf{w}$ è la proiezione ortogonale di $\mathbf{w}$ su $V$.
+
+> $P$ non dipende dalla scelta della base ortonormale di $V$, ma solo dal sottospazio $V$.
+
+**Esempio.** Per $V = \left\langle \begin{pmatrix}1\\1\end{pmatrix} \right\rangle \leq \mathbb{R}^2$:
+
+$$Q = \begin{pmatrix}\frac{1}{\sqrt{2}}\\\frac{1}{\sqrt{2}}\end{pmatrix}, \qquad P = Q Q^H = \begin{pmatrix}\frac{1}{2} & \frac{1}{2}\\\frac{1}{2} & \frac{1}{2}\end{pmatrix}$$
+
+---
+
+## Teorema Spettrale (versione additiva)
+
+Sia $A \in M_n(\mathbb{K})$ con $\mathrm{Spec}(A) = \{\lambda_1, \ldots, \lambda_t\}$. Per ogni $i$, sia $P_i = Q_i Q_i^H$ la matrice di proiezione ortogonale di $\mathbb{K}^n$ su $E_A(\lambda_i)$. Allora:
+
+$$\boxed{A \text{ è unitariamente diagonalizzabile} \iff A = \lambda_1 P_1 + \lambda_2 P_2 + \cdots + \lambda_t P_t}$$
+
+**Idea della dimostrazione.** Dalla decomposizione $A = U D U^H$ con $U = (Q_1 \cdots Q_t)$:
+
+$$A = \begin{pmatrix}Q_1 & \cdots & Q_t\end{pmatrix} \begin{pmatrix}\lambda_1 \mathbb{1}_{m_A(\lambda_1)} & & \\ & \ddots & \\ & & \lambda_t \mathbb{1}_{m_A(\lambda_t)}\end{pmatrix} \begin{pmatrix}Q_1^H \\ \vdots \\ Q_t^H\end{pmatrix} = \sum_{i=1}^t \lambda_i \underbrace{Q_i Q_i^H}_{P_i}$$
+
+### Proprietà delle proiezioni spettrali
+
+Se $\mathrm{Spec}(A) = \{\lambda_1, \lambda_2\}$ (esattamente 2 autovalori distinti), allora:
+
+$$P_1 + P_2 = \mathbb{1}_n \qquad \text{(quindi } P_2 = \mathbb{1}_n - P_1\text{)}$$
+
+---
+
+## Matrici Quadrate di Ordine 2
+
+Sia $A = \begin{pmatrix}a & b\\ c & d\end{pmatrix} \in M_2(\mathbb{C})$.
+
+Il polinomio caratteristico è sempre di grado 2:
+
+$$p_A(x) = x^2 + (-a-d)x + (ad - bc) = (x - \lambda_1)(x - \lambda_2) \qquad \lambda_1, \lambda_2 \in \mathbb{C}$$
+
+### Diagonalizzabilità
+
+- **Se $\lambda_1 \neq \lambda_2$:** $m_A(\lambda_i) = 1 = d_A(\lambda_i)$ per entrambi, quindi $A$ è diagonalizzabile.
+
+- **Se $\lambda_1 = \lambda_2 =: \lambda$:** $m_A(\lambda) = 2$. Allora:
+
+$$A \text{ è diagonalizzabile} \iff d_A(\lambda) = 2 \iff \mathrm{rk}(A - \lambda\mathbb{1}_2) = 0 \iff A = \lambda\mathbb{1}_2$$
+
+  cioè se e solo se $A$ è **matrice scalare**.
+
+### Diagonalizzabilità Unitaria (coefficienti reali)
+
+Sia $A = \begin{pmatrix}a&b\\c&d\end{pmatrix} \in M_2(\mathbb{R})$. Poiché $A$ è reale, $A^H = A^T$. La condizione $A A^H = A^H A$ si riduce a:
+
+$$\begin{cases} b^2 = c^2 \\ ac + bd = ab + cd \end{cases}$$
+
+Le soluzioni sono esattamente due forme:
+
+| Forma | Condizione | Tipo |
+|-------|-----------|------|
+| $\begin{pmatrix}a&b\\b&d\end{pmatrix}$ | $c = b$ | simmetrica |
+| $\begin{pmatrix}a&b\\-b&a\end{pmatrix}$ | $c = -b$, $a = d$ | antisimmetrica fuori diagonale |
+
+**Conclusione.** Una matrice $A \in M_2(\mathbb{R})$ è unitariamente diagonalizzabile se e solo se ha una delle due forme sopra.
+
+> In particolare, $A = \begin{pmatrix}a&b\\c&d\end{pmatrix} \in M_2(\mathbb{R})$ con $\lambda_1 \neq \lambda_2$ è diagonalizzabile ma **non** unitariamente diagonalizzabile se non è simmetrica e non ha $a = d$, $c = -b$.

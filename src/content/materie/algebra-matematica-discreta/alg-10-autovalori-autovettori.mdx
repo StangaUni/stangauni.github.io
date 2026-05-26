@@ -191,3 +191,13 @@ $$S = \bigl(A_1 \mid A_2 \mid \cdots \mid A_t\bigr)$$
 dove $A_i$ è la matrice avente come colonne i vettori di $\mathcal{B}_i$.
 
 $S$ è invertibile perché $A$ è diagonalizzabile, cioè $m_A(\lambda_i) = d_A(\lambda_i)$ per ogni $i$.
+
+---
+
+## Operazioni Elementari e Autovalori
+
+Le operazioni elementari sulle righe di una matrice **non** preservano in generale lo spettro né gli autospazi.
+
+> **Esempio.** La matrice $A = \begin{pmatrix}8 & -8\\ 2 & 0\end{pmatrix}$ ha $p_A(x) = (x-4)^2$, quindi $\mathrm{Spec}(A) = \{4\}$ con $m_A(4) = 2$ e $d_A(4) = 1$ ($A$ non è diagonalizzabile). Applicando operazioni elementari alle righe si ottiene $B = \begin{pmatrix}1 & -1\\ 0 & 2\end{pmatrix}$, che ha $\mathrm{Spec}(B) = \{1, 2\}$: lo spettro è cambiato.
+
+La similitudine preserva spettro e molteplicità (per il Teorema degli invarianti di similitudine); le operazioni elementari sulle righe in generale non lo fanno.

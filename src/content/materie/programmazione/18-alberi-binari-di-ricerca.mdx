@@ -1,0 +1,150 @@
+---
+title: "Alberi Binari di Ricerca"
+type: "riassunto"
+excerpt: "Definizione di albero e terminologia; relazione con le liste; proprietà del BST (Binary Search Tree); complessità di ricerca, inserimento e cancellazione; rappresentazione in C; visite in ordine, pre-ordine e post-ordine."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Definizione di Albero
+
+Un **albero** è una coppia $tree = \langle V, E \rangle$ dove:
+
+- $V$ è un insieme di **vertici** (nodi), ciascuno contenente un valore di un qualche tipo
+- $E \subseteq V \times V$ è un insieme di **archi**, ovvero coppie ordinate $e = \langle v_{\text{parent}}, v_{\text{child}} \rangle$
+
+La relazione $E$ è una relazione di discendenza con due proprietà strutturali:
+
+- Esiste un unico nodo, detto **radice**, che non ha predecessori
+- Ogni altro nodo ha esattamente un predecessore
+
+---
+
+## Terminologia
+
+| Termine | Definizione |
+|---------|-------------|
+| **Radice** | Unico nodo senza predecessore |
+| **Foglia** | Nodo senza successori |
+| **Nodo intermedio** | Nodo che non è né radice né foglia |
+| **Grado di uscita** | Numero di successori diretti di un nodo |
+| **Profondità di un nodo** | Distanza dalla radice; la radice ha profondità 0 |
+| **Profondità dell'albero** | Massimo delle profondità di tutti i nodi |
+| **Livello** | Insieme di nodi alla stessa profondità |
+
+Un albero si dice **bilanciato** quando, per qualsiasi nodo, le profondità dei sottoalberi differiscono al massimo di 1.
+
+---
+
+## Relazione con le Liste
+
+Su un albero si applicano le stesse operazioni di una lista (cfr. [Liste Collegate](./17-liste-collegate)): inserimento, cancellazione, visita, ricerca. La differenza strutturale fondamentale è che un albero ha più nodi terminali (foglie) anziché uno solo.
+
+- L'*inserimento in coda* richiede un criterio di selezione della foglia target
+- L'inserimento in posizione intermedia o in testa tende a far degenerare l'albero in una struttura sequenziale; per questa ragione gli inserimenti avvengono tipicamente sulle foglie
+
+---
+
+## Albero Binario di Ricerca
+
+Un **albero binario** è un albero con grado di uscita al massimo 2: ogni nodo ha al più un figlio sinistro e un figlio destro.
+
+Un albero binario è di **ricerca** (BST, *Binary Search Tree*) quando vale la seguente proprietà su ogni nodo $v$:
+
+$$v.\text{value} \geq v.\text{left}.\text{value} \quad \text{e} \quad v.\text{value} < v.\text{right}.\text{value}$$
+
+ovvero il valore di ciascun nodo è $\geq$ del valore del figlio sinistro e strettamente $<$ del valore del figlio destro.
+
+### Analisi di Complessità
+
+| Operazione | Media | Worst case |
+|-----------|-------|------------|
+| Spazio | $O(n)$ | $O(n)$ |
+| Ricerca | $O(\log n)$ | $O(n)$ |
+| Inserimento | $O(\log n)$ | $O(n)$ |
+| Cancellazione | $O(\log n)$ | $O(n)$ |
+
+Il worst case $O(n)$ si verifica su un albero **sbilanciato** (degenere), in cui i nodi vengono inseriti in ordine monotono e la struttura degenera in una lista.
+
+---
+
+## Rappresentazione in C
+
+La struttura del nodo BST estende la rappresentazione dei nodi di lista con un secondo puntatore:
+
+```c
+struct btree {
+    int value;
+    struct btree *leftPtr;
+    struct btree *rightPtr;
+};
+```
+
+La struttura è auto-referenziale: `leftPtr` e `rightPtr` puntano rispettivamente al sottoalbero sinistro e al sottoalbero destro. `NULL` indica l'assenza di figlio (foglia).
+
+---
+
+## Visita di un BST
+
+La visita di un BST può avvenire secondo tre ordini, tutti implementabili ricorsivamente (cfr. [Ricorsione](./13-ricorsione)):
+
+### Visita in Ordine (Simmetrica)
+
+Ordine: sottoalbero sinistro → nodo corrente → sottoalbero destro.
+
+Applicata a un BST, produce i valori in **ordine non decrescente**.
+
+```
+in_order(nodo):
+    if nodo ≠ NULL:
+        in_order(nodo.leftPtr)
+        visita(nodo.value)
+        in_order(nodo.rightPtr)
+```
+
+### Visita in Pre-ordine (Anticipata)
+
+Ordine: nodo corrente → sottoalbero sinistro → sottoalbero destro.
+
+```
+pre_order(nodo):
+    if nodo ≠ NULL:
+        visita(nodo.value)
+        pre_order(nodo.leftPtr)
+        pre_order(nodo.rightPtr)
+```
+
+### Visita in Post-ordine (Posticipata)
+
+Ordine: sottoalbero sinistro → sottoalbero destro → nodo corrente.
+
+Il nodo viene visitato dopo l'intera discendenza: coincide con la **visita in profondità** (*depth-first*).
+
+```
+post_order(nodo):
+    if nodo ≠ NULL:
+        post_order(nodo.leftPtr)
+        post_order(nodo.rightPtr)
+        visita(nodo.value)
+```
+
+### Esempio
+
+BST bilanciato di riferimento:
+
+```
+        2
+       / \
+      1   6
+     / \ / \
+    0  2 6  9
+         \
+          5
+```
+
+| Visita | Output |
+|--------|--------|
+| In ordine (simmetrica) | 0, 1, 2, 2, 5, 6, 6, 9 |
+| Pre-ordine (anticipata) | 2, 1, 0, 2, 6, 6, 5, 9 |
+| Post-ordine (posticipata) | 0, 2, 1, 5, 6, 9, 6, 2 |
