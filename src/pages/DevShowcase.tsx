@@ -184,6 +184,8 @@ export function DevShowcase() {
           selectedSemester={selectedSemester}
           onSelectYear={(y) => { setSelectedYear(y); setSelectedSemester(null) }}
           onSelectSemester={(_, s) => setSelectedSemester(s)}
+          showAbandoned={false}
+          onToggleAbandoned={() => {}}
           mobileOpen={false}
           onMobileClose={() => {}}
           collapsed={filterCollapsed}

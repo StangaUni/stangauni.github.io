@@ -7,13 +7,13 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeSlug from 'rehype-slug'
-import path from 'node:path'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@content': path.resolve(__dirname, 'content'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@content': fileURLToPath(new URL('./content', import.meta.url)),
     },
   },
   plugins: [

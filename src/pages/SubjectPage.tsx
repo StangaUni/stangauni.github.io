@@ -12,6 +12,7 @@ import { SEO } from '../components/ui/SEO'
 import { NotFound } from './NotFound'
 import type { Note, NoteType } from '@/types/note'
 import type { ChangelogEntry, ChangelogEntryType } from '@/types/changelog'
+import type { Subject } from '@/types/subject'
 
 // ─── Tab config ──────────────────────────────────────────────────────────────
 
@@ -605,7 +606,7 @@ function ChangelogDropdown({ entries, open }: { entries: ChangelogEntry[]; open:
 function SubjectHeader({
   subject, changelog, changelogOpen, onToggleChangelog,
 }: {
-  subject: ReturnType<typeof import('../hooks/useSubjects').useSubjects>['subjects'][number]
+  subject: Subject
   changelog: import('../types/changelog').SubjectChangelog | null
   changelogOpen: boolean
   onToggleChangelog: () => void
