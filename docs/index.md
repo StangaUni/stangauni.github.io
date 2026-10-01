@@ -9,3 +9,10 @@ Guida per chi sviluppa o contribuisce al sito.
 - [Aggiungere una materia](materie.md) _(include: `_subject.mdx` + `_changelog.mdx`)_
 - [Aggiungere una nota](note.md)
 - [Componenti MDX](componenti-mdx.md)
+- [Content layer](content-layer.md) _(architettura dati)_
+
+## Link utili
+
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — come contribuire
+- [README.md](../README.md) — panoramica del repository
+- Sito pubblico: [stangauni.github.io](https://stangauni.github.io)

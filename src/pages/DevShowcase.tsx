@@ -14,7 +14,7 @@ import { Breadcrumbs } from '../components/note/Breadcrumbs'
 import { CodeBlock } from '../components/mdx/CodeBlock'
 import { Collapsible } from '../components/mdx/Collapsible'
 import { ChangelogModal } from './SubjectPage'
-import type { ChangelogEntryType } from '../types/changelog'
+import type { ChangelogEntryType } from '@/types/changelog'
 
 // ─── Sample data ──────────────────────────────────────────────────────────────
 

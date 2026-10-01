@@ -9,6 +9,7 @@ dist/
 
 # Cache TypeScript
 *.tsbuildinfo
+node_modules/.tmp/
 
 # Variabili d'ambiente
 .env
@@ -16,16 +17,30 @@ dist/
 .env.*.local
 
 # Editor
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
 .idea/
 *.suo
 *.swp
 *~
+*.code-workspace
 
 # OS
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Log
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage / test
+coverage/
+.nyc_output/
+
+# Optional local overrides
+*.local

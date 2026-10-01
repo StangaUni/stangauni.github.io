@@ -7,14 +7,9 @@ import { SEO } from '../components/ui/SEO'
 import { CodeBlock } from '../components/mdx/CodeBlock'
 import { Collapsible } from '../components/mdx/Collapsible'
 import { ThemedImage } from '../components/mdx/ThemedImage'
-import { useSubjects } from '../hooks/useSubjects'
-import { useNotes } from '../hooks/useNotes'
+import { getSubject, getNotesBySubject, loadNoteModule } from '@/lib/content'
 import { NotFound } from './NotFound'
-import type { Contributor, Note } from '../types/note'
-
-const mdxModules = import.meta.glob('../content/materie/**/*.mdx')
-
-// ─── Contributors ─────────────────────────────────────────────────────────────
+import type { Contributor, Note } from '@/types/note'
 
 function ContributorList({ contributors }: { contributors: Contributor[] }) {
   return (
@@ -52,8 +47,6 @@ function ContributorList({ contributors }: { contributors: Contributor[] }) {
   )
 }
 
-// ─── MDX components ───────────────────────────────────────────────────────────
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MDX_COMPONENTS: Record<string, React.ComponentType<any>> = {
   h1: () => null,
@@ -70,8 +63,6 @@ type NoteModule = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default: React.ComponentType<{ components?: Record<string, React.ComponentType<any>> }>
 }
-
-// ─── Prev / Next ──────────────────────────────────────────────────────────────
 
 function PrevNext({ prev, next, subjectSlug, variant = 'subtle' }: {
   prev: Note | null; next: Note | null; subjectSlug: string; variant?: 'subtle' | 'prominent'
@@ -126,12 +117,10 @@ function PrevNext({ prev, next, subjectSlug, variant = 'subtle' }: {
   )
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
-
 export function NotePage() {
   const { subjectSlug, noteSlug } = useParams<{ subjectSlug: string; noteSlug: string }>()
-  const { subjects, loading: loadingSubject } = useSubjects()
-  const { notes } = useNotes(subjectSlug)
+  const subject = subjectSlug ? getSubject(subjectSlug) : undefined
+  const notes = subjectSlug ? getNotesBySubject(subjectSlug) : []
   const [mod, setMod] = useState<NoteModule | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -140,14 +129,18 @@ export function NotePage() {
     if (!subjectSlug || !noteSlug) return
     setLoading(true)
     setNotFound(false)
-    const key = Object.keys(mdxModules).find(
-      (k) => k.includes(`/materie/${subjectSlug}/`) && k.endsWith(`/${noteSlug}.mdx`) && !k.endsWith('_subject.mdx')
-    )
-    if (!key) { setNotFound(true); setLoading(false); return }
-    ;(mdxModules[key]() as Promise<NoteModule>).then((m) => { setMod(m); setLoading(false) })
+    loadNoteModule(subjectSlug, noteSlug).then((m) => {
+      if (!m) {
+        setNotFound(true)
+        setLoading(false)
+        return
+      }
+      setMod(m as NoteModule)
+      setLoading(false)
+    })
   }, [subjectSlug, noteSlug])
 
-  if (loading || loadingSubject) {
+  if (loading) {
     return (
       <div className="space-y-4 animate-pulse-soft">
         <div className="skeleton h-3 w-48 rounded" />
@@ -156,9 +149,8 @@ export function NotePage() {
     )
   }
 
-  if (notFound || !mod) return <NotFound />
+  if (notFound || !mod || !subjectSlug) return <NotFound />
 
-  const subject = subjects.find((s) => s.slug === subjectSlug)
   const { frontmatter: fm } = mod
   const Content = mod.default
 
@@ -172,40 +164,33 @@ export function NotePage() {
       <SEO title={fm.title} description={fm.excerpt} />
 
       <Breadcrumbs items={[
-        { label: subject?.title ?? subjectSlug!, href: `/materia/${subjectSlug}` },
+        { label: subject?.title ?? subjectSlug, href: `/materia/${subjectSlug}` },
         { label: fm.title },
       ]} />
 
-      {/* ── Header card ── */}
       <div className="relative rounded-2xl border border-border bg-card overflow-hidden mb-5">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.05]"
           style={{ background: 'radial-gradient(ellipse 55% 90% at 0% 50%, hsl(var(--primary)) 0%, transparent 70%)' }}
         />
         <div className="relative px-6 py-5">
-          {/* Meta row */}
           {fm.date && (
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              {fm.date && (
-                <span className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary border border-border/60 rounded px-2 py-0.5">
-                  <Calendar size={10} />
-                  {new Date(fm.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </span>
-              )}
+              <span className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary border border-border/60 rounded px-2 py-0.5">
+                <Calendar size={10} />
+                {new Date(fm.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </span>
             </div>
           )}
 
-          {/* Title */}
           <h1 className="font-sans text-2xl sm:text-3xl font-bold text-foreground leading-tight">
             {fm.title}
           </h1>
 
-          {/* Excerpt */}
           {fm.excerpt && (
             <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">{fm.excerpt}</p>
           )}
 
-          {/* Contributors */}
           {fm.contributors && fm.contributors.length > 0 && (
             <div className="mt-4">
               <ContributorList contributors={fm.contributors} />
@@ -214,13 +199,10 @@ export function NotePage() {
         </div>
       </div>
 
-      {/* ── Prev / Next ── */}
-      <PrevNext prev={prevNote} next={nextNote} subjectSlug={subjectSlug!} />
+      <PrevNext prev={prevNote} next={nextNote} subjectSlug={subjectSlug} />
 
-      {/* ── Divider ── */}
       <hr className="my-6 border-border" />
 
-      {/* ── Content + ToC ── */}
       <div className="flex gap-10">
         <article className="flex-1 min-w-0 prose-academic">
           <Content components={MDX_COMPONENTS} />
@@ -233,9 +215,8 @@ export function NotePage() {
         </aside>
       </div>
 
-      {/* ── Bottom prev/next ── */}
-      <div className="mt-8 pt-6 border-t border-border">
-        <PrevNext prev={prevNote} next={nextNote} subjectSlug={subjectSlug!} variant="prominent" />
+      <div className="mt-10">
+        <PrevNext prev={prevNote} next={nextNote} subjectSlug={subjectSlug} variant="prominent" />
       </div>
     </>
   )

@@ -40,9 +40,9 @@ Immagine che cambia sorgente in base al tema light/dark.
 
 ```mdx
 <ThemedImage
-  lightSrc="/immagini/schema-light.png"
-  darkSrc="/immagini/schema-dark.png"
-  alt="Schema del processo di compilazione"
+  lightSrc="/assets/mia-materia/schema.svg"
+  darkSrc="/assets/mia-materia/schema_scuro.svg"
+  alt="Schema del processo"
 />
 ```
 
@@ -55,34 +55,23 @@ Immagine che cambia sorgente in base al tema light/dark.
 | `alt` | `string` | sì | Testo alternativo |
 | `className` | `string` | no | Classi CSS aggiuntive |
 
-Usa path relativi alla cartella `public/` (es. `/immagini/foto.png` → `public/immagini/foto.png`).
+I path sono relativi a `public/` (es. `/assets/foto.png` → `public/assets/foto.png`).
 
 ---
 
 ## `<CodeBlock>` (implicito)
 
-I blocchi di codice fenced (` ``` `) vengono automaticamente renderizzati da `CodeBlock`,
-che aggiunge:
+I blocchi di codice fenced vengono renderizzati da `CodeBlock`:
 
-- **Syntax highlighting** via `react-syntax-highlighter` (Prism), con tema `oneLight` (light) e `vscDarkPlus` (dark) — si aggiorna in tempo reale al cambio tema
-- Label con il linguaggio in alto a sinistra (omessa se non viene specificato un linguaggio)
-- Pulsante **copia** in alto a destra (appare all'hover, con feedback visivo ✓)
+- syntax highlighting (Prism): `oneLight` / `vscDarkPlus`
+- label linguaggio
+- pulsante copia
 
-```mdx
-```c
-int main() {
-    return 0;
-}
-```
-```
-
-Non è necessario usare `<CodeBlock>` esplicitamente.
+Non è necessario usare `<CodeBlock>` esplicitamente nel MDX.
 
 ---
 
-## Markdown esteso
-
-Oltre ai componenti personalizzati, sono disponibili tutte le estensioni GFM:
+## Markdown esteso (GFM + math)
 
 ### Tabelle
 
@@ -99,15 +88,16 @@ Oltre ai componenti personalizzati, sono disponibili tutte le estensioni GFM:
 - [ ] Da fare
 ```
 
-### Formule matematiche
+### Formule
 
 Inline: `$E = mc^2$`
 
 Blocco:
+
 ```mdx
 $$
 \int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}
 $$
 ```
 
-Renderizzate con KaTeX. Vedi la [documentazione KaTeX](https://katex.org/docs/supported.html) per i simboli supportati.
+Vedi la [documentazione KaTeX](https://katex.org/docs/supported.html) per i simboli supportati.

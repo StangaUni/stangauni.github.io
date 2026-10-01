@@ -14,8 +14,6 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 h-14">
-
-        {/* Logo */}
         <NavLink
           to="/"
           className="flex items-center gap-2 font-sans font-bold text-base text-primary hover:opacity-80 transition-opacity"
@@ -24,7 +22,6 @@ export function Header() {
           StangaUni
         </NavLink>
 
-        {/* Desktop nav */}
         <div className="hidden sm:flex items-center gap-1">
           <ul className="flex gap-1">
             {navItems.map(({ to, label, end }) => (
@@ -48,7 +45,6 @@ export function Header() {
           <ThemeToggle />
         </div>
 
-        {/* Mobile */}
         <div className="flex sm:hidden items-center gap-1">
           <ThemeToggle />
           <button
@@ -61,7 +57,6 @@ export function Header() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
       {open && (
         <div className="border-t border-border bg-background px-6 pb-3 sm:hidden">
           <ul className="flex flex-col gap-1 pt-2">

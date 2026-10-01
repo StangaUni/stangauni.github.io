@@ -1,4 +1,6 @@
-export type SubjectStatus = 'completo' | 'in-corso' | 'revisionato' | 'bozza'
+import type { NoteType } from './note'
+
+export type SubjectStatus = 'completo' | 'in-corso' | 'revisionato' | 'bozza' | 'abbandonato'
 
 export interface Subject {
   slug: string
@@ -13,5 +15,5 @@ export interface Subject {
   styleTags?: string[]
   cfu?: number
   hidden?: boolean
-  hiddenSections?: import('./note').NoteType[]
+  hiddenSections?: NoteType[]
 }

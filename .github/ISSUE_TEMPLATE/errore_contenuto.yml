@@ -12,8 +12,8 @@ body:
     id: file
     attributes:
       label: File o argomento
-      description: Il nome del file o dell'argomento che contiene l'errore.
-      placeholder: "es. 10. Puntatori.md"
+      description: Il percorso del file o l'argomento che contiene l'errore.
+      placeholder: "es. content/materie/analisi-matematica/01-insiemi.mdx"
     validations:
       required: true
 
@@ -22,7 +22,7 @@ body:
     attributes:
       label: Descrizione dell'errore
       description: Cosa è scritto e perché è sbagliato.
-      placeholder: "A pagina X, nella sezione Y, è scritto '...' ma dovrebbe essere '...'"
+      placeholder: "Nella sezione Y è scritto '...' ma dovrebbe essere '...'"
     validations:
       required: true
 

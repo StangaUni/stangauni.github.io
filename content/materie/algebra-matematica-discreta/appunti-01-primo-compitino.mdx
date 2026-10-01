@@ -1,0 +1,659 @@
+---
+title: "Primo Compitino — Raccolta Esercizi"
+type: "appunti"
+date: "2026-09-30"
+excerpt: "Raccolta esercizi primo compitino: congruenze, sistemi, grafi e combinatoria (esami e materiali di lezione)."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+---
+
+## ALGEBRA — FORNITI A LEZIONE
+
+---
+
+## Esercizio 1 — Congruenza lineare
+
+Si risolva la seguente congruenza:
+
+$$12x \equiv 18 \pmod{30}$$
+
+### Teoria
+
+> Riferimento: `Algebra/Riassunti/04. Congruenze.md` — **Congruenze con Incognite**, **Teorema 1**, **Teorema 2**, **Semplificazione di una congruenza**
+
+#### Cos'è una congruenza con incognita
+
+Una **congruenza lineare** è un'espressione della forma:
+$$a \cdot x \equiv b \pmod{n}$$
+dove $a, b, n \in \mathbb{Z}$, $n \neq 0$, e $x$ è l'incognita intera che vogliamo trovare.
+
+$x_0$ è **soluzione** se, sostituendolo, il membro sinistro e il membro destro hanno lo stesso resto nella divisione per $n$, ovvero se $n \mid (ax_0 - b)$.
+
+> **Attenzione:** non tutte le congruenze hanno soluzioni. A differenza delle equazioni in $\mathbb{R}$, qui $ax = b$ può non avere soluzione.
+
+Se $x_0$ è una soluzione, allora **tutti gli interi della classe $[x_0]_n$** sono soluzioni. Risolvere significa quindi trovare **tutte le classi di congruenza** che sono soluzioni.
+
+#### Quando esistono soluzioni? (Teorema 1)
+
+Calcolo prima di tutto $d = \text{MCD}(a, n)$ con l'algoritmo di Euclide.
+
+$$a \cdot x \equiv b \pmod{n} \text{ ha soluzioni} \iff d \mid b$$
+
+Cioè: la congruenza ha soluzioni **se e solo se** il MCD di $a$ e $n$ divide anche $b$. Se $d \nmid b$, il procedimento si ferma qui: non esistono soluzioni.
+
+#### Quante sono e come si trovano? (Semplificazione + Teorema 2)
+
+Se $d \mid b$, si **semplifica** l'intera congruenza dividendo $a$, $b$ e $n$ per $d$:
+
+$$\frac{a}{d} \cdot x \equiv \frac{b}{d} \pmod{\frac{n}{d}}$$
+
+Questa congruenza ridotta ha il vantaggio che $\text{MCD}\!\left(\tfrac{a}{d}, \tfrac{n}{d}\right) = 1$, cioè il coefficiente e il modulo sono **coprimi**. In questo caso il coefficiente $\tfrac{a}{d}$ è invertibile modulo $\tfrac{n}{d}$, quindi la congruenza ridotta ammette **un'unica soluzione** $x_0$ modulo $\tfrac{n}{d}$, trovabile come:
+$$x_0 \equiv \left(\frac{a}{d}\right)^{-1} \cdot \frac{b}{d} \pmod{\frac{n}{d}}$$
+
+dove l'inverso si trova cercando un intero $\alpha$ tale che $\tfrac{a}{d} \cdot \alpha \equiv 1 \pmod{\tfrac{n}{d}}$ (spesso per tentativi su numeri piccoli, o tramite Bézout).
+
+Per il **Teorema 2**, le soluzioni della congruenza originale $ax \equiv b \pmod{n}$ sono esattamente $d$ classi di congruenza modulo $n$, ottenute come:
+
+$$x_0,\quad x_0 + \frac{n}{d},\quad x_0 + 2\cdot\frac{n}{d},\quad \ldots,\quad x_0 + (d-1)\cdot\frac{n}{d}$$
+
+**In sintesi, il metodo è:**
+1. Calcolare $d = \text{MCD}(a, n)$; se $d \nmid b$ → nessuna soluzione.
+2. Semplificare: $\tfrac{a}{d} x \equiv \tfrac{b}{d} \pmod{\tfrac{n}{d}}$.
+3. Trovare $x_0$ invertendo $\tfrac{a}{d}$ modulo $\tfrac{n}{d}$.
+4. Le $d$ soluzioni modulo $n$ sono $x_0,\ x_0+\tfrac{n}{d},\ \ldots$
+
+### Soluzione
+
+$d = \gcd(12, 30) = 6$. Poiché $6 \mid 18$, ha soluzioni. Si semplifica:
+$$2x \equiv 3 \pmod{5}$$
+
+Inverso di $2$ modulo $5$: $2 \cdot 3 = 6 \equiv 1 \pmod{5}$, quindi $2^{-1} \equiv 3$.
+
+$$x_0 \equiv 3 \cdot 3 = 9 \equiv 4 \pmod{5}$$
+
+$d = 6$ soluzioni modulo $30$:
+
+$$\boxed{x \equiv 4,\ 9,\ 14,\ 19,\ 24,\ 29 \pmod{30}}$$
+
+Verifica: $12 \cdot 4 = 48 = 30 + 18 \equiv 18 \pmod{30}$ ✓
+
+---
+
+## Esercizio 2 — Sistema di congruenze
+
+Si risolva il seguente sistema di congruenze:
+
+$$\begin{cases} 3x \equiv 6 \pmod{9} \\ 5x \equiv 4 \pmod{7} \end{cases}$$
+
+### Teoria
+
+> Riferimento: `Algebra/Riassunti/04. Congruenze.md` — **Semplificazione di una congruenza** | `Algebra/Riassunti/05. Sistemi di Congruenze.md` — **Definizione**, **Strategia per Sistemi Generici**, **Teorema Cinese dei Resti**, **Metodo di Newton**
+
+#### Cos'è un sistema di congruenze
+
+Un **sistema di congruenze** è un insieme di congruenze che devono essere soddisfatte **contemporaneamente** dallo stesso $x$:
+
+$$\begin{cases} a_1 x \equiv b_1 \pmod{n_1} \\ a_2 x \equiv b_2 \pmod{n_2} \\ \vdots \end{cases}$$
+
+Risolvere il sistema significa trovare tutte le classi di congruenza $[x]_m$ (per qualche modulo $m$) che soddisfano ogni congruenza simultaneamente.
+
+> **Attenzione:** anche se ogni singola congruenza ha soluzioni, il sistema potrebbe non averne — le soluzioni di ciascuna potrebbero non avere elementi in comune.
+
+#### Strategia generale (passo per passo)
+
+**Passo 1 — Ridurre ogni congruenza alla forma $x \equiv b_i \pmod{n_i}$.**
+
+Per ogni congruenza $a_i x \equiv c_i \pmod{m_i}$, calcolo $d_i = \text{MCD}(a_i, m_i)$:
+- Se $d_i \nmid c_i$ → quella congruenza non ha soluzioni → il **sistema non ha soluzioni** (stop).
+- Se $d_i \mid c_i$ → si semplifica a $\tfrac{a_i}{d_i} x \equiv \tfrac{c_i}{d_i} \pmod{\tfrac{m_i}{d_i}}$, che ha un'unica classe soluzione $x \equiv b_i \pmod{n_i}$ (con $n_i = \tfrac{m_i}{d_i}$).
+
+Dopo questo passo il sistema è nella forma standard: $x \equiv b_i \pmod{n_i}$.
+
+**Passo 2 — Verificare che i moduli siano coprimi a due a due.**
+
+Se $\text{MCD}(n_i, n_j) = 1$ per ogni coppia $i \neq j$, il **Teorema Cinese dei Resti (TCR)** garantisce che esiste un'unica soluzione modulo $n = n_1 \cdot n_2 \cdots n_t$.
+
+**Passo 3 — Applicare il Metodo di Newton.**
+
+Il metodo costruisce la soluzione per passi successivi. Con 2 congruenze:
+
+$$\begin{cases} x \equiv b_1 \pmod{n_1} \\ x \equiv b_2 \pmod{n_2} \end{cases} \qquad \text{MCD}(n_1, n_2) = 1$$
+
+1. Parto da $x_1 = b_1$ (soddisfa già la prima congruenza).
+2. Cerco $x_2 = x_1 + K_2 \cdot n_1$ tale che $x_2 \equiv b_2 \pmod{n_2}$. Poiché $x_2 = x_1 + K_2 n_1$, ottengo $K_2 \equiv (b_2 - x_1) \cdot n_1^{-1} \pmod{n_2}$. Scelgo un valore concreto di $K_2$ e calcolo $x_2$.
+3. La soluzione è $[x_2]_{n_1 \cdot n_2}$.
+
+La costruzione funziona perché $x_2 \equiv x_1 \equiv b_1 \pmod{n_1}$ (aggiungere un multiplo di $n_1$ non cambia il resto modulo $n_1$), quindi $x_2$ soddisfa ancora la prima congruenza, e per costruzione soddisfa anche la seconda.
+
+### Soluzione
+
+**Prima congruenza:** $d = \gcd(3, 9) = 3$. Poiché $3 \mid 6$, si semplifica: $x \equiv 2 \pmod{3}$.
+
+**Seconda congruenza:** $d = \gcd(5, 7) = 1$. Inverso di $5$ modulo $7$: $5 \cdot 3 = 15 \equiv 1$, quindi $5^{-1} \equiv 3$.
+$$x_0 \equiv 3 \cdot 4 = 12 \equiv 5 \pmod{7}$$
+
+**Sistema ridotto:**
+$$\begin{cases} x \equiv 2 \pmod{3} \\ x \equiv 5 \pmod{7} \end{cases}$$
+
+$\gcd(3, 7) = 1$ → TCR garantisce un'unica soluzione modulo $21$.
+
+**Metodo di Newton:**
+- $x_1 = 2$
+- $x_2 = 2 + 3K_2$, con $2 + 3K_2 \equiv 5 \pmod{7}$, cioè $3K_2 \equiv 3 \pmod{7}$
+
+Inverso di $3$ modulo $7$: $3 \cdot 5 = 15 \equiv 1$, quindi $3^{-1} \equiv 5$.
+$$K_2 \equiv 5 \cdot 3 = 15 \equiv 1 \pmod{7}$$
+$$x_2 = 2 + 3 \cdot 1 = 5$$
+
+Verifica: $3 \cdot 5 = 15 \equiv 6 \pmod{9}$ ✓; $5 \cdot 5 = 25 \equiv 4 \pmod{7}$ ✓
+
+$$\boxed{x \equiv 5 \pmod{21}}$$
+
+---
+
+## Esercizio 3 — Sistema lineare con parametro
+
+Si risolva il sistema lineare $A(\alpha)\mathbf{x} = \mathbf{b}(\alpha)$ dipendente dal parametro $\alpha \in \mathbb{R}$, dove:
+
+$$A(\alpha) = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 1 & \alpha \\ 2 & \alpha & 5 \end{pmatrix} \qquad \mathbf{b}(\alpha) = \begin{pmatrix} 3 \\ 1 \\ \alpha+6 \end{pmatrix}$$
+
+### Teoria
+
+> Riferimento: `Algebra/Riassunti/07. Matrici.md` — **§3.2 Matrici e Sistemi Lineari**, **§3.3 Algoritmo di Eliminazione di Gauss**, **Matrici a gradini**, **Lettura delle soluzioni dalla forma ridotta**
+
+#### Cos'è un sistema lineare e come si scrive in forma matriciale
+
+Un **sistema lineare** di $m$ equazioni in $n$ incognite è un insieme di $m$ equazioni di primo grado:
+
+$$\begin{cases} a_{11}x_1 + \cdots + a_{1n}x_n = b_1 \\ \quad\vdots \\ a_{m1}x_1 + \cdots + a_{mn}x_n = b_m \end{cases}$$
+
+Si può scrivere compattamente come $A \cdot \mathbf{x} = \mathbf{b}$, dove $A \in M_{m,n}$ è la **matrice dei coefficienti**, $\mathbf{x}$ il vettore delle incognite e $\mathbf{b}$ il vettore dei termini noti.
+
+Per risolverlo si lavora sulla **matrice aumentata** $(A \mid \mathbf{b})$, cioè la matrice $A$ con la colonna $\mathbf{b}$ affiancata a destra:
+
+$$\left(\begin{array}{ccc|c} a_{11} & \cdots & a_{1n} & b_1 \\ \vdots & & \vdots & \vdots \\ a_{m1} & \cdots & a_{mn} & b_m \end{array}\right)$$
+
+#### Operazioni elementari sulle righe
+
+Si possono applicare tre tipi di operazioni, che **non cambiano l'insieme delle soluzioni**:
+
+| Notazione | Operazione |
+|-----------|-----------|
+| $E_{ij}$ | Scambio delle righe $i$ e $j$ |
+| $E_i(\alpha)$, $\alpha \neq 0$ | Moltiplicazione della riga $i$ per lo scalare $\alpha$ |
+| $E_{ij}(\alpha)$, $\alpha \neq 0$ | Aggiunta alla riga $i$ del multiplo $\alpha$ della riga $j$ |
+
+#### Forma a gradini (ridotta di Gauss)
+
+L'obiettivo è trasformare $(A \mid \mathbf{b})$ in una **matrice a gradini** $(C \mid \mathbf{d})$, che soddisfa:
+1. Le righe nulle sono tutte in fondo.
+2. In ogni riga non nulla, il primo elemento non zero è $1$ e si chiama **pivot**.
+3. Ogni pivot si trova strettamente a destra del pivot della riga sopra.
+
+Le colonne che contengono un pivot si chiamano **dominanti**; le altre si chiamano **libere**.
+
+#### Come leggere le soluzioni dalla forma ridotta
+
+Una volta ottenuta $(C \mid \mathbf{d})$, si guarda la colonna dei termini noti $\mathbf{d}$:
+
+| Caso | Condizione | Soluzioni |
+|------|-----------|-----------|
+| **Impossibile** | $\mathbf{d}$ è colonna **dominante** (c'è una riga $0 = 1$) | **nessuna** |
+| **Unica** | $\mathbf{d}$ è libera e **tutte** le colonne di $C$ sono dominanti | **una** |
+| **Infinite** | $\mathbf{d}$ è libera e in $C$ ci sono $K \geq 1$ colonne libere | **infinite** ($\infty^K$ soluzioni, con $K$ parametri) |
+
+Nel caso infinito, le incognite corrispondenti alle colonne **libere** si pongono uguali a parametri $t_1, t_2, \ldots \in \mathbb{R}$; le incognite **dominanti** si ricavano per sostituzione a ritroso (dall'ultima riga alla prima).
+
+> **Nota sui sistemi con parametro:** se $A$ o $\mathbf{b}$ dipendono da $\alpha$, bisogna distinguere i casi in base ai valori di $\alpha$ che fanno annullare (o no) certi pivot.
+
+### Soluzione
+
+Matrice aumentata:
+
+$$\begin{pmatrix} 1 & 0 & 2 & | & 3 \\ 0 & 1 & \alpha & | & 1 \\ 2 & \alpha & 5 & | & \alpha+6 \end{pmatrix}$$
+
+$R_3 \leftarrow R_3 - 2R_1$:
+
+$$\begin{pmatrix} 1 & 0 & 2 & | & 3 \\ 0 & 1 & \alpha & | & 1 \\ 0 & \alpha & 1 & | & \alpha \end{pmatrix}$$
+
+$R_3 \leftarrow R_3 - \alpha R_2$:
+
+$$\begin{pmatrix} 1 & 0 & 2 & | & 3 \\ 0 & 1 & \alpha & | & 1 \\ 0 & 0 & 1-\alpha^2 & | & 0 \end{pmatrix}$$
+
+Il pivot $1 - \alpha^2 = 0 \iff \alpha = \pm 1$.
+
+**Caso $\alpha = 1$:** $R_3 = (0,0,0\mid 0)$ → $x_3$ **libera** $(= t)$.
+
+Da $R_2$: $x_2 = 1 - t$. Da $R_1$: $x_1 = 3 - 2t$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}3\\1\\0\end{pmatrix} + t\begin{pmatrix}-2\\-1\\1\end{pmatrix}, \quad t \in \mathbb{R}} \qquad (\infty^1 \text{ soluzioni})$$
+
+**Caso $\alpha = -1$:** $R_3 = (0,0,0\mid 0)$ → $x_3$ **libera** $(= t)$.
+
+Da $R_2$: $x_2 = 1 + t$. Da $R_1$: $x_1 = 3 - 2t$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}3\\1\\0\end{pmatrix} + t\begin{pmatrix}-2\\1\\1\end{pmatrix}, \quad t \in \mathbb{R}} \qquad (\infty^1 \text{ soluzioni})$$
+
+**Caso $\alpha \neq \pm 1$:** $(1-\alpha^2) \neq 0$ → $x_3 = 0$. Da $R_2$: $x_2 = 1$. Da $R_1$: $x_1 = 3$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}3\\1\\0\end{pmatrix}} \qquad (\text{unica soluzione})$$
+
+---
+
+## MATEMATICA DISCRETA — FORNITI A LEZIONE
+
+---
+
+## Esercizio 4 — Handshaking e sequenza di gradi
+
+Un grafo semplice ha 3 vertici di grado 4 e $n - 3$ vertici di grado 2, con un totale di 12 archi. Trovare $n$.
+
+### Teoria
+
+> Riferimento: `Matematica discreta/Riassunti/01. Definizioni Base dei Grafi.md` — **Gradi dei Vertici**, **Teorema 1 — Handshaking Lemma**
+
+#### Cos'è il grado di un vertice
+
+In un grafo $G(V, E)$, il **grado** $d(v)$ di un vertice $v$ è il numero di archi che hanno $v$ come estremo (cioè il numero di archi "attaccati" a $v$).
+
+#### Handshaking Lemma (Lemma delle Strette di Mano)
+
+$$\boxed{\sum_{v \in V} d(v) = 2 \cdot |E|}$$
+
+**Perché vale:** ogni arco ha esattamente **due** estremi. Quando sommiamo i gradi di tutti i vertici, contiamo ogni arco due volte (una per ciascun estremo). Quindi la somma dei gradi è sempre il doppio del numero di archi.
+
+**Conseguenza pratica:** la somma di tutti i gradi è sempre un numero **pari**. In particolare, il numero di vertici di grado dispari è sempre pari (se la somma di certi numeri dispari è pari, ce ne devono essere un numero pari).
+
+**Come si usa in questo esercizio:** conosciamo la distribuzione dei gradi (quanti vertici hanno grado 4, quanti hanno grado 2) e il numero di archi. Il Lemma fornisce l'equazione per trovare $n$.
+
+### Soluzione
+
+$$12 + 2(n-3) = 2 \cdot 12 = 24 \implies 2n + 6 = 24 \implies n = 9$$
+
+Il grafo ha $\boxed{n = 9}$ **vertici** (3 di grado 4 e 6 di grado 2). La somma $\sum d = 24$ è pari ✓, quindi tale grafo può esistere.
+
+---
+
+## Esercizio 5 — Connettività
+
+<ThemedImage
+  lightSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio5.svg"
+  darkSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio5_scuro.svg"
+  alt="primocompitino esercizio5"
+/>
+
+Dato grafo G in figura, determinare $\kappa(G)$, $\lambda(G)$ e $\delta(G)$. Individuare un separatore minimo e un taglio minimo.
+
+### Teoria
+
+> Riferimento: `Matematica discreta/Riassunti/03. Connettività.md` — **Taglio Associato a $S$**, **Arcoconnettività tra $u$ e $v$**, **Arcoconnettività di un Grafo**, **Connettività sui Vertici — Separatori**, **Teorema Fondamentale**
+
+#### Grado minimo $\delta(G)$
+
+Il **grado minimo** è semplicemente il più piccolo tra tutti i gradi dei vertici del grafo:
+
+$$\delta(G) = \min\{d(v) : v \in V\}$$
+
+È la "misura" meno sofisticata: indica qual è il vertice meno connesso del grafo.
+
+#### Arcoconnettività $\lambda(G)$ (connettività sugli archi)
+
+Un **taglio** associato a un sottoinsieme $S \subseteq V$ è l'insieme degli archi che hanno un estremo dentro $S$ e l'altro fuori da $S$:
+
+$$\delta(S) = \{uv \in E : |S \cap \{u, v\}| = 1\}$$
+
+Rimuovendo tutti gli archi del taglio $\delta(S)$, i vertici di $S$ vengono separati da quelli di $V \setminus S$.
+
+La **arcoconnettività** $\lambda(G)$ è il minimo numero di archi che bisogna rimuovere per **disconnettere** il grafo (cioè per isolare almeno un vertice dal resto):
+
+$$\lambda(G) = \min_{u \neq v} K^E_{u,v}(G)$$
+
+Un arco la cui rimozione da sola disconnette il grafo si chiama **ponte**. Se esiste un ponte, allora $\lambda(G) = 1$.
+
+#### Connettività $\kappa(G)$ (connettività sui vertici)
+
+Un **separatore** è un sottoinsieme $S \subseteq V$ tale che rimuovendo tutti i vertici di $S$ (e gli archi ad essi incidenti) il grafo $G \setminus S$ diventa **disconnesso**.
+
+La **connettività** $\kappa(G)$ è il minimo numero di vertici da rimuovere per disconnettere il grafo:
+
+$$\kappa(G) = \min\{|S| : S \text{ è un separatore di } G\}$$
+
+> **Convenzione:** per il grafo completo $K_n$ (in cui non esiste nessun separatore) si pone $\kappa(K_n) = n - 1$.
+
+#### Teorema Fondamentale
+
+Per ogni grafo semplice e connesso con almeno due vertici:
+
+$$\boxed{\kappa(G) \leq \lambda(G) \leq \delta(G)}$$
+
+**Interpretazione:** è più facile (o ugualmente difficile) disconnettere un grafo rimuovendo archi piuttosto che vertici; e nessuno dei due può superare il grado minimo (rimuovere tutti gli archi di un vertice di grado minimo disconnette quel vertice dal resto).
+
+Questo teorema è utile come **verifica**: i valori trovati devono rispettare questa catena di disuguaglianze.
+
+### Soluzione
+
+**Gradi:** $d(1)=2$, $d(2)=2$, $d(3)=3$, $d(4)=3$, $d(5)=2$, $d(6)=2$ → $\delta(G) = 2$.
+
+**Arcoconnettività:** $3\text{-}4$ è un ponte: rimuovendolo il grafo si disconnette in $\{1,2,3\}$ e $\{4,5,6\}$. Quindi $\lambda(G) = 1$.
+
+**Taglio minimo:** $\{3\text{-}4\}$.
+
+**Connettività:** rimuovendo il vertice $3$ rimangono i componenti $\{1,2\}$ e $\{4,5,6\}$, disconnessi. Quindi $\kappa(G) = 1$.
+
+**Separatore minimo:** $\{3\}$ (o simmetricamente $\{4\}$).
+
+Verifica: $\kappa(G) \leq \lambda(G) \leq \delta(G)$ → $1 \leq 1 \leq 2$ ✓
+
+---
+
+## Esercizio 6 — Albero di copertura minimo (Kruskal)
+
+<ThemedImage
+  lightSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio6.svg"
+  darkSrc="/assets/algebra-matematica-discreta/primocompitino_esercizio6_scuro.svg"
+  alt="primocompitino esercizio6"
+/>
+
+> Nell'immagine dovrebbero esserci anche gli archi AC, BC, CD, CE, che non so per quale motivo il programma non mi ha esportato correttamente. Fate finta che ci siano e utilizzate i relativi pesi mostrati 2, 1, 8, 10
+
+In riferimento al grafo G in figura, trovare un albero di copertura di peso minimo con l'algoritmo di Kruskal.
+
+### Teoria
+
+> Riferimento: `Matematica discreta/Riassunti/04. Alberi.md` — **Definizioni**, **Proprietà 2 — $|E| = |V| - 1$**, **Albero di Peso Minimo**, **Algoritmo di Kruskal**
+
+#### Cos'è un albero
+
+Un **albero** è un grafo che è contemporaneamente:
+- **connesso**: esiste un cammino tra ogni coppia di vertici,
+- **aciclico**: non contiene cicli (non esiste nessun percorso chiuso).
+
+La proprietà fondamentale degli alberi (dimostrata per induzione) è:
+
+$$\boxed{|E| = |V| - 1}$$
+
+Un albero su $n$ vertici ha sempre esattamente $n-1$ archi. Questa è la "struttura minima" per tenere connesso un grafo: un arco in meno e si disconnette, un arco in più e si crea un ciclo.
+
+#### Cos'è un albero di copertura (spanning tree)
+
+Dato un grafo connesso $G(V, E)$, un **albero di copertura** (o albero ricoprente) è un sottografo $T(V, E')$ con $E' \subseteq E$ che:
+- usa **tutti** i vertici di $G$,
+- è un albero, quindi ha $|V| - 1$ archi e nessun ciclo.
+
+In un grafo con $n$ vertici e $m$ archi, un albero di copertura usa sempre esattamente $n-1$ archi (scelti tra gli $m$ disponibili).
+
+#### Albero di copertura di peso minimo (MST)
+
+Se ogni arco ha un **peso** (un costo, una distanza, ...), il **Minimum Spanning Tree (MST)** è l'albero di copertura con somma dei pesi minima tra tutti quelli possibili.
+
+#### Algoritmo di Kruskal
+
+L'algoritmo di Kruskal costruisce l'MST in modo **greedy** (goloso): sceglie sempre l'arco di peso minore che non crea cicli.
+
+**Passi:**
+1. Ordina tutti gli archi per peso **crescente**.
+2. Parti con un "foresta" di $n$ componenti isolate (un vertice ciascuna).
+3. Esamina gli archi nell'ordine:
+   - Se i due estremi dell'arco si trovano in **componenti diverse** → **aggiungi** l'arco (unisce due componenti senza creare cicli).
+   - Se i due estremi si trovano nella **stessa componente** → **scarta** l'arco (aggiungerlo creerebbe un ciclo).
+4. Fermati quando hai inserito $|V| - 1$ archi: l'albero è completo.
+
+**Perché funziona:** ad ogni passo, l'arco di peso minimo che collega due componenti diverse è **sempre** nell'MST (proprietà del taglio). Kruskal sfrutta questa proprietà sistematicamente.
+
+### Soluzione
+
+Archi ordinati per peso crescente e applicazione dell'algoritmo ($n=5$, servono $n-1=4$ archi):
+
+| Peso | Arco | Componenti dopo | Aggiunto? |
+|------|------|-----------------|-----------|
+| 1 | $B$-$C$ | $\{A\},\{BC\},\{D\},\{E\}$ | ✓ |
+| 2 | $A$-$C$ | $\{ABC\},\{D\},\{E\}$ | ✓ |
+| 3 | $D$-$E$ | $\{ABC\},\{DE\}$ | ✓ |
+| 4 | $A$-$B$ | — | ✗ (ciclo $A$-$B$-$C$-$A$) |
+| 5 | $B$-$D$ | $\{ABCDE\}$ | ✓ — **stop** |
+
+**MST:** archi $B$-$C$ (1), $A$-$C$ (2), $D$-$E$ (3), $B$-$D$ (5).
+
+$$\boxed{\text{Peso totale MST} = 1 + 2 + 3 + 5 = 11}$$
+
+---
+
+## Esercizio 7 — Hamiltonicità ed Eulerianità di $K_{m,n}$
+
+Per quali $m, n \geq 1$ il grafo bipartito completo $K_{m,n}$ è: (a) euleriano? (b) hamiltoniano?
+
+### Teoria
+
+> Riferimento: `Matematica discreta/Riassunti/06. Grafi Hamiltoniani ed Euleriani.md` — **Percorsi Euleriani e Grafi Euleriani**, **Teorema di Eulero**, **Circuiti Hamiltoniani e Grafi Hamiltoniani**, **$K_{r,s}$ è Hamiltoniano $\iff$ $r = s \geq 2$**
+
+#### Grafi Euleriani
+
+Un **percorso euleriano** è un percorso **chiuso** che attraversa ogni arco del grafo **esattamente una volta** (e poi torna al vertice di partenza). Un grafo che lo possiede è detto **euleriano**.
+
+**Teorema di Eulero:**
+$$G \text{ è euleriano} \iff G \text{ è connesso e ogni vertice ha grado pari}$$
+
+**Perché:** in un percorso chiuso, ogni volta che si "entra" in un vertice si deve anche "uscire". Ogni passaggio usa un arco in ingresso e uno in uscita, quindi ogni vertice deve partecipare un numero pari di volte, cioè deve avere grado pari.
+
+**Gradi in $K_{m,n}$:** nel grafo bipartito completo $K_{m,n}$, i vertici della partizione $V_1$ (di cardinalità $m$) sono collegati a **tutti** i vertici di $V_2$, quindi hanno grado $n$. Simmetricamente, i vertici di $V_2$ hanno grado $m$. Il grafo è connesso per ogni $m, n \geq 1$.
+
+Quindi $K_{m,n}$ è euleriano $\iff$ $m$ è pari **e** $n$ è pari.
+
+#### Grafi Hamiltoniani
+
+Un **circuito hamiltoniano** è un ciclo che passa per ogni vertice del grafo **esattamente una volta**. Un grafo che lo possiede è detto **hamiltoniano**.
+
+A differenza dell'euleriano, non esiste una caratterizzazione completa (condizione necessaria e sufficiente semplice) per l'hamiltonicità — è un problema molto più difficile.
+
+**Hamiltonicità di $K_{r,s}$:**
+
+In $K_{r,s}$ ogni arco collega un vertice di $V_1$ a un vertice di $V_2$, quindi qualsiasi percorso **alterna obbligatoriamente** i due gruppi: $V_1, V_2, V_1, V_2, \ldots$ Un circuito hamiltoniano usa $r + s$ vertici in quest'alternanza e deve tornare al punto di partenza. Affinché l'alternanza sia perfetta in un ciclo chiuso, occorre $r = s$. Inoltre serve $r = s \geq 2$ perché $K_{1,1}$ non è hamiltoniano (il "circuito" $a \to b \to a$ usa lo stesso arco due volte).
+
+$$\boxed{K_{r,s} \text{ è hamiltoniano} \iff r = s \geq 2}$$
+
+### Soluzione
+
+**(a) Eulerianità:** $K_{m,n}$ è connesso per $m, n \geq 1$. È euleriano $\iff$ tutti i gradi sono pari $\iff$ $m$ pari **e** $n$ pari.
+
+$$\boxed{K_{m,n} \text{ è euleriano} \iff m \text{ e } n \text{ sono entrambi pari}}$$
+
+**(b) Hamiltonicità:**
+
+$$\boxed{K_{m,n} \text{ è hamiltoniano} \iff m = n \geq 2}$$
+
+---
+
+## ANALISI PRIMO COMPITINO
+
+---
+
+## Esercizio 8 — Vero o Falso
+
+> Salvo diverse diciture, per *grafo* si intende grafo semplice.
+
+| Affermazione | V | F |
+|---|:---:|:---:|
+| Un grafo connesso con $n$ vertici e $n-1$ archi è un albero | ☐ | ☐ |
+| Ogni grafo planare è bipartito | ☐ | ☐ |
+| Un grafo semplice con $\lvert E \rvert > 3\lvert V \rvert - 6$ non è planare | ☐ | ☐ |
+| Un grafo bipartito non può contenere triangoli | ☐ | ☐ |
+| Il grafo bipartito completo $K_{3,3}$ è hamiltoniano | ☐ | ☐ |
+| Ogni cammino in un grafo bipartito ha lunghezza pari | ☐ | ☐ |
+| Se $d(v) \geq \dfrac{\lvert V \rvert}{2}$ per ogni $v \in V$, allora $G$ è hamiltoniano | ☐ | ☐ |
+
+### Teoria
+
+> Riferimento: `Matematica discreta/Riassunti/04. Alberi.md` — **Caratterizzazione degli Alberi** | `Matematica discreta/Riassunti/05. Grafi Planari.md` — **Formula di Eulero**, **Teorema: $e \leq 3v-6$** | `Matematica discreta/Riassunti/02. Grafi Bipartiti e Isomorfismi.md` — **Teorema 4 — Caratterizzazione dei Grafi Bipartiti** | `Matematica discreta/Riassunti/06. Grafi Hamiltoniani ed Euleriani.md` — **$K_{r,s}$ è Hamiltoniano $\iff$ $r = s \geq 2$**, **Teorema di Dirac**
+
+#### 1. Caratterizzazione degli alberi
+
+Un grafo $T$ è un **albero** se e solo se è connesso e aciclico. Il teorema di caratterizzazione stabilisce che le seguenti condizioni sono **tutte equivalenti**:
+
+- $T$ è connesso e aciclico (definizione).
+- $T$ è connesso e $|E| = |V| - 1$.
+- $T$ è aciclico e $|E| = |V| - 1$.
+- Tra ogni coppia di vertici esiste un **unico** cammino.
+
+In particolare: **connesso + $|E| = |V| - 1$ $\Rightarrow$ albero** (e viceversa).
+
+#### 2. Grafi planari e disuguaglianza $e \leq 3v - 6$
+
+Un grafo è **planare** se può essere disegnato nel piano senza che gli archi si intersechino.
+
+La **Formula di Eulero** per grafi connessi planari dice: $r = e - v + 2$ (dove $r$ = facce, $e$ = archi, $v$ = vertici).
+
+Da qui si dimostra che ogni grafo **semplice, connesso e planare** soddisfa:
+
+$$\boxed{e \leq 3v - 6}$$
+
+La **contrappostiva** è lo strumento pratico: se $e > 3v - 6$, allora il grafo **non può essere planare**. Attenzione: la disuguaglianza $e \leq 3v-6$ è condizione necessaria ma non sufficiente per la planarità.
+
+Grafo planare non implica bipartito: $K_4$ è planare ma contiene triangoli (cicli dispari) quindi non è bipartito.
+
+#### 3. Grafi bipartiti e cicli dispari
+
+Un grafo $G$ è **bipartito** se i vertici si possono colorare con due colori in modo che ogni arco colleghi un vertice del primo colore a uno del secondo. Equivalentemente:
+
+$$\boxed{G \text{ è bipartito} \iff G \text{ non contiene cicli di lunghezza dispari}}$$
+
+Un **triangolo** è un ciclo di lunghezza 3 (dispari), quindi è **impossibile** in un grafo bipartito.
+
+Attenzione alla distinzione: la proprietà riguarda i **cicli**, non i cammini. Un cammino (percorso senza ciclo) in un grafo bipartito può tranquillamente avere lunghezza dispari: basta prendere un singolo arco, che ha lunghezza 1.
+
+#### 4. Hamiltonicità di $K_{r,s}$ (ripasso da Es. 7)
+
+$$K_{r,s} \text{ è hamiltoniano} \iff r = s \geq 2$$
+
+In particolare, $K_{3,3}$ ha $r = s = 3 \geq 2$, quindi è hamiltoniano.
+
+#### 5. Teorema di Dirac
+
+**Teorema (Dirac).** Se $G$ è un grafo semplice con $|V| = n \geq 3$ e ogni vertice ha grado almeno $\dfrac{n}{2}$:
+
+$$d(v) \geq \frac{n}{2} \quad \forall\, v \in V \implies G \text{ è hamiltoniano}$$
+
+Questa è una condizione **sufficiente** (non necessaria): un grafo può essere hamiltoniano anche senza soddisfarla. Ma se la soddisfa, la risposta è certamente sì.
+
+### Soluzione
+
+1. **Un grafo connesso con $n$ vertici e $n-1$ archi è un albero.** Caratterizzazione degli alberi: connesso + $|E|=|V|-1$ equivale ad essere un albero. **VERO**
+
+2. **Ogni grafo planare è bipartito.** Controesempio: $K_4$ è planare (verifica: $e=6 = 3\cdot4-6$) ma contiene triangoli → non è bipartito. **FALSO**
+
+3. **$|E| > 3|V|-6 \Rightarrow$ non planare.** È la contrappostiva della disuguaglianza necessaria per la planarità. **VERO**
+
+4. **Un grafo bipartito non può contenere triangoli.** Il triangolo è un ciclo di lunghezza 3 (dispari), e i grafi bipartiti non contengono cicli di lunghezza dispari. **VERO**
+
+5. **$K_{3,3}$ è hamiltoniano.** $r = s = 3 \geq 2$, soddisfa la condizione. **VERO**
+
+6. **Ogni cammino in un grafo bipartito ha lunghezza pari.** Falso: un singolo arco è un cammino di lunghezza 1 (dispari) e appartiene a qualsiasi grafo bipartito. La proprietà "lunghezza pari" vale per i *cicli*, non per i cammini aperti. **FALSO**
+
+7. **$d(v) \geq |V|/2\ \forall v \Rightarrow G$ hamiltoniano.** È esattamente l'ipotesi del Teorema di Dirac (con $|V| \geq 3$). **VERO**
+
+---
+
+## Esercizio 9 — Congruenza
+
+Si risolva la seguente congruenza:
+
+$$15x \equiv 25 \pmod{35}$$
+
+### Teoria
+
+> Riferimento: `Algebra/Riassunti/04. Congruenze.md` — **Congruenze con Incognite**, **Teorema 1**, **Teorema 2**, **Semplificazione di una congruenza**
+
+La teoria è la stessa dell'Esercizio 1. Si riassume il metodo completo:
+
+#### Metodo risolutivo per $ax \equiv b \pmod{n}$
+
+**Passo 1 — Calcolare $d = \text{MCD}(a, n)$** tramite l'algoritmo di Euclide.
+
+**Passo 2 — Verificare l'esistenza:** la congruenza ha soluzioni $\iff d \mid b$. Se $d \nmid b$, non esistono soluzioni.
+
+**Passo 3 — Semplificare:** dividere $a$, $b$ e $n$ per $d$:
+$$\frac{a}{d} \cdot x \equiv \frac{b}{d} \pmod{\frac{n}{d}}$$
+Il nuovo coefficiente $\tfrac{a}{d}$ e il nuovo modulo $\tfrac{n}{d}$ sono coprimi, quindi $\tfrac{a}{d}$ è **invertibile** modulo $\tfrac{n}{d}$.
+
+**Passo 4 — Trovare l'inverso di $\tfrac{a}{d}$ modulo $\tfrac{n}{d}$:** cercare $\alpha$ tale che $\tfrac{a}{d} \cdot \alpha \equiv 1 \pmod{\tfrac{n}{d}}$. La soluzione particolare è $x_0 \equiv \alpha \cdot \tfrac{b}{d} \pmod{\tfrac{n}{d}}$.
+
+**Passo 5 — Elencare le $d$ soluzioni modulo $n$:** le soluzioni sono le $d$ classi
+$$x_0,\quad x_0 + \frac{n}{d},\quad x_0 + 2\cdot\frac{n}{d},\quad \ldots,\quad x_0 + (d-1)\cdot\frac{n}{d} \pmod{n}$$
+
+### Soluzione
+
+$d = \gcd(15, 35) = 5$. Poiché $5 \mid 25$, ha soluzioni. Si semplifica:
+$$3x \equiv 5 \pmod{7}$$
+
+Inverso di $3$ modulo $7$: $3 \cdot 5 = 15 \equiv 1 \pmod{7}$, quindi $3^{-1} \equiv 5$.
+
+$$x_0 \equiv 5 \cdot 5 = 25 \equiv 4 \pmod{7}$$
+
+$d = 5$ soluzioni modulo $35$:
+
+$$\boxed{x \equiv 4,\ 11,\ 18,\ 25,\ 32 \pmod{35}}$$
+
+Verifica: $15 \cdot 4 = 60 = 35 + 25 \equiv 25 \pmod{35}$ ✓
+
+---
+
+## Esercizio 10 — Sistema lineare con parametro
+
+Si risolva il sistema lineare $A(\alpha)\mathbf{x} = \mathbf{b}(\alpha)$ dipendente dal parametro $\alpha \in \mathbb{R}$, dove:
+
+$$A(\alpha) = \begin{pmatrix} 1 & 2 & 1 \\ 1 & 2 & -1 \\ 0 & \alpha & 1 \end{pmatrix} \qquad \mathbf{b}(\alpha) = \begin{pmatrix} 3 \\ 1 \\ \alpha+1 \end{pmatrix}$$
+
+### Teoria
+
+> Riferimento: `Algebra/Riassunti/07. Matrici.md` — **§3.2 Matrici e Sistemi Lineari**, **§3.3 Algoritmo di Eliminazione di Gauss**, **Matrici a gradini**, **Lettura delle soluzioni dalla forma ridotta**
+
+La teoria è la stessa dell'Esercizio 3. Si riassume il procedimento:
+
+#### Procedura completa per un sistema $A\mathbf{x} = \mathbf{b}$ con parametro
+
+1. **Scrivere la matrice aumentata** $(A \mid \mathbf{b})$.
+
+2. **Applicare le operazioni elementari sulle righe** per portarla in forma a gradini $(C \mid \mathbf{d})$:
+   - $E_{ij}$: scambio di due righe.
+   - $E_i(\alpha)$: moltiplicazione di una riga per uno scalare $\neq 0$.
+   - $E_{ij}(\alpha)$: somma alla riga $i$ del multiplo $\alpha$ della riga $j$.
+
+3. **Identificare i casi parametrici:** un'espressione che dipende dal parametro $\alpha$ compare in un possibile pivot. Bisogna distinguere il caso in cui quella espressione è zero da quello in cui non lo è, perché questo cambia il numero di pivot (e quindi il numero di soluzioni).
+
+4. **Leggere le soluzioni** per ogni caso:
+
+| Caso | Condizione | Soluzioni |
+|------|-----------|-----------|
+| **Impossibile** | Compare una riga $(0\ 0\ \cdots\ 0 \mid c)$ con $c \neq 0$ | **nessuna** |
+| **Unica** | Nessuna colonna libera in $C$, $\mathbf{d}$ libera | **una** |
+| **Infinite** | $K \geq 1$ colonne libere in $C$, $\mathbf{d}$ libera | **infinite** ($\infty^K$) |
+
+Nel caso infinito: le incognite delle colonne libere diventano parametri $t_1, \ldots, t_K \in \mathbb{R}$; le incognite dominanti si ricavano per sostituzione a ritroso dall'ultima riga alla prima.
+
+### Soluzione
+
+Matrice aumentata:
+
+$$\begin{pmatrix} 1 & 2 & 1 & | & 3 \\ 1 & 2 & -1 & | & 1 \\ 0 & \alpha & 1 & | & \alpha+1 \end{pmatrix}$$
+
+$R_2 \leftarrow R_2 - R_1$, poi scambio $R_2 \leftrightarrow R_3$:
+
+$$\begin{pmatrix} 1 & 2 & 1 & | & 3 \\ 0 & \alpha & 1 & | & \alpha+1 \\ 0 & 0 & -2 & | & -2 \end{pmatrix}$$
+
+Da $R_3$: $x_3 = 1$ (per ogni $\alpha$).
+
+**Caso $\alpha = 0$:** $R_2$ diventa $(0, 0, 1 \mid 1)$ — ridondante. La colonna $x_2$ è **libera**.
+
+Da $R_1$: $x_1 + 2x_2 + 1 = 3 \implies x_1 = 2 - 2x_2$.
+
+Posto $x_2 = t$:
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}2\\0\\1\end{pmatrix} + t\begin{pmatrix}-2\\1\\0\end{pmatrix}, \quad t \in \mathbb{R}} \qquad (\infty^1 \text{ soluzioni})$$
+
+**Caso $\alpha \neq 0$:** da $R_2$: $\alpha x_2 + 1 = \alpha + 1 \implies x_2 = 1$.
+
+Da $R_1$: $x_1 + 2 + 1 = 3 \implies x_1 = 0$.
+
+$$\boxed{\mathbf{x} = \begin{pmatrix}0\\1\\1\end{pmatrix}} \qquad (\text{unica soluzione})$$

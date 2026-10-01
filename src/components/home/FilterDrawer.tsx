@@ -8,6 +8,8 @@ interface FilterDrawerProps {
   selectedSemester: number | null
   onSelectYear: (year: number | null) => void
   onSelectSemester: (year: number, semester: number | null) => void
+  showAbandoned: boolean
+  onToggleAbandoned: (value: boolean) => void
   mobileOpen: boolean
   onMobileClose: () => void
 }
@@ -17,8 +19,6 @@ const SEMESTER_LABELS: Record<number, string> = {
   2: 'II Semestre',
   3: 'III Semestre',
 }
-
-// ─── Year + semester accordion ────────────────────────────────────────────────
 
 function YearSection({
   year, isYearActive, selectedSemester, onSelectYear, onSelectSemester,
@@ -105,9 +105,55 @@ function YearSection({
   )
 }
 
-// ─── Collapsed strip ──────────────────────────────────────────────────────────
+function AbandonedToggle({
+  showAbandoned,
+  onToggle,
+}: {
+  showAbandoned: boolean
+  onToggle: (value: boolean) => void
+}) {
+  return (
+    <div className="border-t border-border/40 px-4 py-3">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={showAbandoned}
+        onClick={() => onToggle(!showAbandoned)}
+        className={`select-none flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-[12px] transition-colors focus-visible:outline-none ${
+          showAbandoned
+            ? 'bg-amber-500/10 text-amber-800 dark:text-amber-400'
+            : 'text-muted-foreground/80 hover:bg-secondary/50 hover:text-foreground'
+        }`}
+      >
+        <span className="leading-snug">
+          <span className="block font-medium">Corsi abbandonati</span>
+          <span className="block text-[10px] opacity-70 mt-0.5">
+            {showAbandoned ? 'Visibili nella lista' : 'Nascosti di default'}
+          </span>
+        </span>
+        <span
+          className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+            showAbandoned ? 'bg-amber-500/80' : 'bg-border'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+              showAbandoned ? 'translate-x-4' : 'translate-x-0.5'
+            }`}
+          />
+        </span>
+      </button>
+    </div>
+  )
+}
 
-function CollapsedStrip({ onExpand, hasActiveFilter }: { onExpand: () => void; hasActiveFilter: boolean }) {
+function CollapsedStrip({
+  onExpand,
+  hasActiveFilter,
+}: {
+  onExpand: () => void
+  hasActiveFilter: boolean
+}) {
   return (
     <div className="flex flex-col items-center gap-4 py-5 w-10">
       <button
@@ -125,20 +171,19 @@ function CollapsedStrip({ onExpand, hasActiveFilter }: { onExpand: () => void; h
   )
 }
 
-// ─── Drawer panel ─────────────────────────────────────────────────────────────
-
 function DrawerPanel({
-  years, selectedYear, selectedSemester, onSelectYear, onSelectSemester, onCollapse,
+  years, selectedYear, selectedSemester, onSelectYear, onSelectSemester,
+  showAbandoned, onToggleAbandoned, onCollapse,
 }: Omit<FilterDrawerProps, 'mobileOpen' | 'onMobileClose'> & { onCollapse: () => void }) {
   return (
-    <div className="w-52 flex flex-col">
+    <div className="w-52 flex flex-col h-full">
       <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
         <div className="flex items-center gap-2">
           <span className="select-none text-[10px] font-semibold uppercase tracking-[0.13em] text-muted-foreground/45">
             Filtri
           </span>
           <AnimatePresence>
-            {selectedYear !== null && (
+            {(selectedYear !== null || showAbandoned) && (
               <motion.span
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -184,18 +229,18 @@ function DrawerPanel({
           />
         ))}
       </div>
+
+      <AbandonedToggle showAbandoned={showAbandoned} onToggle={onToggleAbandoned} />
     </div>
   )
 }
 
-// ─── Public component ─────────────────────────────────────────────────────────
-
 export function FilterDrawer(props: FilterDrawerProps & { collapsed: boolean; onToggleCollapse: () => void }) {
   const { mobileOpen, onMobileClose, collapsed, onToggleCollapse, ...rest } = props
+  const hasActiveFilter = rest.selectedYear !== null || rest.showAbandoned
 
   return (
     <>
-      {/* ── Desktop ── */}
       <aside className="hidden lg:flex flex-col shrink-0 border-r border-border/50 self-stretch">
         <div className="sticky top-[3.6rem] max-h-[calc(100vh-3.6rem)] overflow-hidden">
           <AnimatePresence initial={false} mode="wait">
@@ -208,7 +253,7 @@ export function FilterDrawer(props: FilterDrawerProps & { collapsed: boolean; on
                 transition={{ duration: 0.22, ease: 'easeInOut' }}
                 className="overflow-hidden"
               >
-                <CollapsedStrip onExpand={onToggleCollapse} hasActiveFilter={rest.selectedYear !== null} />
+                <CollapsedStrip onExpand={onToggleCollapse} hasActiveFilter={hasActiveFilter} />
               </motion.div>
             ) : (
               <motion.div
@@ -226,7 +271,6 @@ export function FilterDrawer(props: FilterDrawerProps & { collapsed: boolean; on
         </div>
       </aside>
 
-      {/* ── Mobile overlay ── */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -252,7 +296,7 @@ export function FilterDrawer(props: FilterDrawerProps & { collapsed: boolean; on
                   <span className="select-none text-[10px] font-semibold uppercase tracking-[0.13em] text-muted-foreground/45">
                     Filtri
                   </span>
-                  {rest.selectedYear !== null && (
+                  {hasActiveFilter && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/65" />
                   )}
                 </div>
@@ -265,7 +309,7 @@ export function FilterDrawer(props: FilterDrawerProps & { collapsed: boolean; on
               </div>
               <div className="flex-1 overflow-y-auto">
                 <button
-                  onClick={() => { rest.onSelectYear(null); onMobileClose() }}
+                  onClick={() => { rest.onSelectYear(null) }}
                   className={`select-none relative flex w-full items-center px-5 py-2.5 text-sm transition-colors duration-150 border-b border-border/40 focus-visible:outline-none ${
                     rest.selectedYear === null
                       ? 'text-primary font-medium bg-primary/[0.05]'
@@ -288,6 +332,10 @@ export function FilterDrawer(props: FilterDrawerProps & { collapsed: boolean; on
                   />
                 ))}
               </div>
+              <AbandonedToggle
+                showAbandoned={rest.showAbandoned}
+                onToggle={rest.onToggleAbandoned}
+              />
             </motion.div>
           </>
         )}

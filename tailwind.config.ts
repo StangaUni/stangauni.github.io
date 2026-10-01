@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss'
 import typography from '@tailwindcss/typography'
 
 export default {
-  content: ['./index.html', './src/**/*.{ts,tsx,mdx}'],
+  content: ['./index.html', './src/**/*.{ts,tsx,mdx}', './content/**/*.{mdx,md}'],
   darkMode: 'class',
   theme: {
     extend: {
@@ -54,8 +54,8 @@ export default {
         },
       },
       animation: {
-        'fade-in':       'fade-in 0.4s ease-out forwards',
-        'pulse-soft':    'pulse-soft 1.5s ease-in-out infinite',
+        'fade-in':    'fade-in 0.4s ease-out forwards',
+        'pulse-soft': 'pulse-soft 1.5s ease-in-out infinite',
       },
     },
   },

@@ -3,21 +3,21 @@
 ## Posizione del file
 
 ```
-src/content/materie/<slug-materia>/<slug-nota>.mdx
+content/materie/<slug-materia>/<slug-nota>.mdx
 ```
 
-Lo slug-nota diventa il segmento URL: `/materia/<slug-materia>/<slug-nota>`.
+URL risultante: `/materia/<slug-materia>/<slug-nota>`.
 
-**Convenzione di naming:** inizia con numero a due cifre per controllare l'ordinamento:
+**Convenzione di naming:** prefisso numerico a due cifre per l’ordinamento:
+
 ```
 01-algoritmi.mdx
 02-pseudocodice.mdx
 ...
-extra-primo-compitino.mdx   ← file "extra" senza numero
+extra-primo-compitino.mdx   ← senza numero se “extra”
 ```
 
-Le note sono ordinate alfabeticamente per slug. Il prefisso numerico garantisce
-che appaiano nell'ordine corretto nel TOC laterale e nella navigazione precedente/successiva.
+Le note sono ordinate alfabeticamente per slug.
 
 ## Frontmatter
 
@@ -37,50 +37,31 @@ contributors:
 ---
 ```
 
-### Campi del frontmatter
+### Campi
 
 | Campo | Tipo | Obbligatorio | Descrizione |
 |---|---|---|---|
 | `title` | `string` | sì | Titolo della nota |
 | `type` | `NoteType` | sì | Categoria (vedi sotto) |
-| `tags` | `string[]` | no | Tag tematici; alcuni hanno significato speciale per le esercitazioni (vedi sotto) |
-| `date` | `string` | no | Data di creazione/aggiornamento (formato `YYYY-MM-DD`) |
-| `excerpt` | `string` | no | Testo anteprima nella lista |
-| `difficulty` | `1 \| 2 \| 3` | no | Difficoltà (mostrata come pallini nelle esercitazioni) |
+| `tags` | `string[]` | no | Tag tematici; alcuni hanno significato speciale per le esercitazioni |
+| `date` | `string` | no | `YYYY-MM-DD` |
+| `excerpt` | `string` | no | Anteprima nella lista |
+| `difficulty` | `1 \| 2 \| 3` | no | Difficoltà (pallini nelle esercitazioni) |
 | `hasSolution` | `boolean` | no | Se l'esercizio ha soluzione completa |
-| `week` | `number` | no | Settimana del corso (raggruppa gli esercizi per settimana) |
-| `section` | `string` | no | Sezione o modulo del corso di appartenenza |
-| `contributors` | `Contributor[]` | no | Autori/contributori della nota (vedi sotto) |
+| `week` | `number` | no | Settimana del corso |
+| `section` | `string` | no | Sezione o modulo |
+| `contributors` | `Contributor[]` | no | Autori della nota |
 
 ### Tipi di nota (`type`)
 
 | Valore | Label nel sito | Uso |
 |---|---|---|
-| `riassunto` | Teoria | Riassunti teorici del corso |
+| `riassunto` | Teoria | Riassunti teorici |
 | `esercitazione` | Esercizi | Esercizi svolti |
 | `appunti` | Strategie Esame | Consigli e strategie d'esame |
-| `extra` | Materiale Extra | Tutto il resto (compitini, dispense, ecc.) |
-
-### `contributors`
-
-Lista di autori/contributori della nota. Ogni voce ha:
-
-| Campo | Tipo | Descrizione |
-|---|---|---|
-| `name` | `string` | Nome visualizzato |
-| `github` | `string` (opzionale) | Username GitHub |
-
-```yaml
-contributors:
-  - name: "Enrico Stangherlin"
-    github: "StangaUni"
-  - name: "Altro Autore"
-```
+| `extra` | Materiale Extra | Compitini, dispense, altro |
 
 ### Tag speciali per le esercitazioni
-
-Nelle note di tipo `esercitazione`, il primo tag che corrisponde a una di queste chiavi
-determina il badge colorato mostrato nella lista:
 
 | Tag | Badge |
 |---|---|
@@ -90,22 +71,19 @@ determina il badge colorato mostrato nella lista:
 
 ## Struttura del contenuto
 
-Il contenuto MDX supporta tutto il Markdown esteso da GFM più:
-
-- **Heading H1 (`#`)** → **soppresso**: non viene renderizzato. Il titolo della nota viene mostrato dall'header card (frontmatter `title`). Non usare `#` nel corpo.
-- **Heading H2 (`##`)** → sezioni principali, appaiono nel TOC laterale come voci collassabili
-- **Heading H3 (`###`)** → sottosezioni, appaiono come figli nel TOC
-- **Formule** con `$formula$` (inline) e `$$formula$$` (blocco) — renderizzate da KaTeX
+- **Heading H1 (`#`)** → soppresso (il titolo viene dall’header card)
+- **H2 / H3** → sezioni nel Table of Contents
+- **Formule** `$...$` / `$$...$$` (KaTeX)
 - **Tabelle** GFM
-- **Componenti MDX** importati automaticamente (vedi [Componenti MDX](componenti-mdx.md))
+- **Componenti MDX** — vedi [componenti-mdx.md](componenti-mdx.md)
 
-### Esempio di nota completa
+### Esempio
 
 ```mdx
 ---
 title: "Puntatori"
 type: "riassunto"
-excerpt: "Concetto di puntatore, operatori & e *, aritmetica dei puntatori."
+excerpt: "Concetto di puntatore, operatori & e *."
 contributors:
   - name: "Enrico Stangherlin"
     github: "stangherlin-enrico"
@@ -117,7 +95,7 @@ Un puntatore è una variabile che contiene un **indirizzo di memoria**.
 
 ```c
 int x = 42;
-int *p = &x;   // p punta a x
+int *p = &x;
 ```
 
 ## Operatori
@@ -127,22 +105,11 @@ int *p = &x;   // p punta a x
 | `&` | Indirizzo di |
 | `*` | Dereferenziazione |
 
-### Aritmetica dei puntatori
+### Aritmetica
 
 <Collapsible title="Dettaglio: incremento di puntatore">
 
-`p + 1` sposta il puntatore di `sizeof(*p)` byte, non di 1 byte.
+`p + 1` sposta il puntatore di `sizeof(*p)` byte.
 
 </Collapsible>
-
-## Formule
-
-La dimensione di un array: $n \times \text{sizeof}(T)$
 ```
-
-## Table of Contents laterale
-
-Il TOC viene costruito automaticamente dagli heading H2 e H3 presenti nel documento.
-È sempre abilitato il collapse delle sezioni H3 sotto il rispettivo H2.
-
-Il TOC non è mostrato se la pagina non ha heading.

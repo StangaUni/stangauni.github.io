@@ -3,11 +3,10 @@ import {
   BookOpen, ExternalLink, FileText, FlaskConical,
   Github, GraduationCap, Heart, Info, Target, Users,
 } from 'lucide-react'
-import type { Contributor } from '../types/note'
+import type { Contributor } from '@/types/note'
 import { SEO } from '../components/ui/SEO'
+import { getAllSubjects, getAllNotes } from '@/lib/content'
 import { Badge } from '../components/ui/Badge'
-import { useSubjects } from '../hooks/useSubjects'
-import { useNotes } from '../hooks/useNotes'
 
 // ─── Feature card ─────────────────────────────────────────────────────────────
 
@@ -46,8 +45,10 @@ function TypeRow({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function InfoPage() {
-  const { subjects, loading: loadingSubjects } = useSubjects()
-  const { notes, loading: loadingNotes } = useNotes()
+  const subjects = getAllSubjects()
+  const notes = getAllNotes()
+  const loadingSubjects = false
+  const loadingNotes = false
 
   const visibleSubjects = subjects.filter((s) => !s.hidden)
   const subjectsWithGithub = visibleSubjects.filter((s) => s.github)

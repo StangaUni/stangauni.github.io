@@ -19,6 +19,7 @@ const STATUS_CONFIG: Record<SubjectStatus, { label: string; className: string }>
   'in-corso':  { label: 'In corso',    className: 'bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400'   },
   revisionato: { label: 'Revisionato', className: 'bg-sky-100    text-sky-700    dark:bg-sky-900/30    dark:text-sky-400'    },
   bozza:       { label: 'Bozza',       className: 'bg-gray-100   text-gray-500   dark:bg-gray-800      dark:text-gray-400'   },
+  abbandonato: { label: 'Abbandonato', className: 'bg-amber-100  text-amber-800  dark:bg-amber-900/30  dark:text-amber-400' },
 }
 
 function TypeIndicator({

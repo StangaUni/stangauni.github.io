@@ -6,9 +6,12 @@ import { SubjectCard } from '../components/home/SubjectCard'
 import { SkeletonCard } from '../components/home/SkeletonCard'
 import { FilterDrawer } from '../components/home/FilterDrawer'
 import { SEO } from '../components/ui/SEO'
-import { useSubjects } from '../hooks/useSubjects'
-import { useNotes } from '../hooks/useNotes'
-import type { Subject } from '../types/subject'
+import {
+  getAllSubjects,
+  getAllNotes,
+  getNoteCountsBySubject,
+} from '@/lib/content'
+import type { Subject } from '@/types/subject'
 
 const SEMESTER_LABELS: Record<number, string> = {
   1: 'I Semestre',
@@ -17,8 +20,6 @@ const SEMESTER_LABELS: Record<number, string> = {
 }
 
 const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform)
-
-// ─── Section header ───────────────────────────────────────────────────────────
 
 function SemesterSection({
   year, semester, showYear, subjects, noteCountsBySubject, index,
@@ -60,11 +61,10 @@ function SemesterSection({
   )
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export function Home() {
-  const { subjects, loading } = useSubjects()
-  const { notes } = useNotes()
+  const subjects = getAllSubjects()
+  const notes = getAllNotes()
+  const noteCountsBySubject = useMemo(() => getNoteCountsBySubject(), [])
   const [searchParams, setSearchParams] = useSearchParams()
   const [drawerCollapsed, setDrawerCollapsed] = useState(true)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
@@ -73,8 +73,8 @@ export function Home() {
 
   const urlYear     = searchParams.get('year')     ? Number(searchParams.get('year'))     : null
   const urlSemester = searchParams.get('semester') ? Number(searchParams.get('semester')) : null
+  const showAbandoned = searchParams.get('abbandonati') === '1'
 
-  // ⌘K / Ctrl+K focuses search
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -89,23 +89,30 @@ export function Home() {
 
   const years = useMemo(
     () => Array.from(new Set(subjects.map((s) => s.year))).sort(),
-    [subjects]
+    [subjects],
   )
+
+  const visibleCount = useMemo(() => {
+    if (showAbandoned) return subjects.length
+    return subjects.filter((s) => s.status !== 'abbandonato').length
+  }, [subjects, showAbandoned])
 
   const filtered = useMemo(() => {
     let base = subjects
+    if (!showAbandoned) base = base.filter((s) => s.status !== 'abbandonato')
     if (urlYear     !== null) base = base.filter((s) => s.year     === urlYear)
     if (urlSemester !== null) base = base.filter((s) => s.semester === urlSemester)
     if (query.trim()) {
       const q = query.trim().toLowerCase()
       base = base.filter(
-        (s) => s.title.toLowerCase().includes(q) ||
-               s.code.toLowerCase().includes(q) ||
-               s.description?.toLowerCase().includes(q)
+        (s) =>
+          s.title.toLowerCase().includes(q) ||
+          s.code.toLowerCase().includes(q) ||
+          s.description?.toLowerCase().includes(q),
       )
     }
     return base
-  }, [subjects, urlYear, urlSemester, query])
+  }, [subjects, urlYear, urlSemester, query, showAbandoned])
 
   const bySemester = useMemo(() => {
     const map = new Map<string, Subject[]>()
@@ -125,20 +132,6 @@ export function Home() {
         return { year, semester, subs }
       })
   }, [filtered])
-
-  const noteCountsBySubject = useMemo(() => {
-    const subjectMap = new Map(subjects.map((s) => [s.slug, s]))
-    const map: Record<string, { riassunto: number; esercitazione: number; altro: number }> = {}
-    notes.forEach((n) => {
-      const subject = subjectMap.get(n.subject)
-      if (subject?.hiddenSections?.includes(n.type)) return
-      if (!map[n.subject]) map[n.subject] = { riassunto: 0, esercitazione: 0, altro: 0 }
-      if (n.type === 'riassunto')          map[n.subject].riassunto++
-      else if (n.type === 'esercitazione') map[n.subject].esercitazione++
-      else                                 map[n.subject].altro++
-    })
-    return map
-  }, [notes, subjects])
 
   const semesterOffsets = useMemo(() => {
     const offsets: number[] = []
@@ -162,21 +155,30 @@ export function Home() {
     setSearchParams(params, { replace: true })
   }
 
+  function setShowAbandoned(value: boolean) {
+    const params = new URLSearchParams(searchParams)
+    if (value) params.set('abbandonati', '1')
+    else params.delete('abbandonati')
+    setSearchParams(params, { replace: true })
+  }
+
+  // silence unused - notes available if needed later
+  void notes
+
   return (
     <>
       <SEO />
 
-      {/* Page layout: sidebar on left, content block on right */}
       <div className="flex flex-1 gap-0 -mx-6 sm:-mx-8">
-
-        {/* ── FilterDrawer: standalone, outside the content block ── */}
-        {!loading && years.length > 0 && (
+        {years.length > 0 && (
           <FilterDrawer
             years={years}
             selectedYear={urlYear}
             selectedSemester={urlSemester}
             onSelectYear={setYearFilter}
             onSelectSemester={setSemesterFilter}
+            showAbandoned={showAbandoned}
+            onToggleAbandoned={setShowAbandoned}
             collapsed={drawerCollapsed}
             onToggleCollapse={() => setDrawerCollapsed((c) => !c)}
             mobileOpen={mobileDrawerOpen}
@@ -184,10 +186,7 @@ export function Home() {
           />
         )}
 
-        {/* ── Content block: search + cards ── */}
         <div className="flex-1 min-w-0 flex flex-col">
-
-          {/* Search bar */}
           <div className="px-6 sm:px-8 py-6 border-b border-border/60">
             <div className="relative group">
               <Search
@@ -199,7 +198,7 @@ export function Home() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={loading ? '' : `Cerca tra ${subjects.length} materie…`}
+                placeholder={`Cerca tra ${visibleCount} materie…`}
                 className="w-full rounded-2xl border border-border bg-background pl-11 pr-28 py-3.5 text-sm shadow-sm placeholder:text-muted-foreground/45 focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:shadow-md transition-all duration-200"
               />
               {query ? (
@@ -223,7 +222,6 @@ export function Home() {
             </div>
           </div>
 
-          {/* Mobile filter button */}
           <div className="flex items-center justify-end pt-3 pb-1 px-6 sm:px-8 lg:hidden">
             <button
               onClick={() => setMobileDrawerOpen(true)}
@@ -231,25 +229,21 @@ export function Home() {
             >
               <SlidersHorizontal size={13} />
               Filtra
-              {urlYear !== null && <span className="rounded-full bg-primary w-1.5 h-1.5" />}
+              {(urlYear !== null || showAbandoned) && <span className="rounded-full bg-primary w-1.5 h-1.5" />}
             </button>
           </div>
 
-          {/* Cards */}
           <div className="px-6 sm:px-8 pt-4 pb-6">
-            {loading ? (
+            {subjects.length === 0 ? (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="py-16 text-center text-muted-foreground">
-                <p className="font-medium text-foreground">Nessuna materia trovata</p>
-                <p className="mt-1 text-sm">
-                  {query ? 'Prova con un termine diverso.' : 'Modifica i filtri attivi.'}
-                </p>
-              </div>
+              <p className="text-sm text-muted-foreground py-12 text-center">
+                Nessuna materia trovata.
+              </p>
             ) : (
-              bySemester.map(({ year, semester, subs }, idx) => (
+              bySemester.map(({ year, semester, subs }, i) => (
                 <SemesterSection
                   key={`${year}-${semester}`}
                   year={year}
@@ -257,7 +251,7 @@ export function Home() {
                   showYear={urlYear === null}
                   subjects={subs}
                   noteCountsBySubject={noteCountsBySubject}
-                  index={semesterOffsets[idx]}
+                  index={semesterOffsets[i]}
                 />
               ))
             )}

@@ -3,10 +3,10 @@
 ## 1. Creare la cartella
 
 ```
-src/content/materie/<slug>/
+content/materie/<slug>/
 ```
 
-Lo `<slug>` diventa il segmento URL: `/materia/<slug>`.
+Lo `<slug>` diventa il segmento URL: `/materia/<slug>`.  
 Usa kebab-case, tutto minuscolo (es. `analisi-matematica`).
 
 ## 2. Creare `_subject.mdx`
@@ -38,30 +38,27 @@ github: "https://github.com/StangaUni/<repo>"
 | `semester` | `number` | sì | Semestre (1 o 2) |
 | `professor` | `string` | no | Docente o lista docenti |
 | `cfu` | `number` | no | Crediti formativi |
-| `status` | `string` | no | `in-corso` \| `completo` \| `revisionato` \| `bozza` |
+| `status` | `string` | no | `in-corso` \| `completo` \| `revisionato` \| `bozza` \| `abbandonato` |
+
+> **`abbandonato`**: corsi non più proseguiti sul sito. Di default **non** compaiono in Home; si attivano dal filtro laterale «Corsi abbandonati» (`?abbandonati=1`).
 | `github` | `string` | no | URL del repository GitHub della materia |
 | `hidden` | `boolean` | no | Se `true`, la materia non compare da nessuna parte |
 | `hiddenSections` | `NoteType[]` | no | Tab nascosti nella pagina materia |
-| `styleTags` | `string[]` | no | Tag visivi aggiuntivi (riservato per uso futuro) |
+| `styleTags` | `string[]` | no | Tag visivi aggiuntivi |
 
 ### `hiddenSections`
-
-Permette di nascondere un tab dalla pagina materia anche se ci sono note di quel tipo:
 
 ```yaml
 hiddenSections: ["appunti", "extra"]
 ```
 
-I valori validi sono: `riassunto`, `esercitazione`, `appunti`, `extra`.
+Valori validi: `riassunto`, `esercitazione`, `appunti`, `extra`.
 
 ### `github`
 
-Se presente, compare un'icona GitHub accanto al titolo nella pagina materia
-e la materia viene elencata nella pagina `/info`.
+Se presente, compare un'icona GitHub nella pagina materia e la materia viene elencata in `/info`.
 
 ## 3. Creare `_changelog.mdx`
-
-Il file tiene traccia delle modifiche alla materia. Il corpo è ignorato; tutto è nel frontmatter.
 
 ```yaml
 ---
@@ -75,13 +72,7 @@ entries:
 ---
 ```
 
-Il corpo del file è ignorato; la materia di appartenenza viene derivata automaticamente dal percorso della cartella.
-
-### Campi
-
-| Campo | Tipo | Descrizione |
-|---|---|---|
-| `entries` | `ChangelogEntry[]` | Lista voci, dalla più recente alla meno recente |
+Il corpo del file è ignorato; la materia di appartenenza è derivata dal path della cartella.
 
 ### Tipo di voce (`type`)
 
@@ -99,4 +90,3 @@ Vedi [Aggiungere una nota](note.md).
 ## Ordinamento nella Home
 
 Le materie sono ordinate prima per `year` (crescente), poi per `semester` (crescente).
-A parità, l'ordine è quello di risoluzione del glob (alfabetico per slug).

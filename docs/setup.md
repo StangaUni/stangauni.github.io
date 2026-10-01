@@ -39,6 +39,7 @@ Il deploy è automatizzato via GitHub Actions (`.github/workflows/deploy.yml`).
 **Trigger:** ogni push su `main` (o manualmente via `workflow_dispatch`).
 
 **Pipeline:**
+
 1. Checkout del repository
 2. Setup Node.js 22 con cache npm
 3. `npm ci`
@@ -48,16 +49,28 @@ Il deploy è automatizzato via GitHub Actions (`.github/workflows/deploy.yml`).
 
 Non è necessario fare nulla manualmente: il push su `main` pubblica automaticamente.
 
-## Note sulla pipeline MDX
+## Pipeline MDX
 
 Vite processa i file `.mdx` tramite il plugin `@mdx-js/rollup` configurato in `vite.config.ts`.
-I plugin attivi nella pipeline sono, nell'ordine:
 
-1. `remark-frontmatter` — fa sì che il frontmatter YAML non venga emesso come contenuto
+Plugin attivi, nell’ordine:
+
+1. `remark-frontmatter` — il frontmatter YAML non viene emesso come contenuto
 2. `remark-mdx-frontmatter` — esporta il frontmatter come named export `frontmatter`
 3. `remark-gfm` — tabelle, task list, autolink, strikethrough
-4. `remark-math` — sintassi `$...$` e `$$...$$` per le formule
-5. `rehype-slug` — aggiunge `id` automatici agli heading (usati dal TableOfContents)
-6. `rehype-katex` — renderizza le formule math in HTML
+4. `remark-math` — sintassi `$...$` e `$$...$$`
+5. `rehype-slug` — `id` automatici sugli heading (usati dal TableOfContents)
+6. `rehype-katex` — render formule in HTML
 
-I file `.mdx` vengono caricati lazy con `import.meta.glob` e importati dinamicamente al momento della navigazione.
+I metadati delle materie/note sono risolti in modo **eager** a compile-time.
+Il corpo MDX di una nota è importato in modo **lazy** solo quando si apre quella pagina.
+Vedi [content-layer.md](content-layer.md).
+
+## Alias di percorso
+
+| Alias | Directory |
+|-------|-----------|
+| `@/` | `src/` |
+| `@content/` | `content/` |
+
+Definiti in `vite.config.ts` e `tsconfig.app.json`.

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { getSubject, getNotesBySubject, getChangelog } from '@/lib/content'
 import {
   Github, BookOpen, FlaskConical, Target, Paperclip,
   CheckCircle, Circle, ChevronLeft, ChevronRight, User, History, ChevronDown,
@@ -8,12 +9,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Breadcrumbs } from '../components/note/Breadcrumbs'
 import { Badge } from '../components/ui/Badge'
 import { SEO } from '../components/ui/SEO'
-import { useSubjects } from '../hooks/useSubjects'
-import { useNotes } from '../hooks/useNotes'
-import { useChangelog } from '../hooks/useChangelog'
 import { NotFound } from './NotFound'
-import type { Note, NoteType } from '../types/note'
-import type { ChangelogEntry, ChangelogEntryType } from '../types/changelog'
+import type { Note, NoteType } from '@/types/note'
+import type { ChangelogEntry, ChangelogEntryType } from '@/types/changelog'
 
 // ─── Tab config ──────────────────────────────────────────────────────────────
 
@@ -744,9 +742,11 @@ function TabBar({
 
 export function SubjectPage() {
   const { subjectSlug } = useParams<{ subjectSlug: string }>()
-  const { subjects, loading: loadingSubject } = useSubjects()
-  const { notes, loading: loadingNotes } = useNotes(subjectSlug)
-  const { changelog } = useChangelog(subjectSlug)
+  const subject = subjectSlug ? getSubject(subjectSlug) : undefined
+  const notes = subjectSlug ? getNotesBySubject(subjectSlug) : []
+  const changelog = subjectSlug ? getChangelog(subjectSlug) : null
+  const loadingSubject = false
+  const loadingNotes = false
   const [activeTab, setActiveTab] = useState<NoteType | null>(null)
   const [changelogOpen, setChangelogOpen] = useState(false)
   const [navCollapsed, setNavCollapsed] = useState(false)
@@ -767,7 +767,7 @@ export function SubjectPage() {
     )
   }
 
-  const subject = subjects.find((s) => s.slug === subjectSlug)
+  // subject already resolved above
   if (!subject) return <NotFound />
 
   const availableTabs = TABS.filter(

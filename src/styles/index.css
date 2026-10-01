@@ -134,8 +134,6 @@
     @apply bg-muted animate-pulse-soft rounded;
   }
 
-
-  /* Academic prose style for note pages */
   .prose-academic {
     @apply prose prose-slate max-w-none dark:prose-invert;
     font-family: 'Merriweather', Georgia, serif;
@@ -152,8 +150,6 @@
     scroll-margin-top: 5rem;
   }
 
-  /* h1 è soppresso (ritorna null) e lascia un comment node come primo figlio,
-     quindi Tailwind prose non azzera il margin-top del primo heading visibile */
   .prose-academic h2:first-of-type,
   .prose-academic h3:first-of-type {
     margin-top: 0;
@@ -180,7 +176,6 @@
   }
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
