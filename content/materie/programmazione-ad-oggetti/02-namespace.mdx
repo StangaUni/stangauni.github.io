@@ -1,0 +1,94 @@
+---
+title: "Namespace"
+type: "riassunto"
+excerpt: "Perché servono i namespace; operatore di scoping `::`; direttiva `using` (completa e selettiva); alias di namespace; esempi Hello World consigliati e da evitare."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Perché servono
+
+Quando si usano più librerie, è frequente che due di esse definiscano lo stesso identificatore (stessa funzione, stessa classe, stessa costante…).  
+Senza un meccanismo di separazione si verificherebbero collisioni di nomi.
+
+Un **namespace** è uno spazio dei nomi: un contenitore che raggruppa identificatori sotto un prefisso comune.  
+Namespace diversi possono contenere la stessa keyword senza interferire tra loro.
+
+---
+
+## Operatore di scoping `::`
+
+Per riferirsi a un identificatore appartenente a un namespace si usa l’operatore di risoluzione di scope:
+
+```cpp
+std::cout << "Hello" << std::endl;
+```
+
+`std` è il namespace della libreria standard; `cout` e `endl` sono identificatori definiti al suo interno.
+
+Questa forma è **preferibile**: rende esplicita la provenienza di ogni nome e non inquina lo spazio dei nomi globale.
+
+---
+
+## Direttiva `using`
+
+La direttiva
+
+```cpp
+using namespace std;
+```
+
+rende visibili *tutti* gli identificatori del namespace `std`.  
+È comoda in file piccoli, ma in generale è sconsigliata perché:
+
+- importa molto più di quanto serve;
+- aumenta il rischio di collisioni di nomi.
+
+Esiste una forma più selettiva:
+
+```cpp
+using std::cout;
+using std::endl;
+```
+
+che importa solo gli identificatori indicati.
+
+---
+
+## Alias di namespace
+
+Si può creare un nome più corto per un namespace lungo:
+
+```cpp
+namespace fs = std::filesystem;
+```
+
+Dopo questa dichiarazione si può scrivere `fs::path` al posto di `std::filesystem::path`.
+
+---
+
+## Esempi di “Hello World”
+
+**Forma consigliata (scoping esplicito):**
+
+```cpp
+#include <iostream>
+
+int main() {
+    std::cout << "Hello World" << std::endl;
+    return 0;
+}
+```
+
+**Forma con direttiva `using` (da usare con cautela):**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello World" << endl;
+    return 0;
+}
+```

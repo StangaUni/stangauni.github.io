@@ -1,0 +1,72 @@
+---
+title: "Introduzione alla OOP e agli ADT"
+type: "riassunto"
+excerpt: "Programmi, algoritmi e dati; programmazione procedurale vs OOP; pilastri dell’OOP (incapsulamento, ereditarietà, polimorfismo); Abstract Data Type e information hiding; novità di C++ rispetto al C."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Programmi, algoritmi e dati
+
+Ogni programma è composto da due elementi fondamentali:
+
+- gli **algoritmi** (le istruzioni che dicono *cosa* fare);
+- i **dati** su cui quegli algoritmi operano.
+
+A seconda di dove si pone l’accento si ottengono due stili di programmazione diversi.
+
+| Accento posto su… | Stile di programmazione | Esempio tipico |
+|-------------------|-------------------------|----------------|
+| Algoritmi         | Programmazione procedurale | Linguaggio C   |
+| Dati              | Programmazione orientata agli oggetti (OOP) | C++, Java, … |
+
+Nella programmazione procedurale si parte dalle operazioni e si organizzano i dati di conseguenza.  
+Nella OOP si parte dai dati: si definiscono tipi che raggruppano sia lo stato sia le operazioni ammesse su quello stato.
+
+---
+
+## Cos’è la programmazione orientata agli oggetti
+
+L’OOP è un paradigma centrato sui **dati** e sulle operazioni che su di essi ha senso eseguire.
+
+Obiettivi principali (qualità del software che l’OOP favorisce):
+
+- modularità
+- riusabilità
+- manutenibilità
+- robustezza
+
+Un linguaggio (o uno stile) è considerato orientato agli oggetti quando supporta almeno questi tre meccanismi:
+
+1. **Incapsulamento**
+2. **Ereditarietà**
+3. **Polimorfismo**
+
+(Questi concetti verranno approfonditi più avanti; per ora basta saperli riconoscere come i “pilastri” dell’OOP.)
+
+---
+
+## Abstract Data Type (ADT)
+
+Un **Abstract Data Type** è un tipo di dato definito *solo* attraverso:
+
+- le operazioni che si possono eseguire su di esso;
+- il comportamento atteso di quelle operazioni.
+
+La rappresentazione interna dei dati rimane nascosta. Chi usa l’ADT non deve (e non può) conoscere i dettagli implementativi.
+
+### Perché le `struct` non sono ADT
+
+Le `struct` del C (e anche quelle del C++ usate in stile C) espongono tutti i campi. Chiunque può leggere e modificare direttamente i membri. Manca quindi l’**information hiding**, requisito essenziale di un ADT.
+
+---
+
+## Cosa introduce C++ rispetto al C
+
+Oltre alle funzionalità già presenti in C, C++ aggiunge (tra le altre cose):
+
+- **template** di funzione e di classe → permettono di scrivere codice generico;
+- **gestione delle eccezioni** → meccanismo strutturato per segnalare e gestire errori a runtime.
+
+Questi strumenti saranno usati più avanti; per ora è sufficiente saperne dell’esistenza.

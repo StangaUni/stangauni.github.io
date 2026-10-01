@@ -1,0 +1,151 @@
+---
+title: "Classi e costruttori"
+type: "riassunto"
+excerpt: "std::string come primo esempio di classe; definizione di classi proprie; public/private e information hiding; metodi inline e non inline; puntatore this; costruttore di default e di copia; esempio classe Complesso."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## `string`: il primo esempio di classe
+
+Nella Standard Template Library, `std::string` è una classe.  
+Più precisamente è un’istanziazione di un template di classe:
+
+```cpp
+typedef basic_string<char> string;
+```
+
+Usarla è semplice:
+
+```cpp
+std::string st = "Ciao";
+std::cout << st.size() << std::endl;   // stampa 4
+```
+
+- `st` è un **oggetto** (istanza) della classe `string`;
+- `size()` è un **metodo** della classe.
+
+Si possono anche usare esplicitamente i costruttori:
+
+```cpp
+std::string s1("testo");   // costruttore da const char*
+std::string s2(s1);        // costruttore di copia
+```
+
+`string` è un ADT concreto: l’utente vede solo l’interfaccia pubblica (metodi come `size`, `operator[]`, `+`, …) e non sa come i caratteri sono memorizzati internamente.
+
+---
+
+## Definire una propria classe
+
+Sintassi di base:
+
+```cpp
+class Orario {
+public:
+    int Ore() const;
+    int Minuti() const;
+    int Secondi() const;
+
+private:
+    int sec;          // secondi dalla mezzanotte
+};
+```
+
+### public e private – Information Hiding
+
+- **public**: membri accessibili da qualsiasi parte del programma. Costituiscono l’*interfaccia* della classe.
+- **private**: membri accessibili solo dai metodi della classe stessa. Costituiscono l’*implementazione* nascosta.
+
+Questa distinzione realizza l’**information hiding**:
+dall’esterno si può interagire solo attraverso i metodi pubblici; i dettagli interni restano protetti.
+
+I metodi della classe, invece, possono accedere liberamente sia alla parte pubblica sia a quella privata.
+
+### Metodi inline e non inline
+
+Un metodo può essere definito in due modi:
+
+1. **Inline** – il corpo è scritto direttamente all’interno della dichiarazione della classe (di solito nel file `.h`).
+2. **Non inline** – nella classe compare solo il prototipo; il corpo è scritto in un file `.cpp` separato.
+
+Il compilatore può espandere i metodi inline nel punto di chiamata (evitando il costo di una chiamata a funzione).  
+I metodi non inline vengono compilati una sola volta e collegati in fase di linking.
+
+### Separazione header / implementazione
+
+Convenzione standard in C++:
+
+| File   | Contenuto                              |
+|--------|----------------------------------------|
+| `.h`   | Dichiarazione della classe (interfaccia) |
+| `.cpp` | Definizione dei metodi non inline      |
+
+Questa separazione permette di:
+- nascondere i dettagli implementativi a chi include solo l’header;
+- compilare separatamente le varie unità di traduzione.
+
+### Il puntatore `this`
+
+Ogni metodo non statico riceve implicitamente un parametro `this` di tipo `C*` (puntatore all’oggetto su cui il metodo è stato invocato).
+
+`this` è una keyword.  
+Nella maggior parte dei casi non è necessario scriverlo esplicitamente, ma può diventare utile quando:
+
+- si deve restituire un riferimento all’oggetto corrente;
+- un parametro del metodo ha lo stesso nome di un membro e serve disambiguare.
+
+È possibile (anche se raramente utile) dereferenziare `*this` all’interno del corpo di un metodo.
+
+---
+
+## Costruttori
+
+I **costruttori** sono metodi speciali chiamati automaticamente alla creazione di un oggetto.  
+Hanno lo stesso nome della classe e non specificano un tipo di ritorno.
+
+È possibile definire più costruttori (**overloading**): il compilatore sceglie quello corretto in base al numero e al tipo degli argomenti.
+
+### Costruttore di default
+
+Costruttore senza parametri (o con tutti i parametri che hanno un valore di default).  
+Se il programmatore non ne definisce nessuno, il compilatore ne genera uno automaticamente.
+
+### Costruttore di copia
+
+Costruttore che riceve un riferimento costante a un oggetto della stessa classe e ne crea una copia:
+
+```cpp
+Orario(const Orario& altro);
+```
+
+Se non viene definito, il compilatore ne fornisce uno che esegue una copia membro a membro.
+
+---
+
+## Esempio completo di riferimento
+
+Un’implementazione completa che mette insieme tutti i concetti di questo riassunto (ADT, information hiding, costruttori, separazione `.h`/`.cpp`) si trova nel repository del corso:
+
+```
+Utils/01_Classe_Complessi/
+```
+
+[Repository GitHub → Utils/01_Classe_Complessi](https://github.com/StangaUni/2627_programmazione_ad_oggetti/tree/main/Utils/01_Classe_Complessi)
+
+La classe `Complesso` rappresenta un numero complesso. Internamente memorizza la forma algebrica (`re`, `im`); dall’esterno espone anche modulo e argomento (forma polare). I campi restano privati.
+
+| File            | Ruolo                                    |
+|-----------------|------------------------------------------|
+| `Complesso.h`   | Dichiarazione della classe               |
+| `Complesso.cpp` | Definizione dei metodi                   |
+| `main.cpp`      | Programma di prova                       |
+| `README.md`     | Istruzioni di compilazione               |
+
+Compilazione:
+
+```bash
+g++ -std=c++17 -Wall -Wextra -o complesso Complesso.cpp main.cpp
+./complesso
+```
