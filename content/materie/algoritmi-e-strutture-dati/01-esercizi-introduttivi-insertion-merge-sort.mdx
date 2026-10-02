@@ -1,0 +1,244 @@
+---
+title: "Esercizi introduttivi (Insertion e Merge Sort)"
+type: "esercitazione"
+excerpt: "Insertion Sort ricorsivo, ricerca e conteggio di duplicati, problema Two-Sum: soluzioni dirette e con ordinamento."
+hasSolution: true
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Esercizio 1 — Insertion Sort ricorsivo
+
+Scrivere una versione ricorsiva di Insertion Sort.
+
+Idea: ordina ricorsivamente $A[1..n-1]$ e poi inserisci $A[n]$ nella posizione corretta all'interno del prefisso già ordinato.
+
+<Collapsible title="Soluzione">
+
+#### Algoritmo
+
+Chiamata iniziale: `InsertionSortRic(A, A.length)`.
+
+```
+InsertionSortRic(A, n)       // ordina A[1..n]
+  if n > 1
+    InsertionSortRic(A, n-1)
+    key = A[n]
+    i = n - 1
+    while (i > 0) and (A[i] > key)
+      A[i+1] = A[i]
+      i = i - 1
+    A[i+1] = key
+```
+
+Il blocco dopo la chiamata ricorsiva è esattamente il corpo del ciclo `for` di [Insertion Sort](02-insertion-sort) con $j = n$.
+
+#### Correttezza
+
+Induzione su $n$, con $P(n)$: «`InsertionSortRic(A, n)` ordina $A[1..n]$ senza alterarne gli elementi».
+
+- **Base** ($n \le 1$): $A[1..n]$ ha al più un elemento, quindi è già ordinato.
+- **Passo** ($n > 1$): per ipotesi induttiva $A[1..n-1]$ risulta ordinato dopo la chiamata ricorsiva. Il `while` inserisce `key` $= A[n]$ nella posizione corretta (invariante del ciclo interno di Insertion Sort), quindi $A[1..n]$ è ordinato.
+
+Basta l'induzione ordinaria: la chiamata ricorsiva è su $n-1$.
+
+#### Costo
+
+Sia $t_n$ il numero di iterazioni del `while`. Allora
+
+$$
+T(n) = T(n-1) + \Theta(t_n + 1), \qquad T(1) = \Theta(1).
+$$
+
+- **Caso migliore** (array ordinato, $t_n = 0$): $T(n) = T(n-1) + \Theta(1) = \Theta(n)$.
+- **Caso peggiore** (array strettamente decrescente, $t_n = n-1$): $T(n) = T(n-1) + \Theta(n) = \Theta(n^2)$.
+
+Stessa complessità temporale della versione iterativa. In più la ricorsione ha profondità $n$, quindi usa $\Theta(n)$ di spazio sullo stack, contro $\Theta(1)$ della versione iterativa.
+
+</Collapsible>
+
+---
+
+## Esercizio 2 — Duplicati in un array
+
+Dato un array $A[1..n]$, un **duplicato** è una coppia di indici $(i,j)$ con $i < j$ e $A[i] = A[j]$.
+
+Implementare (o progettare) le seguenti procedure.
+
+**`DupCheck(A)`** → `true` / `false`: restituisce `true` se e solo se esiste almeno un duplicato.
+
+**`DupCount(A)`**, in tre varianti:
+
+**(a)** numero di **coppie** duplicate
+$$
+\bigl|\{(i,j) \mid i < j,\ A[i]=A[j]\}\bigr|
+$$
+Esempio: $A = [1,2,1,3,2,2]$, coppie $(1,3),\ (2,5),\ (2,6),\ (5,6)$ → $4$.
+
+**(b)** numero di **valori** distinti che appaiono più di una volta
+$$
+\bigl|\{A[i] \mid \exists j\neq i,\ A[i]=A[j]\}\bigr|
+$$
+Nell'esempio: $\{1,2\}$ → $2$.
+
+**(c)** numero di **indici** che appartengono ad almeno una coppia di duplicati
+$$
+\bigl|\{i \mid \exists j\neq i,\ A[i]=A[j]\}\bigr|
+$$
+Nell'esempio: $\{1,2,3,5,6\}$ → $5$.
+
+<Collapsible title="Soluzione">
+
+Per ogni procedura ci sono due approcci: il confronto di tutte le coppie, $\Theta(n^2)$, e l'ordinamento preliminare con Merge Sort ([Merge Sort e divide et impera](03-merge-sort-divide-et-impera)), $\Theta(n \log n)$. L'idea chiave è che **dopo l'ordinamento i valori uguali sono contigui**, quindi bastano confronti tra elementi adiacenti.
+
+#### `DupCheck` — approccio diretto
+
+```
+DupCheck(A)
+  n = A.length
+  for i = 1 to n-1
+    for j = i+1 to n
+      if A[i] == A[j]
+        return true
+  return false
+```
+
+Costo: $\Theta(n^2)$ nel caso peggiore (nessun duplicato), $\Theta(1)$ nel migliore ($A[1] = A[2]$).
+
+#### `DupCheck` — con ordinamento
+
+```
+DupCheck(A)
+  n = A.length
+  B = copia di A
+  MergeSort(B, 1, n)
+  for i = 1 to n-1
+    if B[i] == B[i+1]
+      return true
+  return false
+```
+
+**Correttezza**: ordinando, tutti gli elementi uguali occupano posizioni consecutive. Esiste un duplicato se e solo se due elementi adiacenti di $B$ sono uguali.
+
+**Costo**: $\Theta(n \log n)$ per l'ordinamento più $\Theta(n)$ per la scansione, in totale $\Theta(n \log n)$. La copia serve a non modificare $A$; si può omettere se è lecito riordinare l'input.
+
+#### `DupCount` — schema comune con ordinamento
+
+Dopo l'ordinamento, $B$ si scompone in **blocchi** (*run*) massimali di valori uguali. Se un blocco ha lunghezza $k$, il suo contributo dipende dalla variante:
+
+| Variante | Cosa si conta | Contributo di un blocco di lunghezza $k$ |
+| -------- | ------------- | ---------------------------------------- |
+| (a) coppie | coppie di indici uguali | $\binom{k}{2} = k(k-1)/2$ |
+| (b) valori | valori con $\ge 2$ occorrenze | $1$ se $k \ge 2$, altrimenti $0$ |
+| (c) indici | indici in qualche duplicato | $k$ se $k \ge 2$, altrimenti $0$ |
+
+Schema (qui per la variante (a); per le altre cambia solo la riga con `contributo`):
+
+```
+DupCountCoppie(A)
+  n = A.length
+  B = copia di A
+  MergeSort(B, 1, n)
+  count = 0
+  k = 1                                // lunghezza del blocco corrente
+  for i = 2 to n
+    if B[i] == B[i-1]
+      k = k + 1
+    else
+      count = count + k*(k-1)/2        // (a)
+      // (b): if k >= 2 then count = count + 1
+      // (c): if k >= 2 then count = count + k
+      k = 1
+  count = count + k*(k-1)/2            // ultimo blocco, stessa riga scelta sopra
+  return count
+```
+
+**Verifica sull'esempio** $A = [1,2,1,3,2,2]$, ordinato $B = [1,1,2,2,2,3]$: blocchi di lunghezza $2, 3, 1$.
+
+- (a) $1 + 3 + 0 = 4$ ✓
+- (b) $1 + 1 + 0 = 2$ ✓
+- (c) $2 + 3 + 0 = 5$ ✓
+
+**Correttezza**: ogni coppia duplicata $(i,j)$ ha i due elementi nello stesso blocco, e un blocco di lunghezza $k$ contiene esattamente $\binom{k}{2}$ coppie. Un valore compare più volte se e solo se il suo blocco ha $k \ge 2$, e in tal caso tutti i suoi $k$ indici appartengono a un duplicato.
+
+**Costo**: $\Theta(n \log n)$ per tutte e tre le varianti.
+
+#### `DupCount` — approccio diretto (cenni)
+
+- **(a)**: doppio ciclo $i < j$ con un contatore incrementato quando $A[i] = A[j]$. Costo $\Theta(n^2)$ sempre.
+- **(c)**: per ogni $i$ si cerca se esiste $j \ne i$ con $A[i] = A[j]$, incrementando il contatore al primo trovato. Costo $\Theta(n^2)$.
+- **(b)**: per ogni $i$ si conta $A[i]$ solo se è la **prima occorrenza** del suo valore (nessun $j < i$ con $A[j] = A[i]$) e ne esiste una successiva ($j > i$). Senza la condizione sulla prima occorrenza lo stesso valore verrebbe contato più volte. Costo $\Theta(n^2)$.
+
+</Collapsible>
+
+---
+
+## Esercizio 3 — Somma a due (`Two-Sum`)
+
+Dato un array $A[1..n]$ e un valore `key`, verificare se esistono indici $i,j$ (anche $i=j$? a seconda della formulazione) tali che
+
+$$
+A[i] + A[j] = \mathrm{key}.
+$$
+
+Varianti possibili:
+
+- restituire solo `true` / `false`;
+- restituire una coppia di indici $(i,j)$ che soddisfa la condizione (se esiste).
+
+<Collapsible title="Soluzione">
+
+**Scelta di formulazione**: si richiede $i < j$ (indici distinti). Se fosse ammesso $i = j$, basterebbe aggiungere il controllo $2A[i] = \mathrm{key}$ (vedi la nota in fondo).
+
+#### Approccio diretto
+
+```
+TwoSum(A, key)
+  n = A.length
+  for i = 1 to n-1
+    for j = i+1 to n
+      if A[i] + A[j] == key
+        return (i, j)
+  return NIL
+```
+
+Per la variante booleana si restituisce `true` al posto di `(i, j)` e `false` al posto di `NIL`.
+
+Costo: $\Theta(n^2)$ nel caso peggiore.
+
+#### Approccio con ordinamento (due puntatori)
+
+Si ordina una copia $B$ di $A$ tenendo accanto a ogni valore il suo indice originale (dati satellite: `B[k].val`, `B[k].idx`), poi si scorre $B$ da entrambi gli estremi.
+
+```
+TwoSum(A, key)
+  n = A.length
+  B = [(A[k], k) per k = 1..n]       // coppie (valore, indice originale)
+  MergeSort(B, 1, n)                 // ordinamento per val
+  i = 1
+  j = n
+  while i < j
+    s = B[i].val + B[j].val
+    if s == key
+      return (B[i].idx, B[j].idx)
+    else if s < key
+      i = i + 1
+    else
+      j = j - 1
+  return NIL
+```
+
+**Invariante**: se esiste una soluzione (una coppia di elementi di $B$ con somma `key`), allora essa è contenuta in $B[i..j]$.
+
+- **Inizializzazione**: $B[1..n]$ contiene tutto.
+- **Mantenimento**:
+  - Se $s < \mathrm{key}$, per ogni $k$ con $i < k \le j$ vale $B[i].val + B[k].val \le B[i].val + B[j].val = s < \mathrm{key}$. Quindi $B[i]$ non fa parte di nessuna soluzione in $B[i..j]$ e si può scartare.
+  - Se $s > \mathrm{key}$, simmetricamente $B[j]$ non può far parte di nessuna soluzione e si scarta.
+- **Terminazione**: o si è trovata una coppia, oppure $i \ge j$ e la finestra non contiene coppie, quindi per l'invariante non esiste soluzione.
+
+**Costo**: $\Theta(n \log n)$ per l'ordinamento, $\Theta(n)$ per la scansione (a ogni iterazione $j - i$ diminuisce di 1), in totale $\Theta(n \log n)$.
+
+**Nota sul caso $i = j$ ammesso**: si cambia la condizione del ciclo in `while i <= j` (così il caso $i = j$ verifica $2B[i].val = \mathrm{key}$ ed è coperto dall'invariante estesa).
+
+</Collapsible>

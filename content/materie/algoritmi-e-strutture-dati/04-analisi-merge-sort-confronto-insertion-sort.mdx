@@ -1,0 +1,84 @@
+---
+title: "Analisi di Merge Sort e confronto con Insertion Sort"
+type: "riassunto"
+excerpt: "Costo di Merge, relazione di ricorrenza, risoluzione con albero di ricorsione, confronto asintotico e numeri concreti con Insertion Sort."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Costo di Merge
+
+Sia $n = r - p + 1$ la lunghezza del segmento da fondere.
+
+- Allocazione e copia nei buffer ausiliari $L$ e $R$: $\Theta(n)$.
+- Ciclo di fusione: $\Theta(n)$.
+
+Complessivamente:
+
+$$
+\mathrm{costo}(\mathrm{Merge}) = a n + b = \Theta(n).
+$$
+
+## Relazione di ricorrenza
+
+$$
+T^{MS}(n) =
+\begin{cases}
+\Theta(1) & \text{se } n \le 1 \\
+T^{MS}\bigl(\lfloor n/2 \rfloor\bigr) + T^{MS}\bigl(\lceil n/2 \rceil\bigr) + \Theta(n) & \text{se } n > 1.
+\end{cases}
+$$
+
+## Risoluzione con l'albero di ricorsione
+
+Per semplicità si assume $n$ potenza di 2. L'albero ha altezza $h = \log_2 n$, quindi $\log_2 n + 1$ livelli.
+
+- Ciascuno dei $\log_2 n$ livelli interni ha lavoro non ricorsivo totale $\Theta(n)$.
+- Le $n$ foglie costano $\Theta(1)$ ciascuna, cioè $\Theta(n)$ in totale.
+
+Sommando si ottiene
+
+$$
+T^{MS}(n) = \Theta(n \log n).
+$$
+
+Forma più precisa, con costanti esplicite:
+
+$$
+T^{MS}(n) = a''\, n\log_2 n + b''\, n + c''.
+$$
+
+## Confronto asintotico
+
+Per il caso peggiore (e medio) di Insertion Sort:
+
+$$
+\begin{align*}
+T^{IS}(n) &= \Theta(n^2), \\
+T^{MS}(n) &= \Theta(n\log n),
+\end{align*}
+$$
+
+$$
+\lim_{n\to\infty} \frac{T^{MS}(n)}{T^{IS}(n)} = 0.
+$$
+
+Quindi $T^{MS}(n) = o\bigl(T^{IS}(n)\bigr)$: Merge Sort cresce asintoticamente più lentamente di Insertion Sort. In particolare, per ogni $\varepsilon > 0$ esiste $n_0$ tale che, per ogni $n \ge n_0$,
+
+$$
+T^{MS}(n) < \varepsilon\, T^{IS}(n).
+$$
+
+Il confronto non vale per il caso migliore di Insertion Sort, che è $\Theta(n)$ (array già ordinato).
+
+### Ordini di grandezza concreti (1 operazione ≈ 1 ns)
+
+| $n$    | Insertion Sort ($n^2$) | Merge Sort ($n\log_2 n$) |
+| ------ | ---------------------- | ------------------------ |
+| $10$   | $0{,}1\,\mu\mathrm{s}$ | $0{,}033\,\mu\mathrm{s}$ |
+| $10^3$ | $1\,\mathrm{ms}$       | $10\,\mu\mathrm{s}$      |
+| $10^6$ | $17\,\mathrm{min}$     | $20\,\mathrm{ms}$        |
+| $10^9$ | $\approx 32\,\mathrm{anni}$ | $30\,\mathrm{s}$    |
+
+I grafici sperimentali confermano la crescita quadratica di Insertion Sort e quella quasi lineare di Merge Sort già per dimensioni di alcune migliaia di elementi.

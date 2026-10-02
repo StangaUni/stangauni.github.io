@@ -1,0 +1,58 @@
+---
+title: "Principio di induzione"
+type: "riassunto"
+excerpt: "Induzione ordinaria e forte, esempi classici, applicazione al numero di foglie di un albero binario e alla correttezza di Merge Sort."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Induzione ordinaria
+
+Sia $P(n)$ una proprietà dei numeri naturali. Per dimostrare $\forall n\in\mathbb{N}\; P(n)$:
+
+1. **Caso base**: si verifica $P(0)$ (o $P(1)$, a seconda del punto di partenza).
+2. **Passo induttivo**: si assume $P(n)$ (*ipotesi induttiva*) e si dimostra $P(n+1)$.
+
+### Esempio classico
+
+$$
+Q(n) \equiv 2^n \le (n+1)!.
+$$
+
+- **Base**: $2^0 = 1 \le 1! = 1$.
+- **Passo**: da $2^n \le (n+1)!$ segue
+  $$
+  2^{n+1} = 2\cdot 2^n \le 2\cdot(n+1)! \le (n+2)(n+1)! = (n+2)!,
+  $$
+  poiché $n+2 \ge 2$.
+
+## Induzione forte (completa)
+
+Si assume che $P(m)$ valga per **tutti** i $m < n$ e si dimostra $P(n)$. Il caso base può essere incluso nell'enunciato generale (per $n = 0$ l'ipotesi è vuota, quindi $P(0)$ va dimostrata direttamente).
+
+È la forma adatta quando il passo ricorsivo si appoggia su valori non necessariamente "il precedente immediato". Logicamente è equivalente all'induzione ordinaria, ma in questi casi è molto più naturale da usare.
+
+## Applicazione: numero di foglie di un albero binario
+
+**Teorema**. Per ogni albero binario $T$ di altezza $n$,
+
+$$
+\#\mathrm{foglie}(T) \le 2^n.
+$$
+
+**Dimostrazione** (induzione forte su $n$).
+
+- **Base** ($n=0$): $T$ è un singolo nodo, quindi ha 1 foglia, e $1 \le 2^0$.
+- **Passo** ($n \ge 1$): si assume l'enunciato per tutte le altezze $m < n$. La radice di $T$ non è una foglia, quindi le foglie di $T$ sono quelle dei suoi sottoalberi, che hanno altezza $\le n-1$.
+  - Se la radice ha **un solo figlio**, il sottoalbero ha altezza $n-1$. Per ipotesi induttiva $\#\mathrm{foglie}(T) \le 2^{n-1} \le 2^n$.
+  - Se la radice ha **due figli**, i sottoalberi $T'$ e $T''$ hanno altezze $m', m'' \le n-1$ (quindi $< n$). Per ipotesi induttiva:
+    $$
+    \#\mathrm{foglie}(T) = \#\mathrm{foglie}(T') + \#\mathrm{foglie}(T'') \le 2^{m'} + 2^{m''} \le 2^{n-1} + 2^{n-1} = 2^n.
+    $$
+
+Qui serve l'induzione forte perché le altezze $m'$ e $m''$ dei sottoalberi possono essere diverse da $n-1$ (e diverse tra loro).
+
+## Applicazione: correttezza di Merge Sort
+
+Nella ricorsione di `MergeSort` le due metà hanno dimensione $\approx n/2$, strettamente minore di $n$. L'ipotesi induttiva deve quindi valere per **tutte** le dimensioni inferiori: si usa l'induzione forte. Dimostrazione completa in [Merge Sort e divide et impera](03-merge-sort-divide-et-impera).

@@ -1,0 +1,81 @@
+---
+title: "Introduzione agli algoritmi e risorse computazionali"
+type: "riassunto"
+excerpt: "Problema computazionale, definizione di algoritmo, modello di computazione, necessità dell’analisi di efficienza, risorse tempo/spazio, problema dell’ordinamento."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Soluzione di un problema computazionale
+
+Un problema computazionale si affronta in tre fasi successive:
+
+<ThemedImage
+  lightSrc="/assets/algoritmi-e-strutture-dati/01_fasiProblema.svg"
+  darkSrc="/assets/algoritmi-e-strutture-dati/01_fasiProblema_scuro.svg"
+  alt="Fasi di soluzione di un problema computazionale"
+/>
+
+**Algoritmo**: descrizione di un procedimento, mediante una sequenza di passi elementari (con opportuni meccanismi di controllo), che risolve il problema dato.
+
+Schema concettuale:
+
+<ThemedImage
+  lightSrc="/assets/algoritmi-e-strutture-dati/01_inputAlgoritmoOutput.svg"
+  darkSrc="/assets/algoritmi-e-strutture-dati/01_inputAlgoritmoOutput_scuro.svg"
+  alt="Schema input-algoritmo-output"
+/>
+
+### Modello di computazione
+
+Si assume un modello in cui alcune operazioni sono **elementari**, cioè eseguibili in tempo costante. Esempi:
+
+- calcolo del fattoriale $n!$ a partire da $n \ge 0$;
+- prodotto di due numeri $A \times B$.
+
+Storicamente, i testi di al-Khwārizmī (Persia, IX secolo) contribuirono a diffondere la notazione posizionale e lo zero, rendendo praticabile l'aritmetica moderna (da lui deriva il termine «algoritmo»).
+
+Per ogni problema non banale esistono **infiniti** algoritmi che lo risolvono; essi differiscono però in **efficienza**.
+
+## Perché serve l'analisi
+
+Esempio paradigmatico: ordinare $n = 30$ contatti di un cellulare generando tutte le permutazioni e verificando se ciascuna è ordinata.
+
+- Le permutazioni sono $30! \approx 2{,}7 \cdot 10^{32}$.
+- Con 1 ms per permutazione servono $\approx 2{,}7 \cdot 10^{29}$ s, cioè $\approx 8 \cdot 10^{21}$ anni.
+- Per confronto, l'età dell'universo è dell'ordine di $1{,}4 \cdot 10^{10}$ anni.
+
+L'obiettivo del corso è quindi l'**analisi e la progettazione di algoritmi efficienti**.
+
+## Risorse analizzate
+
+Di un algoritmo si studiano principalmente due risorse:
+
+- **tempo** di esecuzione;
+- **spazio** di memoria.
+
+Esempio di struttura dati (vettore dinamico):
+
+| Operazione          | Costo                                  |
+| ------------------- | -------------------------------------- |
+| accesso casuale     | $O(1)$                                 |
+| inserimento in coda | $O(1)$ ammortizzato, $O(n)$ nel caso peggiore |
+
+## Il problema dell'ordinamento
+
+Problema centrale dell'algoritmica.
+
+- **Input**: sequenza $a_1, a_2, \dots, a_n$.
+- **Output**: permutazione $a'_1 \le a'_2 \le \dots \le a'_n$ degli stessi elementi.
+
+I dati possono essere oggetti arbitrari muniti di una chiave di ordinamento (`x.key`).
+
+Due algoritmi fondamentali studiati all'inizio del corso:
+
+| Algoritmo      | Paradigma        | Tempo (caso peggiore) |
+| -------------- | ---------------- | --------------------- |
+| Insertion Sort | Incrementale     | $\Theta(n^2)$         |
+| Merge Sort     | Divide et impera | $\Theta(n \log n)$    |
+
+Vedi [Insertion Sort](02-insertion-sort) e [Merge Sort e divide et impera](03-merge-sort-divide-et-impera).

@@ -1,0 +1,78 @@
+---
+title: "Merge Sort e paradigma divide et impera"
+type: "riassunto"
+excerpt: "Schema divide-et-impera, algoritmo Merge Sort, procedura Merge, invarianti e correttezza per induzione forte."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Divide et impera
+
+Schema generale:
+
+1. **DIVIDE** il problema $P$ in sottoproblemi $P_1, \dots, P_m$;
+2. **IMPERA**: risolve i sottoproblemi, ricorsivamente oppure direttamente se sono piccoli;
+3. **COMBINA** le soluzioni dei sottoproblemi in una soluzione di $P$.
+
+## Merge Sort
+
+Applicazione concreta dello schema:
+
+- **divide** l'array in due metà (approssimativamente uguali);
+- **impera**: ordina ricorsivamente ciascuna metà;
+- **combina**: fonde (*merge*) i due sottoarray già ordinati.
+
+<ThemedImage
+  lightSrc="/assets/algoritmi-e-strutture-dati/03_mergeSort.svg"
+  darkSrc="/assets/algoritmi-e-strutture-dati/03_mergeSort.svg"
+  alt="Schema di Merge Sort"
+/>
+
+### Algoritmo
+
+```
+MergeSort(A, p, r)
+  if p < r
+    q = ⌊(p + r)/2⌋
+    MergeSort(A, p, q)
+    MergeSort(A, q+1, r)
+    Merge(A, p, q, r)
+```
+
+### Procedura Merge
+
+```
+Merge(A, p, q, r)          // pre:  A[p..q] e A[q+1..r] ordinati
+                           // post: A[p..r] ordinato
+  n1 = q - p + 1
+  n2 = r - q
+  crea L[1..n1+1], R[1..n2+1]
+  for i = 1 to n1
+    L[i] = A[p + i - 1]
+  for j = 1 to n2
+    R[j] = A[q + j]
+  L[n1+1] = R[n2+1] = ∞
+  i = j = 1
+  for k = p to r
+    if L[i] ≤ R[j]
+      A[k] = L[i];  i = i + 1
+    else
+      A[k] = R[j];  j = j + 1
+```
+
+**Invariante del ciclo di fusione**:
+
+- $A[p..k-1]$ è ordinato e contiene esattamente gli elementi di $L[1..i-1]$ e $R[1..j-1]$;
+- ogni elemento di $A[p..k-1]$ è $\le$ di tutti gli elementi rimanenti in $L$ e $R$.
+
+All'uscita del ciclo ($k = r+1$) l'array $A[p..r]$ è completamente ordinato.
+
+## Correttezza
+
+Si dimostra per **induzione forte** sulla lunghezza $\ell = r - p + 1$ del segmento (vedi [Principio di induzione](05-principio-di-induzione)).
+
+- **Base** ($\ell = 1$): un solo elemento, già ordinato.
+- **Passo** ($\ell > 1$): le due chiamate ricorsive operano su sottoarray di lunghezza strettamente minore di $\ell$, quindi per ipotesi induttiva li ordinano correttamente. `Merge` ha le precondizioni soddisfatte e produce un array ordinato.
+
+Le due metà hanno lunghezza $\approx \ell/2$, non necessariamente $\ell - 1$: l'ipotesi induttiva deve quindi valere per tutte le lunghezze inferiori, non solo per la precedente.

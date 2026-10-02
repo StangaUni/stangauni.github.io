@@ -1,0 +1,110 @@
+---
+title: "Insertion Sort"
+type: "riassunto"
+excerpt: "Idea, pseudocodice, invarianti di correttezza, analisi del tempo di esecuzione (caso migliore, peggiore e medio)."
+contributors:
+  - name: "Enrico Stangherlin"
+    github: "stangherlin-enrico"
+---
+
+## Idea
+
+Si mantiene un prefisso ordinato dell'array e si inserisce, uno alla volta, ogni nuovo elemento nella posizione corretta all'interno di quel prefisso.
+
+Esempio di esecuzione su `[5, 2, 8, 4, 7]`:
+
+<ThemedImage
+  lightSrc="/assets/algoritmi-e-strutture-dati/02_insertionSortSequenza.svg"
+  darkSrc="/assets/algoritmi-e-strutture-dati/02_insertionSortSequenza_scuro.svg"
+  alt="Esempio di esecuzione di Insertion Sort"
+/>
+
+Visualizzazione con il "buco" (`#`), che rappresenta la posizione libera durante lo scorrimento:
+
+<ThemedImage
+  lightSrc="/assets/algoritmi-e-strutture-dati/02_insertionSortBuco.svg"
+  darkSrc="/assets/algoritmi-e-strutture-dati/02_insertionSortBuco_scuro.svg"
+  alt="Visualizzazione del buco durante Insertion Sort"
+/>
+
+## Algoritmo
+
+```
+InsertionSort(A)
+  n = A.length
+  for j = 2 to n
+    key = A[j]
+    i = j - 1
+    while (i > 0) and (A[i] > key)
+      A[i+1] = A[i]
+      i = i - 1
+    A[i+1] = key
+```
+
+Il ciclo `while` termina per uno di due motivi:
+
+1. $i = 0$: `key` è minore di tutti gli elementi del prefisso;
+2. $i > 0$ e $A[i] \le key$: si è trovata la posizione di inserimento.
+
+## Correttezza (invarianti)
+
+Schema generale per un ciclo `while b do C`:
+
+1. Inv vale all'ingresso;
+2. se Inv ∧ $b$ vale prima di C, Inv vale ancora dopo l'esecuzione di C;
+3. all'uscita valgono Inv ∧ ¬$b$.
+
+### Ciclo esterno (`for`)
+
+**Invariante**: $A[1 \dots j-1]$ è ordinato e contiene gli stessi elementi che occupavano le posizioni $1 \dots j-1$ all'inizio.
+
+- **Inizializzazione** ($j = 2$): $A[1 \dots 1]$ ha un solo elemento, quindi è ordinato.
+- **Mantenimento**: il corpo del ciclo inserisce $A[j]$ nella posizione corretta, quindi $A[1 \dots j]$ risulta ordinato.
+- **Terminazione** ($j = n+1$): $A[1 \dots n]$ è ordinato.
+
+### Ciclo interno (`while`)
+
+**Invariante**:
+
+- $A[1 \dots i]$ e $A[i+2 \dots j]$ sono ordinati;
+- $A[1 \dots i] \le A[i+2 \dots j]$;
+- $key < A[i+2 \dots j]$.
+
+## Analisi del tempo di esecuzione
+
+### Modello di costo
+
+Si contano le operazioni elementari, a costo costante. La dimensione del problema è il numero $n$ di elementi da ordinare.
+
+Indicando con $t_j$ il numero di iterazioni del `while` per un dato $j$, si ottiene
+
+$$
+T^{IS}(n) = \Theta(n) + \Theta\Bigl(\sum_{j=2}^{n} t_j\Bigr).
+$$
+
+### Caso migliore
+
+Array già ordinato: $t_j = 0$ per ogni $j$.
+
+$$
+T^{IS}_{\min}(n) = \Theta(n).
+$$
+
+### Caso peggiore
+
+Array ordinato in senso strettamente decrescente: $t_j = j-1$.
+
+$$
+\sum_{j=2}^{n} t_j = \frac{n(n-1)}{2}
+\implies T^{IS}_{\max}(n) = \Theta(n^2).
+$$
+
+### Caso medio
+
+Assumendo che la posizione di inserimento sia distribuita uniformemente, $t_j \approx (j-1)/2$, quindi
+
+$$
+T^{IS}_{\mathrm{med}}(n) = \Theta(n^2).
+$$
+
+In pratica il caso medio e il caso peggiore sono entrambi quadratici.
